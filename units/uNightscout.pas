@@ -13,6 +13,9 @@ const
   cMmolDenominator = 18;
 
 type
+
+  { TNightscoutEntry }
+
   TNightscoutEntry = class
   public
     Date: TDateTime;
@@ -26,6 +29,7 @@ type
     function SugarMmol: Double;
     function GetSugar(IsMmolL: Boolean = True): Double;
     function GetSugarStr(IsMmolL: Boolean = True): string; overload;
+    function GetArrowCountOfSlope(): Byte;
     class function GetSugarStr(SugarValue: Integer; IsMmolL: Boolean = True): string; overload;
   end;
 
@@ -150,6 +154,11 @@ end;
 function TNightscoutEntry.GetSugarStr(IsMmolL: Boolean = True): string;
 begin
   Result := GetSugarStr(Sugar, IsMmolL);
+end;
+
+function TNightscoutEntry.GetArrowCountOfSlope(): Byte;
+begin
+  Result := IfThen((Slope = 'DoubleUp') or (Slope = 'DoubleDown'), 2, 1)
 end;
 
 function TNightscoutEntry.ParseRow(Row: string): Boolean;

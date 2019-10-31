@@ -1091,6 +1091,7 @@ begin
         SugarLevelPointRadius := GetDrawStageSize(dsSugarLines) * 2;
         cnv.Brush.Color := cSugarLevelPointsColor;
         cnv.Pen.Color := cSugarLevelPointsColor;
+        cnv.Pen.Width := 1;
         cnv.Ellipse(x - SugarLevelPointRadius, y - SugarLevelPointRadius, x + SugarLevelPointRadius, y + SugarLevelPointRadius);
       end;
 
@@ -1176,7 +1177,7 @@ begin
       ArrowRect := Rect(0,0,0,0);
       CanDrawArrow := GetArrowRect(Entry.Slope, SlopeRect, ArrowRect);
 
-      ArrowCount := IfThen((Entry.Slope = 'DoubleUp') or (Entry.Slope = 'DoubleDown'), 2, 1);
+      ArrowCount := Entry.GetArrowCountOfSlope;
       ArrowOffsetX := LastSugarLevelPoint.X + Floor((TextSize.cx * 1.2));
       OffsetRect(ArrowRect, ArrowOffsetX, LastSugarLevelPoint.Y); // Move SlopeRect to the left side of dsLastSugarLevel text
 
@@ -1204,8 +1205,6 @@ begin
       Text);
   end;
 end;
-
-
 
 procedure TfMain.DoDraw(Sender: TObject);
 begin
