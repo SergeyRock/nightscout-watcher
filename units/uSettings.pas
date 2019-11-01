@@ -224,7 +224,11 @@ begin
   EntryDateWithCorrection := Entry.Date + TimeZoneCorrection / HoursPerDay;
   Mins := MinutesBetween(Now, EntryDateWithCorrection);
 
-  OutColor := cLastSugarLevelDateColor;
+  if Mins >= StaleDataAlarm then
+    OutColor := cWarningColor
+  else
+    OutColor := cLastSugarLevelDateColor;
+
   if Mins < 1 then
   begin
     Result := 'now';
@@ -241,14 +245,12 @@ begin
     Exit;
   end;
 
-  OutColor := cWarningColor;
   Hours := HoursBetween(Now, EntryDateWithCorrection);
   HoursStr := IntToStr(Hours);
   case Hours of
     1: Result := HoursStr + ' hour ago';
     2..24: Result := HoursStr + ' hours ago';
   end;
-
 
   Days := DaysBetween(Now, EntryDateWithCorrection);
   DaysStr := IntToStr(Days);

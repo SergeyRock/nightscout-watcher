@@ -124,7 +124,8 @@ type
     function LoadEntriesData: Boolean;
     procedure SetActionCheckProperty(Action: TAction; Checked: Boolean; DrawStage: TDrawStage);
     function GetArrowRect(Slope: string; ArrowAreaRect: TRect; var OutPoints: TRect): Boolean;
-    procedure DrawArrow(P1,P2:TPoint; DrawArrowEnd:boolean; Canvas:TCanvas; SugarSlopeColor: TColor);
+    procedure DrawArrow(P1, P2: TPoint; DrawArrowEnd: boolean; Canvas: TCanvas;
+      SugarSlopeColor: TColor; ArrowWidth: Integer);
     procedure UpdateEntriesForHorzSugarLines();
     procedure DoDrawStages(DrawStages: TDrawStages);
     procedure DrawTextInCenter(const Text: string);
@@ -132,10 +133,12 @@ type
     procedure DoUpdateCallerFormWithSettings;
     function SetNightscoutUrl(Url: string): Boolean;
     function SetCheckIntervalByString(Value: string): Boolean;
+    function SetMaximumDrawStageSizeToCanvas(DrawStage: TDrawStage; const Text: string;
+      cnv: TCanvas): Byte;
     procedure SetAlphaBlendValue(Value: Integer);
     procedure RefreshCheckInterval;
     function GetEntriesUrl: string;
-    function GetDrawStageSize(DrawStage: TDrawStage): Integer;
+    function GetDrawStageSize(DrawStage: TDrawStage; ScaleIndex: Integer = -1): Integer;
     procedure HardInvalidate();
     procedure ApplyWindowSettings();
   end;
@@ -369,7 +372,7 @@ begin
   //Win32Check(ShellExecuteEx(@ExecInfo));
 end;
 
-procedure TfMain.CreateDrawPanel;
+procedure TfMain.CreateDrawPanel();
 begin
   DrawPanel := TDrawPanel.Create(Self);
   DrawPanel.Parent := Self;
@@ -541,7 +544,7 @@ begin
   Result := Settings.NightscoutUrl + '/api/v1/entries?count=' + IntToStr(Settings.CountOfEntriesToRecive);
 end;
 
-function TfMain.GetDrawStageSize(DrawStage: TDrawStage): Integer;
+function TfMain.GetDrawStageSize(DrawStage: TDrawStage; ScaleIndex: Integer = -1): Integer;
 var
   i: Integer;
 begin
@@ -556,7 +559,8 @@ begin
     Exit;
   end;
 
-  Result := cDrawStageSizes[i][Settings.ScaleIndex];
+  ScaleIndex := IfThen(ScaleIndex = -1, Settings.ScaleIndex, ScaleIndex);
+  Result := cDrawStageSizes[i][ScaleIndex];
 end;
 
 function TfMain.LoadEntriesData: Boolean;
@@ -628,7 +632,7 @@ begin
   Action.Checked := Checked;
 end;
 
-procedure TfMain.LoadOptions;
+procedure TfMain.LoadOptions();
 var
   ini: TIniFile;
   DrawStageChecked: Boolean;
@@ -704,7 +708,7 @@ begin
   HardInvalidate();
 end;
 
-procedure TfMain.SaveOptions;
+procedure TfMain.SaveOptions();
 var
   ini: TIniFile;
 begin
@@ -777,7 +781,7 @@ begin
   AlphaBlendValue := Settings.AlphaBlendValue;
 end;
 
-function TfMain.SetCheckIntervalByString(Value: String): Boolean;
+function TfMain.SetCheckIntervalByString(Value: string): Boolean;
 begin
   Result := TryStrToInt(Value, Settings.CheckInterval);
   if Result then
@@ -786,6 +790,21 @@ begin
     pb.Position := 0;
     pb.Max := Floor(tmr.Interval / 1000);
   end;
+end;
+
+function TfMain.SetMaximumDrawStageSizeToCanvas(DrawStage: TDrawStage;
+  const Text: string; cnv: TCanvas): Byte;
+var
+  TextSize: TSize;
+  ScaleIndex: Integer;
+begin
+  ScaleIndex := Settings.ScaleIndex;
+  repeat
+    cnv.Font.Size := GetDrawStageSize(DrawStage, ScaleIndex);
+    TextSize := cnv.TextExtent(Text);
+    Dec(ScaleIndex);
+  until (ScaleIndex < 1) or ((TextSize.cx < ClientWidth) and (TextSize.cy < ClientHeight)) ;
+  Result := ScaleIndex + 1;
 end;
 
 procedure TfMain.HardInvalidate();
@@ -845,7 +864,7 @@ begin
 end;
 
 
-procedure TfMain.UpdateEntriesForHorzSugarLines;
+procedure TfMain.UpdateEntriesForHorzSugarLines();
 var
   i, MinSugarValue, MaxSugarValue, Delta: Integer;
   Entry: TNightscoutEntry;
@@ -942,14 +961,15 @@ begin
   end;
 end;
 
-procedure TfMain.DrawArrow(P1,P2: TPoint; DrawArrowEnd: Boolean; Canvas: TCanvas; SugarSlopeColor: TColor);
+procedure TfMain.DrawArrow(P1, P2: TPoint; DrawArrowEnd: boolean;
+  Canvas: TCanvas; SugarSlopeColor: TColor; ArrowWidth: Integer);
 var
   Angle, Distance: Double;
   ArrowLength: Integer;
   p3, p4: TPoint;
 begin
   Canvas.Pen.Color := SugarSlopeColor;
-  Canvas.Pen.Width := GetDrawStageSize(dsSugarSlope);
+  Canvas.Pen.Width := ArrowWidth;
   Canvas.MoveTo(p1.X, p1.Y);
   Canvas.LineTo(p2.X, p2.Y);
   if DrawArrowEnd then
@@ -994,13 +1014,14 @@ var
   cnv: TCanvas;
   EntryWidth, EntryHeight, MarginX, MarginY: Double;
   Entry: TNightscoutEntry;
-  Text: string;
+  Text, TextWithSlope: string;
   TextSize: TSize;
   OffsetPoints: array [0..7] of TPoint;
   LastSugarLevelPoint: TPoint;
   SlopeRect, ArrowRect: TRect;
   CanDrawArrow: Boolean;
   LastSugarLevelDateColor, FontColor: TColor;
+  SugarSlopeScaleIndex: Byte;
 begin
   EntriesCount := Entries.Count;
   if EntriesCount < 1 then
@@ -1130,8 +1151,13 @@ begin
     Entry := Entries.Last;
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
-    cnv.Font.Size := GetDrawStageSize(dsLastSugarLevel);
     Text := Entry.GetSugarStr(Settings.IsMmolL);
+
+    TextWithSlope := Text;
+    if dsSugarSlope in DrawStages then
+      TextWithSlope := TextWithSlope + '....';
+
+    SugarSlopeScaleIndex := SetMaximumDrawStageSizeToCanvas(dsLastSugarLevel, TextWithSlope, cnv);
     TextSize := cnv.TextExtent(Text);
     LastSugarLevelPoint.X := Floor((DrawPanel.Width - TextSize.cx) / 2);
     if dsSugarSlope in DrawStages then
@@ -1172,7 +1198,7 @@ begin
 
     if dsSugarSlope in DrawStages then
     begin
-      SlopeRectWidth := TextSize.cy div 3;
+      SlopeRectWidth := TextSize.cx div 2;
       SlopeRect := Rect(0, 0, SlopeRectWidth, TextSize.cy);
       ArrowRect := Rect(0,0,0,0);
       CanDrawArrow := GetArrowRect(Entry.Slope, SlopeRect, ArrowRect);
@@ -1183,7 +1209,7 @@ begin
 
       for i := 1 to ArrowCount do
       begin
-        DrawArrow(ArrowRect.TopLeft, ArrowRect.BottomRight, CanDrawArrow, cnv, FontColor);
+        DrawArrow(ArrowRect.TopLeft, ArrowRect.BottomRight, CanDrawArrow, cnv, FontColor, SugarSlopeScaleIndex);
         ArrowOffsetX := Floor((SlopeRect.Right - SlopeRect.Left) / 1.5);
         OffsetRect(ArrowRect, ArrowOffsetX, 0);
       end;
@@ -1195,9 +1221,9 @@ begin
     Entry := Entries.Last;
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
-    cnv.Font.Size := GetDrawStageSize(dsLastSugarLevelDate);
     Text := Settings.GetLastSugarLevelDateText(Entry, LastSugarLevelDateColor);
     cnv.Font.Color := LastSugarLevelDateColor;
+    SetMaximumDrawStageSizeToCanvas(dsLastSugarLevelDate, Text, cnv);
     TextSize := cnv.TextExtent(Text);
     cnv.TextOut(
       Floor(DrawPanel.Width - TextSize.cx - 5),

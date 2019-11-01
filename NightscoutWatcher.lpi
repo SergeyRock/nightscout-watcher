@@ -6,8 +6,6 @@
     <General>
       <Flags>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
-        <MainUnitHasCreateFormStatements Value="False"/>
-        <MainUnitHasTitleStatement Value="False"/>
         <MainUnitHasScaledStatement Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
@@ -26,7 +24,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="15"/>
+      <BuildNr Value="18"/>
       <Attributes pvaPreRelease="True"/>
     </VersionInfo>
     <BuildModes Count="3">
@@ -147,7 +145,7 @@
         <ResourceBaseClass Value="Form"/>
       </Unit3>
       <Unit4>
-        <Filename Value="Units\uSettings.pas"/>
+        <Filename Value="units\uSettings.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit4>
     </Units>
@@ -156,7 +154,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <SearchPaths>
-      <IncludeFiles Value="Forms;Units"/>
+      <IncludeFiles Value="Forms;Units;$(ProjOutDir)"/>
       <OtherUnitFiles Value="Forms;Units"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
@@ -173,6 +171,9 @@
       </Options>
     </Linking>
     <Other>
+      <Verbosity>
+        <ShoLineNum Value="True"/>
+      </Verbosity>
       <CustomOptions Value="-dBorland -dVer150 -dDelphi7 -dCompiler6_Up -dPUREPASCAL"/>
     </Other>
   </CompilerOptions>

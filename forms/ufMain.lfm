@@ -28,7 +28,7 @@ object fMain: TfMain
   OnMouseWheel = FormMouseWheel
   OnShow = FormShow
   Position = poDefault
-  LCLVersion = '2.0.4.0'
+  LCLVersion = '2.0.6.0'
   object pb: TProgressBar
     Left = 0
     Height = 5
