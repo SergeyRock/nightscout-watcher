@@ -1,47 +1,47 @@
 object fMain: TfMain
-  Left = 0
-  Top = 0
+  Left = 529
+  Height = 157
+  Top = 388
+  Width = 301
   AlphaBlend = True
   AlphaBlendValue = 230
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'NightscoutWatcher'
   ClientHeight = 157
-  ClientWidth = 233
+  ClientWidth = 301
   Color = clBlack
   Constraints.MinHeight = 50
   Constraints.MinWidth = 80
-  Ctl3D = False
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
-  Font.Style = []
-  FormStyle = fsStayOnTop
+  FormStyle = fsSystemStayOnTop
   KeyPreview = True
-  OldCreateOrder = False
-  Position = poDefault
   OnCreate = FormCreate
   OnDblClick = actVisitNightscoutSiteExecute
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
+  OnMouseDown = FormMouseDown
+  OnMouseMove = FormMouseMove
+  OnMouseUp = FormMouseUp
   OnMouseWheel = FormMouseWheel
   OnShow = FormShow
-  PixelsPerInch = 96
-  TextHeight = 13
+  Position = poDefault
+  LCLVersion = '2.0.6.0'
   object pb: TProgressBar
     Left = 0
-    Top = 152
-    Width = 233
     Height = 5
+    Top = 152
+    Width = 301
     Align = alBottom
     Position = 10
     Smooth = True
     TabOrder = 0
   end
   object pm: TPopupMenu
-    Left = 152
-    Top = 8
+    left = 240
+    top = 8
     object miSetNightscoutSite: TMenuItem
       Action = actSetNightscoutSite
     end
@@ -133,25 +133,25 @@ object fMain: TfMain
     Enabled = False
     Interval = 20000
     OnTimer = tmrTimer
-    Left = 8
-    Top = 8
+    left = 8
+    top = 8
   end
   object tmrProgressBar: TTimer
     Enabled = False
     OnTimer = tmrProgressBarTimer
-    Left = 40
-    Top = 8
+    left = 40
+    top = 8
   end
   object al: TActionList
-    Left = 120
-    Top = 8
+    left = 208
+    top = 8
     object actDrawLastSugarLevel: TAction
       Category = 'Draw options'
       AutoCheck = True
       Caption = 'Draw last sugar level'
       Checked = True
-      ShortCut = 49
       OnExecute = DoDrawStageExecute
+      ShortCut = 49
     end
     object actDrawSugarLines: TAction
       Tag = 1
@@ -159,8 +159,8 @@ object fMain: TfMain
       AutoCheck = True
       Caption = 'Draw sugar lines'
       Checked = True
-      ShortCut = 50
       OnExecute = DoDrawStageExecute
+      ShortCut = 50
     end
     object actDrawSugarExtremePoints: TAction
       Tag = 7
@@ -168,8 +168,8 @@ object fMain: TfMain
       AutoCheck = True
       Caption = 'Draw sugar extreme points'
       Checked = True
-      ShortCut = 56
       OnExecute = DoDrawStageExecute
+      ShortCut = 56
     end
     object actDrawSugarLevel: TAction
       Tag = 2
@@ -177,8 +177,8 @@ object fMain: TfMain
       AutoCheck = True
       Caption = 'Draw sugar level'
       Checked = True
-      ShortCut = 51
       OnExecute = DoDrawStageExecute
+      ShortCut = 51
     end
     object actDrawHorzGuideLines: TAction
       Tag = 3
@@ -186,9 +186,9 @@ object fMain: TfMain
       AutoCheck = True
       Caption = 'Draw horizontal guide lines'
       Checked = True
+      OnExecute = DoDrawStageExecute
       ShortCut = 53
       Visible = False
-      OnExecute = DoDrawStageExecute
     end
     object actDrawVertGuideLines: TAction
       Tag = 4
@@ -196,8 +196,8 @@ object fMain: TfMain
       AutoCheck = True
       Caption = 'Draw vertical guide lines'
       Checked = True
-      ShortCut = 52
       OnExecute = DoDrawStageExecute
+      ShortCut = 52
     end
     object actDrawSugarSlope: TAction
       Tag = 6
@@ -205,8 +205,8 @@ object fMain: TfMain
       AutoCheck = True
       Caption = 'Draw sugar slope'
       Checked = True
-      ShortCut = 55
       OnExecute = DoDrawStageExecute
+      ShortCut = 55
     end
     object actDrawLastSugarLevelDate: TAction
       Tag = 5
@@ -214,8 +214,8 @@ object fMain: TfMain
       AutoCheck = True
       Caption = 'Draw last sugar level date'
       Checked = True
-      ShortCut = 54
       OnExecute = DoDrawStageExecute
+      ShortCut = 54
     end
     object actDrawAlertLines: TAction
       Tag = 8
@@ -223,8 +223,8 @@ object fMain: TfMain
       AutoCheck = True
       Caption = 'Draw alert lines'
       Checked = True
-      ShortCut = 57
       OnExecute = DoDrawStageExecute
+      ShortCut = 57
     end
     object actDrawSugarLevelPoints: TAction
       Tag = 9
@@ -232,79 +232,79 @@ object fMain: TfMain
       AutoCheck = True
       Caption = 'Draw sugar level points'
       Checked = True
-      ShortCut = 73
       OnExecute = DoDrawStageExecute
+      ShortCut = 73
     end
     object actVisitNightscoutSite: TAction
       Category = 'Other'
       Caption = 'Visit Nightscout Site'
-      ShortCut = 86
       OnExecute = actVisitNightscoutSiteExecute
+      ShortCut = 86
     end
     object actShowCheckNewDataProgressBar: TAction
       Category = 'Show options'
       AutoCheck = True
       Caption = 'Show new data checking progress bar'
       Checked = True
-      ShortCut = 80
       OnExecute = actShowCheckNewDataProgressBarExecute
+      ShortCut = 80
     end
     object actHelp: TAction
       Category = 'Other'
       Caption = 'Help'
-      ShortCut = 112
       OnExecute = actHelpExecute
+      ShortCut = 112
     end
     object actSetNightscoutSite: TAction
       Category = 'Options'
       Caption = 'Set Nightscout site URL'
-      ShortCut = 83
       OnExecute = actSetNightscoutSiteExecute
+      ShortCut = 83
     end
     object actExit: TAction
       Category = 'Other'
       Caption = 'Exit'
-      ShortCut = 88
       OnExecute = actExitExecute
+      ShortCut = 88
     end
     object actSetCheckInterval: TAction
       Category = 'Options'
       Caption = 'Set time interval to check new data (secs)'
-      ShortCut = 73
       OnExecute = actSetCheckIntervalExecute
+      ShortCut = 73
     end
     object actShowWindowBorder: TAction
       Category = 'Show options'
       AutoCheck = True
       Caption = 'Show window border'
-      ShortCut = 66
       OnExecute = actShowWindowBorderExecute
+      ShortCut = 66
     end
     object actSetUnitOfMeasureMmolL: TAction
       Category = 'Options'
       AutoCheck = True
       Caption = 'Set to mmol/l'
-      ShortCut = 77
       OnExecute = actSetUnitOfMeasureMmolLExecute
+      ShortCut = 77
     end
     object actSetCountOfEntriesToRecive: TAction
       Category = 'Options'
       Caption = 'Set count of entries to recive'
-      ShortCut = 67
       OnExecute = actSetCountOfEntriesToReciveExecute
+      ShortCut = 67
     end
     object actShowSettings: TAction
       Category = 'Other'
       Caption = 'Show settings'
-      ShortCut = 120
       OnExecute = actShowSettingsExecute
+      ShortCut = 120
     end
     object actFullScreen: TAction
       Category = 'Show options'
       AutoCheck = True
       Caption = 'Full screen'
-      ShortCut = 122
       OnExecute = actFullScreenExecute
+      ShortCut = 122
     end
   end
 end

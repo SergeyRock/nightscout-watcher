@@ -88,6 +88,7 @@ type
     procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure FormMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure CheckStaleDataAlarms;
     procedure tmrTimer(Sender: TObject);
     procedure tmrProgressBarTimer(Sender: TObject);
     procedure DoDrawStageExecute(Sender: TObject);
@@ -108,7 +109,10 @@ type
     procedure actShowSettingsExecute(Sender: TObject);
     procedure actFullScreenExecute(Sender: TObject);
   private
+    StaleAlarmBlinkTrigger: Boolean;
+    NeedStaleDataBlink: Boolean;
     FPressed : Boolean;
+    Loaded: Boolean;
     FPosX : Integer;
     FPosY : Integer;
     Settings: TSettings;
@@ -118,6 +122,7 @@ type
     OptionsFileName: string;
     Connected: Boolean;
     WasAlphaBlend: Boolean;
+    BoundsRectLoaded: TRect;
     procedure CreateDrawPanel();
     procedure SaveOptions();
     procedure LoadOptions();
@@ -162,7 +167,6 @@ uses
 
 const
   cMoveWindowDelta = 10;
-
 
 {$R *.dfm}
 
@@ -329,7 +333,7 @@ begin
     DoUpdateCallerFormWithSettings();
     tmrTimer(tmr);
   finally
-    FormStyle := fsStayOnTop;
+    FormStyle := fsSystemStayOnTop;
   end;
 end;
 
@@ -342,11 +346,9 @@ begin
   if TAction(Sender).Checked then
   begin
     BorderStyle := bsSizeable;
-    BorderIcons := [biSystemMenu, biMaximize, biMinimize];
   end
   else
   begin
-    BorderIcons := [];
     BorderStyle := bsNone;
   end;
   BoundsRect := OldWindowRect;
@@ -359,17 +361,8 @@ begin
 end;
 
 procedure TfMain.actVisitNightscoutSiteExecute(Sender: TObject);
-//var
-//  ExecInfo: TShellExecuteInfo;
 begin
-  //FillChar(ExecInfo, SizeOf(TShellExecuteInfo), 0);
-  //ExecInfo.cbSize := SizeOf(TShellExecuteInfo);
-  //ExecInfo.fMask := SEE_MASK_NOCLOSEPROCESS;
-  //ExecInfo.Wnd := Handle;
-  //ExecInfo.lpFile := PChar(Settings.NightscoutUrl);
-  //ExecInfo.nShow := SW_SHOWNORMAL;
-  //
-  //Win32Check(ShellExecuteEx(@ExecInfo));
+  OpenDocument(Settings.NightscoutUrl);
 end;
 
 procedure TfMain.CreateDrawPanel();
@@ -392,6 +385,8 @@ end;
 
 procedure TfMain.FormCreate(Sender: TObject);
 begin
+  Loaded := False;
+  StaleAlarmBlinkTrigger := False;
   Settings := TSettings.Create();
 
   Connected := False;
@@ -400,7 +395,7 @@ begin
   HorzLinesEntries := TNightscoutEntryList.Create;
 
   CreateDrawPanel();
-  LoadOptions();
+  FormStyle := fsSystemStayOnTop;
 end;
 
 procedure TfMain.FormDestroy(Sender: TObject);
@@ -469,6 +464,26 @@ begin
   FPressed := False;
 end;
 
+procedure TfMain.CheckStaleDataAlarms;
+var
+  Entry: TNightscoutEntry;
+  StaleAlarmReached, UrgentStaleAlarmReached: Boolean;
+begin
+  StaleAlarmReached := False;
+  UrgentStaleAlarmReached := False;
+
+  Entry := Entries.Last();
+  if Assigned(Entry) then
+  begin
+    StaleAlarmReached := Settings.IsStaleDataAlarmExists(Entry);
+    UrgentStaleAlarmReached := Settings.IsUrgentStaleDataAlarmExists(Entry);
+    StaleAlarmBlinkTrigger := not StaleAlarmBlinkTrigger;
+  end;
+  NeedStaleDataBlink := Settings.EnableStaleDataAlarms and
+    (StaleAlarmReached or UrgentStaleAlarmReached) ;
+  Invalidate();
+end;
+
 procedure TfMain.FormMouseEnter(Sender: TObject);
 begin
   WasAlphaBlend := AlphaBlend;
@@ -533,10 +548,17 @@ end;
 
 procedure TfMain.FormShow(Sender: TObject);
 begin
+  if Loaded then
+    Exit;
+
+  LoadOptions();
+
   if Settings.NightscoutUrl = '' then
     actSetNightscoutSiteExecute(actSetNightscoutSite)
   else
     tmrTimer(tmr); // Load data from nightscout site and start monitoring
+
+  Loaded := True;
 end;
 
 function TfMain.GetEntriesUrl: string;
@@ -575,13 +597,8 @@ begin
   Entries.Clear;
   if not DebugMode then
   begin
-    //{$IF CompilerVersion >= 21.0}  // For DELPHI_2010_UP
-    //DeleteUrlCacheEntry(PWideChar(GetEntriesUrl));
-    //IsFileDownloaded := URLDownloadToFile(nil, PWideChar(GetEntriesUrl), PWideChar(FileName), 0, nil) = S_OK;
-    //{$ELSE}
     DeleteUrlCacheEntry(PAnsiChar(GetEntriesUrl));
     IsFileDownloaded := URLDownloadToFile(nil, PAnsiChar(GetEntriesUrl), PAnsiChar(FileName), 0, nil) = S_OK;
-    //{$IFEND}
 
     if not IsFileDownloaded then
     begin
@@ -636,7 +653,6 @@ procedure TfMain.LoadOptions();
 var
   ini: TIniFile;
   DrawStageChecked: Boolean;
-  WindowPosition: TRect;
 begin
   ini := TIniFile.Create(OptionsFileName);
   try
@@ -679,11 +695,11 @@ begin
 
     Settings.ShowCheckNewDataProgressBar := ini.ReadBool('Visual', 'ShowCheckNewDataProgressBar', Settings.ShowCheckNewDataProgressBar);
 
-    WindowPosition.Right := ini.ReadInteger('Visual', 'WindowWidth', Width);
-    WindowPosition.Bottom := ini.ReadInteger('Visual', 'WindowHeight', Height);
-    WindowPosition.Left := ini.ReadInteger('Visual', 'WindowLeft', Screen.Width - Width);
-    WindowPosition.Top := ini.ReadInteger('Visual', 'WindowTop', Floor((Screen.Height - Height) / 2));
-    SetBounds(WindowPosition.Left, WindowPosition.Top, WindowPosition.Right, WindowPosition.Bottom);
+    BoundsRectLoaded.Left := ini.ReadInteger('Visual', 'WindowLeft', BoundsRect.Left);
+    BoundsRectLoaded.Top := ini.ReadInteger('Visual', 'WindowTop', Floor((Screen.Height - Height) / 2));
+    BoundsRectLoaded.Right := ini.ReadInteger('Visual', 'WindowRight', Screen.Width - Width);
+    BoundsRectLoaded.Bottom := ini.ReadInteger('Visual', 'WindowBottom', Floor((Screen.Height + Height) / 2));
+    //SetBounds(BoundsRectLoaded.Left, BoundsRectLoaded.Top, BoundsRectLoaded.Right, BoundsRectLoaded.Bottom);
 
     SetAlphaBlendValue(ini.ReadInteger('Visual', 'AlphaBlendValue', Settings.AlphaBlendValue));
 
@@ -706,6 +722,7 @@ begin
   RefreshCheckInterval();
   ApplyWindowSettings();
   HardInvalidate();
+  BoundsRect := BoundsRectLoaded;
 end;
 
 procedure TfMain.SaveOptions();
@@ -737,10 +754,10 @@ begin
     ini.WriteInteger('Visual', 'AlphaBlendValue', Settings.AlphaBlendValue);
 
     // Save window position and size
-    ini.WriteInteger('Visual', 'WindowLeft', Left);
-    ini.WriteInteger('Visual', 'WindowTop', Top);
-    ini.WriteInteger('Visual', 'WindowWidth', Width);
-    ini.WriteInteger('Visual', 'WindowHeight', Height);
+    ini.WriteInteger('Visual', 'WindowLeft', BoundsRect.Left);
+    ini.WriteInteger('Visual', 'WindowTop', BoundsRect.Top);
+    ini.WriteInteger('Visual', 'WindowRight', BoundsRect.Right);
+    ini.WriteInteger('Visual', 'WindowBottom', BoundsRect.Bottom);
 
     ini.WriteInteger('Visual', 'ScaleIndex', Settings.ScaleIndex);
 
@@ -843,6 +860,7 @@ end;
 procedure TfMain.tmrProgressBarTimer(Sender: TObject);
 begin
   pb.Position := pb.Position + 1;
+  CheckStaleDataAlarms;
 end;
 
 procedure TfMain.tmrTimer(Sender: TObject);
@@ -856,6 +874,7 @@ begin
     tmr.Enabled := True;
     tmrProgressBar.Enabled := True;
     Connected := True;
+    StaleAlarmBlinkTrigger := False;
   end
   else
     actSetNightscoutSiteExecute(actSetNightscoutSite);
@@ -1216,7 +1235,8 @@ begin
     end;
   end;
 
-  if dsLastSugarLevelDate in DrawStages then
+  if (NeedStaleDataBlink and StaleAlarmBlinkTrigger) or
+    (not NeedStaleDataBlink and (dsLastSugarLevelDate in DrawStages)) then
   begin
     Entry := Entries.Last;
     cnv.Brush.Color := Color;

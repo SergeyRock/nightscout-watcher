@@ -13,17 +13,23 @@ uses
   LCLIntf, LCLType,
 {$ENDIF}
   uSettings, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Spin;
+  Dialogs, StdCtrls, Spin, ComCtrls, ExtCtrls;
 
 type
   TOnUpdateCallerFormWithSettings = procedure of object;
   TOnTryLoadEntriesData = function: Boolean of object;
 
+  { TfSettings }
+
   TfSettings = class(TForm)
     btnOK: TButton;
     btnCancel: TButton;
+    cbEnableGlucoseLevelAlarms: TCheckBox;
+    cbEnableStaleDataAlarms: TCheckBox;
     gbGlucoseLevelAlarms: TGroupBox;
+    Image1: TImage;
     lblHighGlucoseAlarm: TLabel;
+    pc: TPageControl;
     seHighGlucoseAlarm: TSpinEdit;
     lblLowGlucoseAlarm: TLabel;
     seLowGlucoseAlarm: TSpinEdit;
@@ -31,16 +37,12 @@ type
     seUrgentHighGlucoseAlarm: TSpinEdit;
     lblUrgentLowGlucoseAlarm: TLabel;
     seUrgentLowGlucoseAlarm: TSpinEdit;
-    cbEnableGlucoseLevelAlarms: TCheckBox;
     GroupBox2: TGroupBox;
     lblUrgentStaleDataAlarm: TLabel;
     seUrgentStaleDataAlarm: TSpinEdit;
     lblStaleDataAlarm: TLabel;
     seStaleDataAlarm: TSpinEdit;
-    cbEnableStaleDataAlarms: TCheckBox;
-    GroupBox3: TGroupBox;
     cbIsMmolL: TCheckBox;
-    GroupBox4: TGroupBox;
     cbDrawHorzGuideLines: TCheckBox;
     cbDrawVertGuideLines: TCheckBox;
     cbDrawLastSugarLevel: TCheckBox;
@@ -71,6 +73,10 @@ type
     lblTimeZoneCorrection: TLabel;
     seTimeZoneCorrection: TSpinEdit;
     cbDrawSugarLevelPoints: TCheckBox;
+    tsAbout: TTabSheet;
+    tsMain: TTabSheet;
+    tsVisual: TTabSheet;
+    tsAlerts: TTabSheet;
     procedure btnOKClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure DoChange(Sender: TObject);
@@ -122,6 +128,7 @@ begin
   TmpSettings := Settings.Clone;
   AssignSettingsToComponents();
   AssignComponentsOnChangeEvent();
+  pc.ActivePage := tsMain;
   if Assigned(OnUpdateCallerFormWithSettings) then
     OnUpdateCallerFormWithSettings;
 end;
@@ -139,6 +146,8 @@ begin
   sbScale.OnChange := DoChange;
   sbAlphaBlend.OnChange := DoChange;
   seTimeZoneCorrection.OnChange := DoChange;
+  seStaleDataAlarm.OnChange := DoChange;
+  seUrgentStaleDataAlarm.OnChange := DoChange;
 
   cbShowCheckNewDataProgressBar.OnClick := DoChange;
   cbDrawHorzGuideLines.OnClick := DoChange;
@@ -188,7 +197,8 @@ procedure TfSettings.DoChange(Sender: TObject);
 begin
   AssignComponentsToSettings();
   OldSettings.Assign(NewSettings);
-  OnUpdateCallerFormWithSettings;
+  if Assigned(OnUpdateCallerFormWithSettings) then
+    OnUpdateCallerFormWithSettings;
 end;
 
 procedure TfSettings.AssignSettingsToComponents;

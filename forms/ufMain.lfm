@@ -1,22 +1,22 @@
 object fMain: TfMain
-  Left = 1454
+  Left = 529
   Height = 157
-  Top = 180
-  Width = 233
+  Top = 388
+  Width = 301
   AlphaBlend = True
   AlphaBlendValue = 230
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'NightscoutWatcher'
   ClientHeight = 157
-  ClientWidth = 233
+  ClientWidth = 301
   Color = clBlack
   Constraints.MinHeight = 50
   Constraints.MinWidth = 80
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
-  FormStyle = fsStayOnTop
+  FormStyle = fsSystemStayOnTop
   KeyPreview = True
   OnCreate = FormCreate
   OnDblClick = actVisitNightscoutSiteExecute
@@ -33,14 +33,14 @@ object fMain: TfMain
     Left = 0
     Height = 5
     Top = 152
-    Width = 233
+    Width = 301
     Align = alBottom
     Position = 10
     Smooth = True
     TabOrder = 0
   end
   object pm: TPopupMenu
-    left = 152
+    left = 240
     top = 8
     object miSetNightscoutSite: TMenuItem
       Action = actSetNightscoutSite
@@ -143,7 +143,7 @@ object fMain: TfMain
     top = 8
   end
   object al: TActionList
-    left = 120
+    left = 208
     top = 8
     object actDrawLastSugarLevel: TAction
       Category = 'Draw options'

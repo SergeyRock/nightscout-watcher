@@ -50,6 +50,8 @@ type
     dsAlertLines, dsSugarLevelPoints);
   TDrawStages = set of TDrawStage;
 
+  { TSettings }
+
   TSettings = class
     AlphaBlendValue: Integer;
     CheckInterval: Integer;
@@ -70,8 +72,13 @@ type
     UrgentHighGlucoseAlarm: Integer;
     UrgentLowGlucoseAlarm: Integer;
     UrgentStaleDataAlarm: Integer;
+  private
+    function GetEntryMinsWithTimeZoneCorrection(Entry: TNightscoutEntry
+      ): Integer;
   public
     constructor Create();
+    function IsStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
+    function IsUrgentStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
     function Clone(): TSettings;
     function GetLastSugarLevelDateText(Entry: TNightscoutEntry; out OutColor: TColor): string;
     function IsInDrawStage(DrawStage: TDrawStage): Boolean; overload;
@@ -151,7 +158,7 @@ begin
   TimeZoneCorrection := Settings.TimeZoneCorrection;
 end;
 
-function TSettings.Clone: TSettings;
+function TSettings.Clone(): TSettings;
 begin
   Result := TSettings.Create;
   Result.AlphaBlendValue := AlphaBlendValue;
@@ -175,7 +182,7 @@ begin
   Result.TimeZoneCorrection := TimeZoneCorrection;
   end;
 
-constructor TSettings.Create;
+constructor TSettings.Create();
 begin
   DrawStages := [dsLastSugarLevel, dsSugarLines, dsHorzGuideLines,
     dsVertGuideLines, dsLastSugarLevelDate, dsSugarSlope, dsSugarExtremePoints];
@@ -197,6 +204,28 @@ begin
   UrgentLowGlucoseAlarm:= Round(3.3 * cMmolDenominator);
   UrgentStaleDataAlarm:= 40;
   TimeZoneCorrection := 0;
+end;
+
+function TSettings.GetEntryMinsWithTimeZoneCorrection(Entry: TNightscoutEntry): Integer;
+var
+  EntryDateWithCorrection: TDateTime;
+begin
+  Result := -1;
+  if Entry = nil then
+    Exit;
+
+  EntryDateWithCorrection := Entry.Date + TimeZoneCorrection / HoursPerDay;
+  Result := MinutesBetween(Now, EntryDateWithCorrection);
+end;
+
+function TSettings.IsStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
+begin
+  Result := GetEntryMinsWithTimeZoneCorrection(Entry) >= StaleDataAlarm;
+end;
+
+function TSettings.IsUrgentStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
+begin
+  Result := GetEntryMinsWithTimeZoneCorrection(Entry) >= UrgentStaleDataAlarm;
 end;
 
 function TSettings.SetScaleIndex(Index: Integer): Boolean;
@@ -222,7 +251,7 @@ var
 begin
   Result := '';
   EntryDateWithCorrection := Entry.Date + TimeZoneCorrection / HoursPerDay;
-  Mins := MinutesBetween(Now, EntryDateWithCorrection);
+  Mins := GetEntryMinsWithTimeZoneCorrection(Entry);
 
   if Mins >= StaleDataAlarm then
     OutColor := cWarningColor
