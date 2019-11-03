@@ -186,7 +186,7 @@ begin
   Result.UrgentLowGlucoseAlarm := UrgentLowGlucoseAlarm;
   Result.UrgentStaleDataAlarm := UrgentStaleDataAlarm;
   Result.TimeZoneCorrection := TimeZoneCorrection;
-  end;
+end;
 
 constructor TSettings.Create();
 begin

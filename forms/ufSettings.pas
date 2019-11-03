@@ -95,7 +95,7 @@ type
     class function ShowForm(AOwner: TComponent; Settings: TSettings;
       OnUpdateCallerFormWithSettings: TOnUpdateCallerFormWithSettings;
       OnTryLoadEntriesData: TOnTryLoadEntriesData): Boolean;
-    constructor Create(AOwner: TComponent; Settings: TSettings);
+    constructor CreateSpecial(AOwner: TComponent; Settings: TSettings);
     procedure AssignComponentsOnChangeEvent;
   end;
 
@@ -113,7 +113,7 @@ begin
   AssignComponentsToSettings();
   OldSettings.Assign(NewSettings);
   
-  if //(NewSettings.NightscoutUrl <> OldSettings.NightscoutUrl) and
+  if (NewSettings.NightscoutUrl <> OldSettings.NightscoutUrl) and
     Assigned(OnTryLoadEntriesData) and not OnTryLoadEntriesData then
   begin
     ModalResult := mrNone;
@@ -121,7 +121,7 @@ begin
   end;
 end;
 
-constructor TfSettings.Create(AOwner: TComponent; Settings: TSettings);
+constructor TfSettings.CreateSpecial(AOwner: TComponent; Settings: TSettings);
 begin
   inherited Create(AOwner);
   OldSettings := Settings;
@@ -168,6 +168,7 @@ end;
 procedure TfSettings.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(NewSettings);
+  FreeAndNil(TmpSettings);
 end;
 
 procedure TfSettings.AssignGlucoseAlertInMmolL(SpinEdit: TSpinEdit);
@@ -284,7 +285,7 @@ class function TfSettings.ShowForm(AOwner: TComponent; Settings: TSettings;
 var
   F: TfSettings;
 begin
-  F := TfSettings.Create(AOwner, Settings);
+  F := TfSettings.CreateSpecial(AOwner, Settings);
   try
     F.OnUpdateCallerFormWithSettings := OnUpdateCallerFormWithSettings;
     F.OnTryLoadEntriesData := OnTryLoadEntriesData;

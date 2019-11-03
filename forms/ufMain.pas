@@ -82,7 +82,6 @@ type
     Fullscreen1: TMenuItem;
     actDrawSugarLevelPoints: TAction;
     Drawsugarlevelpoints1: TMenuItem;
-    procedure actDrawSugarLevelDeltaExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -121,7 +120,6 @@ type
     Settings: TSettings;
     DrawPanel: TDrawPanel;
     Entries: TNightscoutEntryList;
-    HorzLinesEntries: TNightscoutEntryList;
     OptionsFileName: string;
     Connected: Boolean;
     WasAlphaBlend: Boolean;
@@ -134,7 +132,6 @@ type
     function GetArrowRect(Slope: string; ArrowAreaRect: TRect; var OutPoints: TRect): Boolean;
     procedure DrawArrow(P1, P2: TPoint; DrawArrowEnd: boolean; Canvas: TCanvas;
       SugarSlopeColor: TColor; ArrowWidth: Integer);
-    procedure UpdateEntriesForHorzSugarLines();
     procedure DoDrawStages(DrawStages: TDrawStages);
     procedure DrawTextInCenter(const Text: string);
     procedure DoDraw(Sender: TObject);
@@ -392,22 +389,15 @@ begin
   Connected := False;
   OptionsFileName := ExtractFilePath(ParamStr(0)) +  'Options.ini';
   Entries := TNightscoutEntryList.Create;
-  HorzLinesEntries := TNightscoutEntryList.Create;
 
   CreateDrawPanel();
   FormStyle := fsSystemStayOnTop;
-end;
-
-procedure TfMain.actDrawSugarLevelDeltaExecute(Sender: TObject);
-begin
-
 end;
 
 procedure TfMain.FormDestroy(Sender: TObject);
 begin
   SaveOptions();
   FreeAndNil(Entries);
-  FreeAndNil(HorzLinesEntries);
   FreeAndNil(Settings);
 end;
 
@@ -634,7 +624,6 @@ begin
   end;
   Entries.RemoveDuplicatesWithTheSameDate;
   Entries.LimitEntries(Settings.CountOfEntriesToRecive);
-  UpdateEntriesForHorzSugarLines();
   CloseFile(DataFile);
 
   if not DebugMode then
@@ -889,37 +878,6 @@ begin
     actSetNightscoutSiteExecute(actSetNightscoutSite);
 
   HardInvalidate();
-end;
-
-
-procedure TfMain.UpdateEntriesForHorzSugarLines();
-var
-  i, MinSugarValue, MaxSugarValue, Delta: Integer;
-  Entry: TNightscoutEntry;
-begin
-  HorzLinesEntries.Clear;
-
-  if Settings.IsMmolL then
-  begin
-    Delta  := 1;
-    MinSugarValue := Floor(Entries.GetMinSugarMmol) - Delta;
-    MaxSugarValue := Ceil(Entries.GetMaxSugarMmol) + Delta;
-  end
-  else
-  begin
-    Delta  := 10;
-    MinSugarValue := Entries.GetMinSugar - Delta;
-    MaxSugarValue := Entries.GetMaxSugar + Delta;
-  end;
-
-  i := MinSugarValue;
-  while i < MaxSugarValue do
-  begin
-    Entry := TNightscoutEntry.Create();
-    Entry.SetSugar(i, Settings.IsMmolL);
-    HorzLinesEntries.Add(Entry);
-    Inc(i, Delta);
-  end;
 end;
 
 function ContainsText(Text: string; SubText: string): Boolean;
