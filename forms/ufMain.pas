@@ -83,7 +83,6 @@ type
     actDrawSugarLevelPoints: TAction;
     Drawsugarlevelpoints1: TMenuItem;
     procedure actDrawSugarLevelDeltaExecute(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -167,7 +166,7 @@ uses
   ShellAPI,
 {$ELSE}
 {$ENDIF}
-  ufSettings, ufTestModalForm, UrlMon, Wininet, Math, IniFiles, StrUtils, Types;
+  ufSettings, UrlMon, Wininet, Math, IniFiles, StrUtils, Types;
 
 {$R *.lfm}
 
@@ -402,15 +401,6 @@ end;
 procedure TfMain.actDrawSugarLevelDeltaExecute(Sender: TObject);
 begin
 
-end;
-
-procedure TfMain.Button1Click(Sender: TObject);
-var
-  f: TfTestModalForm;
-begin
-  f := TfTestModalForm.Create(Self);
-  f.ShowModal;
-  f.Free;
 end;
 
 procedure TfMain.FormDestroy(Sender: TObject);
@@ -1046,7 +1036,7 @@ end;
 procedure TfMain.DoDrawStages(DrawStages: TDrawStages);
 const
   cMarginX = 0.9;
-  cMarginY = 0.9;
+  cMarginY = 0.7;
 var
   i, x, y, EntriesCount, SlopeRectWidth, ArrowCount, ArrowOffsetX, MaxY, SugarLevelPointRadius: integer;
   cnv: TCanvas;
@@ -1057,7 +1047,7 @@ var
   OffsetPoints: array [0..7] of TPoint;
   LastSugarLevelPoint: TPoint;
   SlopeRect, ArrowRect: TRect;
-  CanDrawArrow: Boolean;
+  CanDrawArrow, NeedDrawSugarExtremePoints: Boolean;
   LastSugarLevelDateColor, FontColor: TColor;
   SugarSlopeScaleIndex: Byte;
 begin
@@ -1130,7 +1120,7 @@ begin
       x := Floor(EntryWidth * i + MarginX);
       y := Floor(EntryHeight * (MaxY - Entry.Sugar) + MarginY);
 
-      cnv.Pen.Color := cSugarLinesColor;
+      cnv.Pen.Color := Settings.GetColorBySugarLevel(Entry.Sugar);
       cnv.Pen.Width := GetDrawStageSize(dsSugarLines);
 
       if i = 0 then
@@ -1140,7 +1130,8 @@ begin
     end;
   end;
 
-  if (dsSugarLevelPoints in DrawStages) or (dsSugarLevel in DrawStages) or (dsSugarExtremePoints in DrawStages) then
+  if (dsSugarLevelPoints in DrawStages) or (dsSugarLevel in DrawStages) or
+    (dsSugarExtremePoints in DrawStages) then
   begin
     for i := 0 to EntriesCount - 1 do
     begin
@@ -1151,39 +1142,45 @@ begin
       if (dsSugarLevelPoints in DrawStages) then
       begin
         SugarLevelPointRadius := GetDrawStageSize(dsSugarLines) * 2;
-        cnv.Brush.Color := cSugarLevelPointsColor;
-        cnv.Pen.Color := cSugarLevelPointsColor;
+        cnv.Brush.Color := Settings.GetColorBySugarLevel(Entry.Sugar);
+        cnv.Pen.Color := cnv.Brush.Color;
         cnv.Pen.Width := 1;
-        cnv.Ellipse(x - SugarLevelPointRadius, y - SugarLevelPointRadius, x + SugarLevelPointRadius, y + SugarLevelPointRadius);
+        cnv.Ellipse(x - SugarLevelPointRadius,
+                    y - SugarLevelPointRadius,
+                    x + SugarLevelPointRadius,
+                    y + SugarLevelPointRadius);
       end;
 
-      cnv.Brush.Color := cSugarLevelBrushColor;
-      cnv.Font.Color := cSugarLevelColor;
       cnv.Font.Size := GetDrawStageSize(dsSugarLevel);
       Text := ' ' + Entry.GetSugarStr(Settings.IsMmolL) + ' ';
       TextSize := cnv.TextExtent(Text);
-
-      if dsSugarExtremePoints in DrawStages then
-      begin
-        if (i = 0) or (i = EntriesCount - 1) or
+      NeedDrawSugarExtremePoints := (dsSugarExtremePoints in DrawStages) and
+          ((i = 0) or (i = EntriesCount - 1) or
           (Entry.Sugar = Entries.GetMaxSugar) or
-          (Entry.Sugar = Entries.GetMinSugar) then
-        begin
-          cnv.Brush.Color := cSugarExtremePointsBrushColor;
-          cnv.Font.Color := cSugarExtremePointsColor;
-        end
-        else if not (dsSugarLevel in DrawStages) then
-        begin
-          Continue;
-        end;
+          (Entry.Sugar = Entries.GetMinSugar));
+
+      if (dsSugarLevel in DrawStages) and not NeedDrawSugarExtremePoints then
+      begin
+        cnv.Brush.Color := cSugarLevelBrushColor;
+        cnv.Font.Color := cSugarLevelColor;
+        // Draw sugar level value in the center of graph point
+        cnv.TextOut(
+          Floor(x - TextSize.cx / 2),
+          Floor(y - TextSize.cy / 2),
+          Text);
+        cnv.MoveTo(x, y);
       end;
 
-      // Draw sugar level value in the center of graph point
-      cnv.TextOut(
-        Floor(x - TextSize.cx / 2),
-        Floor(y - TextSize.cy / 2),
-        Text);
-      cnv.MoveTo(x, y);
+      if NeedDrawSugarExtremePoints then
+      begin
+        cnv.Brush.Color := cSugarExtremePointsBrushColor;
+        cnv.Font.Color := cSugarExtremePointsColor;
+        cnv.TextOut(
+          Floor(x - TextSize.cx / 2),
+          Floor(y - TextSize.cy / 2),
+          Text);
+        cnv.MoveTo(x, y);
+      end;
     end;
   end;
 
@@ -1204,11 +1201,13 @@ begin
 
   if dsSugarLevelDelta in DrawStages then
   begin
+    cnv.Brush.Color := Color;
+    SetBkMode(cnv.Handle, TRANSPARENT);
     Text := Entries.GetSugarLevelDeltaText(Settings.IsMmolL);
     SetMaximumDrawStageSizeToCanvas(dsSugarLevelDelta, Text, cnv);
     TextSize := cnv.TextExtent(Text);
     cnv.Font.Color := cSugarLevelDeltaColor;
-    cnv.TextOut(5, 0, Text);
+    cnv.TextOut((DrawPanel.Width - TextSize.cx) div 2,  0, Text);
   end;
 
   if (dsLastSugarLevel in DrawStages) or (dsSugarSlope in DrawStages)  then
@@ -1219,7 +1218,7 @@ begin
 
     TextWithSlope := Text;
     if dsSugarSlope in DrawStages then
-      TextWithSlope := TextWithSlope + '....';
+      TextWithSlope := TextWithSlope + '.....';
 
     SugarSlopeScaleIndex := SetMaximumDrawStageSizeToCanvas(dsLastSugarLevel, TextWithSlope, cnv);
     TextSize := cnv.TextExtent(Text);

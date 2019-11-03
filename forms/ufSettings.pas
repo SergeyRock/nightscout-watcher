@@ -267,7 +267,7 @@ begin
   NewSettings.SwitchDrawStage(dsVertGuideLines, cbDrawVertGuideLines.Checked);
   NewSettings.SwitchDrawStage(dsAlertLines, cbDrawAlertLines.Checked);
   NewSettings.SwitchDrawStage(dsSugarLevelPoints, cbDrawSugarLevelPoints.Checked);
-  NewSettings.SwitchDrawStage(dsSugarLevelDelta, cbDrawSugarLevelPoints.Checked);
+  NewSettings.SwitchDrawStage(dsSugarLevelDelta, cbDrawSugarLevelDelta.Checked);
 
   NewSettings.ShowCheckNewDataProgressBar := cbShowCheckNewDataProgressBar.Checked;
   NewSettings.ShowWindowBorder := cbShowWindowBorder.Checked;

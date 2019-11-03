@@ -82,6 +82,7 @@ type
       ): Integer;
   public
     constructor Create();
+    function GetColorBySugarLevel(Sugar: Integer): TColor;
     function IsStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
     function IsUrgentStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
     function Clone(): TSettings;
@@ -210,6 +211,16 @@ begin
   UrgentLowGlucoseAlarm:= Round(3.3 * cMmolDenominator);
   UrgentStaleDataAlarm:= 40;
   TimeZoneCorrection := 0;
+end;
+
+function TSettings.GetColorBySugarLevel(Sugar: Integer): TColor;
+begin
+  if (Sugar >= UrgentHighGlucoseAlarm) or (Sugar <= UrgentLowGlucoseAlarm) then
+    Result := cUrgentAlarmColor
+  else if (Sugar >= HighGlucoseAlarm) or (Sugar <= LowGlucoseAlarm) then
+    Result := cHighSugarBrushColor
+  else
+    Result := cSugarLinesColor;
 end;
 
 function TSettings.GetEntryMinsWithTimeZoneCorrection(Entry: TNightscoutEntry): Integer;

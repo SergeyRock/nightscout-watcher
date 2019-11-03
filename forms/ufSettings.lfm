@@ -42,9 +42,9 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 585
-    ActivePage = tsAbout
+    ActivePage = tsVisual
     Align = alTop
-    TabIndex = 3
+    TabIndex = 1
     TabOrder = 2
     object tsMain: TTabSheet
       Caption = 'Main'
