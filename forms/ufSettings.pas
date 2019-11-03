@@ -24,6 +24,7 @@ type
   TfSettings = class(TForm)
     btnOK: TButton;
     btnCancel: TButton;
+    cbDrawSugarLevelDelta: TCheckBox;
     cbEnableGlucoseLevelAlarms: TCheckBox;
     cbEnableStaleDataAlarms: TCheckBox;
     gbGlucoseLevelAlarms: TGroupBox;
@@ -103,7 +104,7 @@ implementation
 uses
   uNightscout;
 
-{$R *.dfm}
+{$R *.lfm}
 
 { TfSettings }
 
@@ -161,6 +162,7 @@ begin
   cbShowWindowBorder.OnClick := DoChange;
   cbDrawAlertLines.OnClick := DoChange;
   cbDrawSugarLevelPoints.OnClick := DoChange;
+  cbDrawSugarLevelDelta.OnClick := DoChange;
 end;
 
 procedure TfSettings.FormDestroy(Sender: TObject);
@@ -213,6 +215,8 @@ begin
   cbDrawVertGuideLines.Checked := NewSettings.IsInDrawStage(dsVertGuideLines);
   cbDrawAlertLines.Checked := NewSettings.IsInDrawStage(dsAlertLines);
   cbDrawSugarLevelPoints.Checked := NewSettings.IsInDrawStage(dsSugarLevelPoints);
+  cbDrawSugarLevelDelta.Checked := NewSettings.IsInDrawStage(dsSugarLevelDelta);
+
   cbEnableGlucoseLevelAlarms.Checked := NewSettings.EnableGlucoseLevelAlarms;
   cbEnableStaleDataAlarms.Checked := NewSettings.EnableStaleDataAlarms;
   cbIsMmolL.Checked := NewSettings.IsMmolL;
@@ -263,6 +267,7 @@ begin
   NewSettings.SwitchDrawStage(dsVertGuideLines, cbDrawVertGuideLines.Checked);
   NewSettings.SwitchDrawStage(dsAlertLines, cbDrawAlertLines.Checked);
   NewSettings.SwitchDrawStage(dsSugarLevelPoints, cbDrawSugarLevelPoints.Checked);
+  NewSettings.SwitchDrawStage(dsSugarLevelDelta, cbDrawSugarLevelPoints.Checked);
 
   NewSettings.ShowCheckNewDataProgressBar := cbShowCheckNewDataProgressBar.Checked;
   NewSettings.ShowWindowBorder := cbShowWindowBorder.Checked;

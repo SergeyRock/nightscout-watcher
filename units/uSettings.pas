@@ -10,13 +10,14 @@ uses
   Graphics, uNightscout;
 
 const
-  cDrawStageSizes : array [1..5, 1..18] of Integer =
+  cDrawStageSizes : array [1..6, 1..18] of Integer =
     (
       (14, 17, 28, 32, 40, 48, 60, 72, 88, 100, 116, 130, 160, 200, 240, 280, 340, 400), // Font size for dsLastSugarLevel
       ( 6,  7,  7,  8,  8,  9,  9, 10, 11,  11,  12,  13,  14,  15,  16,  17,  18,  20), // Font size for dsSugarLevel
       ( 7,  8,  8,  9, 10, 11, 12, 13, 14,  15,  18,  20,  24,  30,  38,  48,  60,  70), // Font size for dsLastSugarLevelDate
-      ( 1,  1,  1,  1,  2,  2,  2,  2,  2,   3,   3,   3,   4,   4,   5,   5,   6,   7), // Line thickness for dsSugarLines
-      ( 1,  1,  3,  3,  3,  4,  5,  6,  7,   8,   9,  10,  12,  15,  20,  26,  38,  50)  // Line thickness for dsSugarSlope
+      ( 1,  1,  1,  2,  2,  2,  2,  2,  2,   3,   3,   3,   4,   4,   5,   5,   6,   7), // Line thickness for dsSugarLines
+      ( 1,  1,  3,  3,  3,  4,  5,  6,  7,   8,   9,  10,  12,  15,  20,  26,  38,  50), // Line thickness for dsSugarSlope
+      ( 7,  8,  9, 10, 11, 12, 13, 15, 17,  19,  23,  26,  30,  36,  46,  58,  70,  86)  // Font size for dsSugarLevelDelta
     );
 
   cProgressBarHeights: array[1..18]  of Byte =
@@ -33,6 +34,7 @@ const
   cSugarSlopeColor = clWhite;
   cSugarExtremePointsColor = clWhite ;
   cSugarExtremePointsBrushColor = clBlue;
+  cSugarLevelDeltaColor = clWhite;
 
   cHighSugarColor = clWhite;
   cHighSugarBrushColor = clYellow;
@@ -44,10 +46,13 @@ const
 
   cSugarLevelPointsColor = $00FF8000;
 
+  cMoveWindowDelta = 10;
+  cAlphaBlendValueDelta = 10;
+
 type
   TDrawStage = (dsLastSugarLevel, dsSugarLines, dsSugarLevel, dsHorzGuideLines,
     dsVertGuideLines, dsLastSugarLevelDate, dsSugarSlope, dsSugarExtremePoints,
-    dsAlertLines, dsSugarLevelPoints);
+    dsAlertLines, dsSugarLevelPoints, dsSugarLevelDelta);
   TDrawStages = set of TDrawStage;
 
   { TSettings }
@@ -185,14 +190,15 @@ begin
 constructor TSettings.Create();
 begin
   DrawStages := [dsLastSugarLevel, dsSugarLines, dsHorzGuideLines,
-    dsVertGuideLines, dsLastSugarLevelDate, dsSugarSlope, dsSugarExtremePoints];
+    dsVertGuideLines, dsLastSugarLevelDate, dsSugarSlope, dsSugarExtremePoints,
+    dsSugarLevelDelta];
   AlphaBlendValue := 200;
   CheckInterval := 20;
   CountOfEntriesToRecive := 40;
   EnableGlucoseLevelAlarms := True;
   EnableStaleDataAlarms := True;
   FullScreen := False;
-  HighGlucoseAlarm:= 9 *  cMmolDenominator;
+  HighGlucoseAlarm:= 9 * cMmolDenominator;
   IsMmolL := True;
   LowGlucoseAlarm:= 4 * cMmolDenominator;
   NightscoutUrl := '';

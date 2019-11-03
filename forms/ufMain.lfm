@@ -65,8 +65,32 @@ object fMain: TfMain
       Action = actDrawLastSugarLevel
       AutoCheck = True
     end
+    object miDrawSugarSlope: TMenuItem
+      Action = actDrawSugarSlope
+      AutoCheck = True
+    end
+    object miDrawSugarLevelDelta: TMenuItem
+      Action = actDrawSugarLevelDelta
+      AutoCheck = True
+    end
     object miDrawSugarLines: TMenuItem
       Action = actDrawSugarLines
+      AutoCheck = True
+    end
+    object miDrawSugarExtremePoints: TMenuItem
+      Action = actDrawSugarExtremePoints
+      AutoCheck = True
+    end
+    object Drawsugarlevelpoints1: TMenuItem
+      Action = actDrawSugarLevelPoints
+      AutoCheck = True
+    end
+    object Drawalertlines1: TMenuItem
+      Action = actDrawAlertLines
+      AutoCheck = True
+    end
+    object miDrawLastSugarLevelDate: TMenuItem
+      Action = actDrawLastSugarLevelDate
       AutoCheck = True
     end
     object miDrawSugarLevel: TMenuItem
@@ -79,26 +103,6 @@ object fMain: TfMain
     end
     object miDrawHorzGuideLines: TMenuItem
       Action = actDrawHorzGuideLines
-      AutoCheck = True
-    end
-    object miDrawLastSugarLevelDate: TMenuItem
-      Action = actDrawLastSugarLevelDate
-      AutoCheck = True
-    end
-    object miDrawSugarSlope: TMenuItem
-      Action = actDrawSugarSlope
-      AutoCheck = True
-    end
-    object miDrawSugarExtremePoints: TMenuItem
-      Action = actDrawSugarExtremePoints
-      AutoCheck = True
-    end
-    object Drawalertlines1: TMenuItem
-      Action = actDrawAlertLines
-      AutoCheck = True
-    end
-    object Drawsugarlevelpoints1: TMenuItem
-      Action = actDrawSugarLevelPoints
       AutoCheck = True
     end
     object miShowWindowBorder: TMenuItem
@@ -160,7 +164,7 @@ object fMain: TfMain
       Caption = 'Draw sugar lines'
       Checked = True
       OnExecute = DoDrawStageExecute
-      ShortCut = 50
+      ShortCut = 52
     end
     object actDrawSugarExtremePoints: TAction
       Tag = 7
@@ -169,7 +173,7 @@ object fMain: TfMain
       Caption = 'Draw sugar extreme points'
       Checked = True
       OnExecute = DoDrawStageExecute
-      ShortCut = 56
+      ShortCut = 53
     end
     object actDrawSugarLevel: TAction
       Tag = 2
@@ -178,7 +182,7 @@ object fMain: TfMain
       Caption = 'Draw sugar level'
       Checked = True
       OnExecute = DoDrawStageExecute
-      ShortCut = 51
+      ShortCut = 57
     end
     object actDrawHorzGuideLines: TAction
       Tag = 3
@@ -187,7 +191,7 @@ object fMain: TfMain
       Caption = 'Draw horizontal guide lines'
       Checked = True
       OnExecute = DoDrawStageExecute
-      ShortCut = 53
+      ShortCut = 72
       Visible = False
     end
     object actDrawVertGuideLines: TAction
@@ -197,7 +201,7 @@ object fMain: TfMain
       Caption = 'Draw vertical guide lines'
       Checked = True
       OnExecute = DoDrawStageExecute
-      ShortCut = 52
+      ShortCut = 76
     end
     object actDrawSugarSlope: TAction
       Tag = 6
@@ -206,7 +210,7 @@ object fMain: TfMain
       Caption = 'Draw sugar slope'
       Checked = True
       OnExecute = DoDrawStageExecute
-      ShortCut = 55
+      ShortCut = 50
     end
     object actDrawLastSugarLevelDate: TAction
       Tag = 5
@@ -215,7 +219,7 @@ object fMain: TfMain
       Caption = 'Draw last sugar level date'
       Checked = True
       OnExecute = DoDrawStageExecute
-      ShortCut = 54
+      ShortCut = 56
     end
     object actDrawAlertLines: TAction
       Tag = 8
@@ -224,7 +228,7 @@ object fMain: TfMain
       Caption = 'Draw alert lines'
       Checked = True
       OnExecute = DoDrawStageExecute
-      ShortCut = 57
+      ShortCut = 55
     end
     object actDrawSugarLevelPoints: TAction
       Tag = 9
@@ -233,7 +237,7 @@ object fMain: TfMain
       Caption = 'Draw sugar level points'
       Checked = True
       OnExecute = DoDrawStageExecute
-      ShortCut = 73
+      ShortCut = 54
     end
     object actVisitNightscoutSite: TAction
       Category = 'Other'
@@ -305,6 +309,15 @@ object fMain: TfMain
       Caption = 'Full screen'
       OnExecute = actFullScreenExecute
       ShortCut = 122
+    end
+    object actDrawSugarLevelDelta: TAction
+      Tag = 10
+      Category = 'Draw options'
+      AutoCheck = True
+      Caption = 'Draw sugar level delta'
+      Checked = True
+      OnExecute = DoDrawStageExecute
+      ShortCut = 51
     end
   end
 end

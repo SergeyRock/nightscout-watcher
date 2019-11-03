@@ -33,6 +33,8 @@ type
     class function GetSugarStr(SugarValue: Integer; IsMmolL: Boolean = True): string; overload;
   end;
 
+  { TNightscoutEntryList }
+
   TNightscoutEntryList = class (TObjectList)
   protected
     procedure SetItem(Index: Integer; const Value: TNightscoutEntry);
@@ -43,6 +45,7 @@ type
     function GetMinSugar(): Integer;
     function GetMinSugarMmol(): Double;
     function GetMaxSugarMmol(): Double;
+    function GetSugarLevelDeltaText(IsMmolL: Boolean): string;
     function Last: TNightscoutEntry;
     procedure RemoveDuplicatesWithTheSameDate();
     procedure LimitEntries(MaxItems: Integer);
@@ -52,7 +55,7 @@ type
 implementation
 
 uses
-  Classes, UrlMon, Math, SysUtils, Dialogs;
+  Classes, UrlMon, strutils, Math, SysUtils, Dialogs;
   
 { TNightscoutEntryList }
 
@@ -61,7 +64,7 @@ begin
   Result := TNightscoutEntry(inherited GetItem(Index));
 end;
 
-function TNightscoutEntryList.GetMaxSugar: Integer;
+function TNightscoutEntryList.GetMaxSugar(): Integer;
 var
   i: Integer;
 begin
@@ -78,7 +81,7 @@ begin
     IfThen(MinValue = -1, GetMinSugar, Min(GetMinSugar, MinValue));
 end;
 
-function TNightscoutEntryList.GetMinSugar: Integer;
+function TNightscoutEntryList.GetMinSugar(): Integer;
 var
   i: Integer;
 begin
@@ -88,14 +91,31 @@ begin
       Result := Items[i].Sugar;
 end;
 
-function TNightscoutEntryList.GetMinSugarMmol: Double;
+function TNightscoutEntryList.GetMinSugarMmol(): Double;
 begin
   Result := GetMinSugar / cMmolDenominator;
 end;
 
-function TNightscoutEntryList.GetMaxSugarMmol: Double;
+function TNightscoutEntryList.GetMaxSugarMmol(): Double;
 begin
   Result := GetMaxSugar / cMmolDenominator;
+end;
+
+function TNightscoutEntryList.GetSugarLevelDeltaText(IsMmolL: Boolean): string;
+var
+  LastEntry, PrevLastEntry: TNightscoutEntry;
+  SugarDelta: Integer;
+begin
+  Result := '';
+  if Count < 2 then
+    Exit;
+
+  LastEntry := Last;
+  PrevLastEntry := Items[Count - 2];
+  SugarDelta := LastEntry.Sugar - PrevLastEntry.Sugar;
+  Result := Result + ifThen(SugarDelta > 0, '+', '');
+  Result := Result + TNightscoutEntry.GetSugarStr(SugarDelta, IsMmolL);
+  Result := Result + ifThen(IsMmolL, ' mmol/l', ' mg/dl');
 end;
 
 function TNightscoutEntryList.Last: TNightscoutEntry;
@@ -103,8 +123,7 @@ begin
   Result := TNightscoutEntry(inherited Last);
 end;
 
-
-procedure TNightscoutEntryList.RemoveDuplicatesWithTheSameDate;
+procedure TNightscoutEntryList.RemoveDuplicatesWithTheSameDate();
 var
   i: Integer;
   Entry, PrevEntry: TNightscoutEntry;
@@ -216,7 +235,7 @@ end;
 
 function TNightscoutEntry.SugarMmol: Double;
 begin
-  Result := Sugar / cMmolDenominator;
+  Result := Sugar / cMmolDenominator
 end;
 
 end.

@@ -10,9 +10,9 @@ uses
   Interfaces,
 {$ENDIF}
   Forms,
-  ufMain in 'forms\ufMain.pas' {fMain},
-  uNightscout in 'units\uNightscout.pas',
+  ufMain in 'forms\ufMain.pas' {fMain},                 
   ufSettings in 'forms\ufSettings.pas' {fSettings},
+  uNightscout in 'units\uNightscout.pas',
   uSettings in 'units\uSettings.pas';
 
 {$R *.res}
