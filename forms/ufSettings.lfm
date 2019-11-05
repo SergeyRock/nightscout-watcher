@@ -1,7 +1,7 @@
 object fSettings: TfSettings
-  Left = 363
+  Left = -697
   Height = 500
-  Top = 212
+  Top = 355
   Width = 585
   Caption = 'Settings'
   ClientHeight = 500
@@ -42,9 +42,9 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 585
-    ActivePage = tsVisual
+    ActivePage = tsMain
     Align = alTop
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 2
     object tsMain: TTabSheet
       Caption = 'Main'
@@ -114,7 +114,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 0
+        TabOrder = 1
       end
       object seCheckInterval: TSpinEdit
         Left = 224
@@ -127,7 +127,7 @@ object fSettings: TfSettings
         MaxValue = 86400
         MinValue = 5
         ParentFont = False
-        TabOrder = 1
+        TabOrder = 2
         Value = 5
       end
       object seCountOfEntriesToRecive: TSpinEdit
@@ -141,7 +141,7 @@ object fSettings: TfSettings
         MaxValue = 500
         MinValue = 2
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 3
         Value = 2
       end
       object eNightscoutSite: TEdit
@@ -154,7 +154,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 3
+        TabOrder = 0
       end
       object seTimeZoneCorrection: TSpinEdit
         Left = 224
@@ -211,7 +211,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 0
+        TabOrder = 10
         Visible = False
       end
       object cbDrawVertGuideLines: TCheckBox
@@ -224,7 +224,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 1
+        TabOrder = 9
       end
       object cbDrawLastSugarLevel: TCheckBox
         Left = 16
@@ -236,7 +236,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 0
       end
       object cbDrawLastSugarLevelDate: TCheckBox
         Left = 16
@@ -248,7 +248,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 3
+        TabOrder = 7
       end
       object cbDrawSugarExtremePoints: TCheckBox
         Left = 16
@@ -260,7 +260,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 4
+        TabOrder = 3
       end
       object cbDrawSugarLevel: TCheckBox
         Left = 16
@@ -284,7 +284,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 6
+        TabOrder = 2
       end
       object cbDrawSugarSlope: TCheckBox
         Left = 16
@@ -296,7 +296,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 7
+        TabOrder = 1
       end
       object cbShowCheckNewDataProgressBar: TCheckBox
         Left = 256
@@ -308,7 +308,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 8
+        TabOrder = 12
       end
       object cbShowWindowBorder: TCheckBox
         Left = 256
@@ -320,7 +320,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 9
+        TabOrder = 11
       end
       object sbScale: TScrollBar
         Left = 16
@@ -332,7 +332,7 @@ object fSettings: TfSettings
         Min = 1
         PageSize = 0
         Position = 10
-        TabOrder = 10
+        TabOrder = 13
       end
       object sbAlphaBlend: TScrollBar
         Left = 16
@@ -344,7 +344,7 @@ object fSettings: TfSettings
         Min = 1
         PageSize = 0
         Position = 10
-        TabOrder = 11
+        TabOrder = 14
       end
       object cbDrawAlertLines: TCheckBox
         Left = 16
@@ -356,7 +356,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 12
+        TabOrder = 6
       end
       object cbDrawSugarLevelPoints: TCheckBox
         Left = 16
@@ -368,7 +368,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 13
+        TabOrder = 4
       end
       object cbDrawSugarLevelDelta: TCheckBox
         Left = 256
@@ -380,7 +380,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 14
+        TabOrder = 8
       end
     end
     object tsAlerts: TTabSheet
@@ -394,7 +394,7 @@ object fSettings: TfSettings
         Width = 264
         ClientHeight = 223
         ClientWidth = 260
-        TabOrder = 0
+        TabOrder = 1
         object lblHighGlucoseAlarm: TLabel
           Left = 16
           Height = 19
@@ -536,14 +536,14 @@ object fSettings: TfSettings
           Value = 1
         end
       end
-      object GroupBox2: TGroupBox
+      object gbStaleDataAlarms: TGroupBox
         Left = 288
         Height = 144
         Top = 36
         Width = 264
         ClientHeight = 120
         ClientWidth = 260
-        TabOrder = 1
+        TabOrder = 3
         object lblUrgentStaleDataAlarm: TLabel
           Left = 13
           Height = 45
@@ -595,7 +595,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 0
       end
       object cbEnableStaleDataAlarms: TCheckBox
         Left = 288
@@ -607,7 +607,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 3
+        TabOrder = 2
       end
     end
     object tsAbout: TTabSheet

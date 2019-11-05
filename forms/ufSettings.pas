@@ -38,7 +38,7 @@ type
     seUrgentHighGlucoseAlarm: TSpinEdit;
     lblUrgentLowGlucoseAlarm: TLabel;
     seUrgentLowGlucoseAlarm: TSpinEdit;
-    GroupBox2: TGroupBox;
+    gbStaleDataAlarms: TGroupBox;
     lblUrgentStaleDataAlarm: TLabel;
     seUrgentStaleDataAlarm: TSpinEdit;
     lblStaleDataAlarm: TLabel;

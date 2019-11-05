@@ -24,7 +24,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="54"/>
+      <BuildNr Value="55"/>
       <Attributes pvaPreRelease="True"/>
     </VersionInfo>
     <BuildModes Count="3">
@@ -179,7 +179,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="3">
+    <Exceptions Count="4">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -189,6 +189,9 @@
       <Item3>
         <Name Value="EFOpenError"/>
       </Item3>
+      <Item4>
+        <Name Value="EConvertError"/>
+      </Item4>
     </Exceptions>
   </Debugging>
 </CONFIG>

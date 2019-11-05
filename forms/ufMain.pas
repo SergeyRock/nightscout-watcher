@@ -125,6 +125,7 @@ type
     WasAlphaBlend: Boolean;
     BoundsRectLoaded: TRect;
     procedure CreateDrawPanel();
+    procedure ResetWindowBoundsToDefault();
     procedure SaveOptions();
     procedure LoadOptions();
     function LoadEntriesData: Boolean;
@@ -348,7 +349,30 @@ begin
   begin
     BorderStyle := bsNone;
   end;
-  BoundsRect := OldWindowRect;
+
+  if not Settings.FullScreen then
+  begin
+    // Reset window bounds after FullScreen turning off if window bounds are so big
+    if (Abs(OldWindowRect.Right) - Abs(OldWindowRect.Left) + cMoveWindowDelta >= Screen.Width) or
+      (Abs(OldWindowRect.Bottom) - Abs(OldWindowRect.Top) + cMoveWindowDelta >= Screen.Height) then
+    begin
+      ResetWindowBoundsToDefault();
+    end
+    else
+      BoundsRect := OldWindowRect;
+  end;
+end;
+
+procedure TfMain.ResetWindowBoundsToDefault();
+var
+  WindowRect: TRect;
+begin
+  WindowRect.Left := Ceil(Screen.Width * 0.75);
+  WindowRect.Right := Screen.Width;
+  WindowRect.Top := Ceil(Screen.Height * 0.75);
+  WindowRect.Bottom := Screen.Height;
+  OffsetRect(WindowRect, -cMoveWindowDelta, -Screen.Height div 2);
+  BoundsRect := WindowRect;
 end;
 
 procedure TfMain.actSetUnitOfMeasureMmolLExecute(Sender: TObject);
@@ -546,14 +570,14 @@ begin
   if Loaded then
     Exit;
 
+  Loaded := True;
+
   LoadOptions();
 
   if Settings.NightscoutUrl = '' then
     actSetNightscoutSiteExecute(actSetNightscoutSite)
   else
     tmrTimer(tmr); // Load data from nightscout site and start monitoring
-
-  Loaded := True;
 end;
 
 function TfMain.GetEntriesUrl: string;
@@ -693,10 +717,10 @@ begin
 
     Settings.ShowCheckNewDataProgressBar := ini.ReadBool('Visual', 'ShowCheckNewDataProgressBar', Settings.ShowCheckNewDataProgressBar);
 
-    BoundsRectLoaded.Left := ini.ReadInteger('Visual', 'WindowLeft', BoundsRect.Left);
-    BoundsRectLoaded.Top := ini.ReadInteger('Visual', 'WindowTop', Floor((Screen.Height - Height) / 2));
-    BoundsRectLoaded.Right := ini.ReadInteger('Visual', 'WindowRight', Screen.Width - Width);
-    BoundsRectLoaded.Bottom := ini.ReadInteger('Visual', 'WindowBottom', Floor((Screen.Height + Height) / 2));
+    BoundsRectLoaded.Left := ini.ReadInteger('Visual', 'WindowLeft', Screen.Width div 2);
+    BoundsRectLoaded.Top := ini.ReadInteger('Visual', 'WindowTop', Screen.Height div 2);
+    BoundsRectLoaded.Right := ini.ReadInteger('Visual', 'WindowRight', Screen.Width);
+    BoundsRectLoaded.Bottom := ini.ReadInteger('Visual', 'WindowBottom', Screen.Height);
 
     SetAlphaBlendValue(ini.ReadInteger('Visual', 'AlphaBlendValue', Settings.AlphaBlendValue));
 
