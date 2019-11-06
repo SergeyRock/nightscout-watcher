@@ -1,7 +1,7 @@
 object fSettings: TfSettings
-  Left = -697
+  Left = 2488
   Height = 500
-  Top = 355
+  Top = 219
   Width = 585
   Caption = 'Settings'
   ClientHeight = 500
@@ -42,9 +42,9 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 585
-    ActivePage = tsHelp
+    ActivePage = tsAbout
     Align = alTop
-    TabIndex = 4
+    TabIndex = 3
     TabOrder = 2
     object tsMain: TTabSheet
       Caption = 'Main'
@@ -226,72 +226,72 @@ object fSettings: TfSettings
         ParentFont = False
         TabOrder = 9
       end
-      object cbDrawLastSugarLevel: TCheckBox
+      object cbDrawLastGlucoseLevel: TCheckBox
         Left = 16
         Height = 23
         Top = 16
         Width = 167
-        Caption = 'Draw last sugar level'
+        Caption = 'Draw last glucose level'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
         TabOrder = 0
       end
-      object cbDrawLastSugarLevelDate: TCheckBox
+      object cbDrawLastGlucoseLevelDate: TCheckBox
         Left = 16
         Height = 23
         Top = 224
         Width = 202
-        Caption = 'Draw last sugar level date'
+        Caption = 'Draw last glucose level date'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
         TabOrder = 7
       end
-      object cbDrawSugarExtremePoints: TCheckBox
+      object cbDrawGlucoseExtremePoints: TCheckBox
         Left = 16
         Height = 23
         Top = 102
         Width = 211
-        Caption = 'Draw sugar extreme points'
+        Caption = 'Draw glucose extreme points'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
         TabOrder = 3
       end
-      object cbDrawSugarLevel: TCheckBox
+      object cbDrawGlucoseLevel: TCheckBox
         Left = 16
         Height = 23
         Top = 163
         Width = 138
-        Caption = 'Draw sugar level'
+        Caption = 'Draw glucose level'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
         TabOrder = 5
       end
-      object cbDrawSugarLines: TCheckBox
+      object cbDrawGlucoseLines: TCheckBox
         Left = 16
         Height = 23
         Top = 72
         Width = 138
-        Caption = 'Draw sugar lines'
+        Caption = 'Draw glucose lines'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
         TabOrder = 2
       end
-      object cbDrawSugarSlope: TCheckBox
+      object cbDrawGlucoseSlope: TCheckBox
         Left = 16
         Height = 23
         Top = 44
         Width = 143
-        Caption = 'Draw sugar slope'
+        Caption = 'Draw glucose slope'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -358,24 +358,24 @@ object fSettings: TfSettings
         ParentFont = False
         TabOrder = 6
       end
-      object cbDrawSugarLevelPoints: TCheckBox
+      object cbDrawGlucoseLevelPoints: TCheckBox
         Left = 16
         Height = 23
         Top = 133
         Width = 186
-        Caption = 'Draw sugar level points'
+        Caption = 'Draw glucose level points'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
         TabOrder = 4
       end
-      object cbDrawSugarLevelDelta: TCheckBox
+      object cbDrawGlucoseLevelDelta: TCheckBox
         Left = 256
         Height = 23
         Top = 16
         Width = 177
-        Caption = 'Draw sugar level delta'
+        Caption = 'Draw glucose level delta'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -1841,16 +1841,20 @@ object fSettings: TfSettings
       ClientHeight = 400
       ClientWidth = 577
       object Memo1: TMemo
-        Left = 8
-        Height = 385
-        Top = 8
-        Width = 560
+        Left = 0
+        Height = 400
+        Top = 0
+        Width = 577
+        Align = alClient
         BorderStyle = bsNone
+        HideSelection = False
         Lines.Strings = (
           'Hot keys:'
+          ''
           'LEFT/RIGHT/UP/DOWN – Move window on the screen'
-          'SHIFT + LEFT/RIGHT/UP/DOWN or MouseWheel – Resize window'
+          'SHIFT + LEFT/RIGHT/UP/DOWN/MouseWheel – Resize window'
           'ALT + UP/DOWN/MouseWheel – Increase/Decrease window opacity'
+          'CTRL + UP/DOWN or MouseWheel – Scale'
           'RightClick – Show popup menu'
           ''
           'S – Set Nightscout site URL'
@@ -1879,6 +1883,7 @@ object fSettings: TfSettings
           'X - Exit'
         )
         ParentColor = True
+        ReadOnly = True
         ScrollBars = ssAutoVertical
         TabOrder = 0
       end

@@ -19,18 +19,18 @@ type
   TNightscoutEntry = class
   public
     Date: TDateTime;
-    Sugar: Integer;
+    Glucose: Integer;
     Slope: string;
     Device: string;
     procedure SetDate(UnixDateStr: string);
-    procedure SetSugar(SugarStr: string); overload;
-    procedure SetSugar(Value: Double; IsMmolL: Boolean); overload;
+    procedure SetGlucose(GlucoseStr: string); overload;
+    procedure SetGlucose(Value: Double; IsMmolL: Boolean); overload;
     function ParseRow(Row: string): Boolean;
-    function SugarMmol: Double;
-    function GetSugar(IsMmolL: Boolean = True): Double;
-    function GetSugarStr(IsMmolL: Boolean = True): string; overload;
+    function GlucoseMmol: Double;
+    function GetGlucose(IsMmolL: Boolean = True): Double;
+    function GetGlucoseStr(IsMmolL: Boolean = True): string; overload;
     function GetArrowCountOfSlope(): Byte;
-    class function GetSugarStr(SugarValue: Integer; IsMmolL: Boolean = True): string; overload;
+    class function GetGlucoseStr(GlucoseValue: Integer; IsMmolL: Boolean = True): string; overload;
   end;
 
   { TNightscoutEntryList }
@@ -40,12 +40,12 @@ type
     procedure SetItem(Index: Integer; const Value: TNightscoutEntry);
     function GetItem(Index: Integer): TNightscoutEntry;
   public
-    function GetMaxSugarDelta(MinValue, MaxValue: Integer): Integer;
-    function GetMaxSugar(): Integer;
-    function GetMinSugar(): Integer;
-    function GetMinSugarMmol(): Double;
-    function GetMaxSugarMmol(): Double;
-    function GetSugarLevelDeltaText(IsMmolL: Boolean): string;
+    function GetMaxGlucoseDelta(MinValue, MaxValue: Integer): Integer;
+    function GetMaxGlucose(): Integer;
+    function GetMinGlucose(): Integer;
+    function GetMinGlucoseMmol(): Double;
+    function GetMaxGlucoseMmol(): Double;
+    function GetGlucoseLevelDeltaText(IsMmolL: Boolean): string;
     function Last: TNightscoutEntry;
     procedure RemoveDuplicatesWithTheSameDate();
     procedure LimitEntries(MaxItems: Integer);
@@ -64,47 +64,47 @@ begin
   Result := TNightscoutEntry(inherited GetItem(Index));
 end;
 
-function TNightscoutEntryList.GetMaxSugar(): Integer;
+function TNightscoutEntryList.GetMaxGlucose(): Integer;
 var
   i: Integer;
 begin
   Result := 0;
   for i := 0 to Count - 1 do
-    if Items[i].Sugar > Result then
-      Result := Items[i].Sugar;
+    if Items[i].Glucose > Result then
+      Result := Items[i].Glucose;
 end;
 
-function TNightscoutEntryList.GetMaxSugarDelta(MinValue, MaxValue: Integer): Integer;
+function TNightscoutEntryList.GetMaxGlucoseDelta(MinValue, MaxValue: Integer): Integer;
 begin
   Result :=
-    IfThen(MaxValue = -1, GetMaxSugar, Max(GetMaxSugar, MaxValue)) -
-    IfThen(MinValue = -1, GetMinSugar, Min(GetMinSugar, MinValue));
+    IfThen(MaxValue = -1, GetMaxGlucose, Max(GetMaxGlucose, MaxValue)) -
+    IfThen(MinValue = -1, GetMinGlucose, Min(GetMinGlucose, MinValue));
 end;
 
-function TNightscoutEntryList.GetMinSugar(): Integer;
+function TNightscoutEntryList.GetMinGlucose(): Integer;
 var
   i: Integer;
 begin
   Result := 999;
   for i := 0 to Count - 1 do
-    if Items[i].Sugar < Result then
-      Result := Items[i].Sugar;
+    if Items[i].Glucose < Result then
+      Result := Items[i].Glucose;
 end;
 
-function TNightscoutEntryList.GetMinSugarMmol(): Double;
+function TNightscoutEntryList.GetMinGlucoseMmol(): Double;
 begin
-  Result := GetMinSugar / cMmolDenominator;
+  Result := GetMinGlucose / cMmolDenominator;
 end;
 
-function TNightscoutEntryList.GetMaxSugarMmol(): Double;
+function TNightscoutEntryList.GetMaxGlucoseMmol(): Double;
 begin
-  Result := GetMaxSugar / cMmolDenominator;
+  Result := GetMaxGlucose / cMmolDenominator;
 end;
 
-function TNightscoutEntryList.GetSugarLevelDeltaText(IsMmolL: Boolean): string;
+function TNightscoutEntryList.GetGlucoseLevelDeltaText(IsMmolL: Boolean): string;
 var
   LastEntry, PrevLastEntry: TNightscoutEntry;
-  SugarDelta: Integer;
+  GlucoseDelta: Integer;
 begin
   Result := '';
   if Count < 2 then
@@ -112,9 +112,9 @@ begin
 
   LastEntry := Last;
   PrevLastEntry := Items[Count - 2];
-  SugarDelta := LastEntry.Sugar - PrevLastEntry.Sugar;
-  Result := Result + ifThen(SugarDelta > 0, '+', '');
-  Result := Result + TNightscoutEntry.GetSugarStr(SugarDelta, IsMmolL);
+  GlucoseDelta := LastEntry.Glucose - PrevLastEntry.Glucose;
+  Result := Result + ifThen(GlucoseDelta > 0, '+', '');
+  Result := Result + TNightscoutEntry.GetGlucoseStr(GlucoseDelta, IsMmolL);
   Result := Result + ifThen(IsMmolL, ' mmol/l', ' mg/dl');
 end;
 
@@ -157,22 +157,22 @@ end;
 
 { TNightscoutEntry }
 
-function TNightscoutEntry.GetSugar(IsMmolL: Boolean = True): Double;
+function TNightscoutEntry.GetGlucose(IsMmolL: Boolean = True): Double;
 begin
-  Result := IfThen(IsMmolL, SugarMmol, Sugar);
+  Result := IfThen(IsMmolL, GlucoseMmol, Glucose);
 end;
 
-class function TNightscoutEntry.GetSugarStr(SugarValue: Integer; IsMmolL: Boolean = True): string;
+class function TNightscoutEntry.GetGlucoseStr(GlucoseValue: Integer; IsMmolL: Boolean = True): string;
 begin
   if IsMmolL then
-    Result := FloatToStrF(SugarValue / cMmolDenominator, ffNumber, 3, 1)
+    Result := FloatToStrF(GlucoseValue / cMmolDenominator, ffNumber, 3, 1)
   else
-    Result := IntToStr(SugarValue);
+    Result := IntToStr(GlucoseValue);
 end;
 
-function TNightscoutEntry.GetSugarStr(IsMmolL: Boolean = True): string;
+function TNightscoutEntry.GetGlucoseStr(IsMmolL: Boolean = True): string;
 begin
-  Result := GetSugarStr(Sugar, IsMmolL);
+  Result := GetGlucoseStr(Glucose, IsMmolL);
 end;
 
 function TNightscoutEntry.GetArrowCountOfSlope(): Byte;
@@ -198,7 +198,7 @@ begin
         case i of
           0: Continue;
           1: SetDate(Value);
-          2: SetSugar(Value);
+          2: SetGlucose(Value);
           3: Slope := Value;
           4: Device := Value;
         end;
@@ -221,21 +221,21 @@ begin
   Date := UnixToDateTime(UnixDate);
 end;
 
-procedure TNightscoutEntry.SetSugar(Value: Double; IsMmolL: Boolean);
+procedure TNightscoutEntry.SetGlucose(Value: Double; IsMmolL: Boolean);
 begin
-  Sugar := Round(Value);
+  Glucose := Round(Value);
   if IsMmolL then
-    Sugar := Sugar * cMmolDenominator;
+    Glucose := Glucose * cMmolDenominator;
 end;
 
-procedure TNightscoutEntry.SetSugar(SugarStr: string);
+procedure TNightscoutEntry.SetGlucose(GlucoseStr: string);
 begin
-  Sugar := StrToInt(SugarStr);
+  Glucose := StrToInt(GlucoseStr);
 end;
 
-function TNightscoutEntry.SugarMmol: Double;
+function TNightscoutEntry.GlucoseMmol: Double;
 begin
-  Result := Sugar / cMmolDenominator
+  Result := Glucose / cMmolDenominator
 end;
 
 end.

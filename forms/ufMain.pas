@@ -30,32 +30,61 @@ type
   { TfMain }
 
   TfMain = class(TForm)
-    actDrawSugarLevelDelta: TAction;
-    miDrawSugarLevelDelta: TMenuItem;
+    actDrawGlucoseLevelDelta: TAction;
+    miSeparator4: TMenuItem;
+    miOpacity15: TMenuItem;
+    miOpacity100: TMenuItem;
+    miOpacity90: TMenuItem;
+    miOpacity75: TMenuItem;
+    miOpacity50: TMenuItem;
+    miOpacity25: TMenuItem;
+    miOpacity: TMenuItem;
+    miScale: TMenuItem;
+    miScale1: TMenuItem;
+    miScale2: TMenuItem;
+    miScale3: TMenuItem;
+    miScale4: TMenuItem;
+    miScale5: TMenuItem;
+    miScale6: TMenuItem;
+    miScale7: TMenuItem;
+    miScale8: TMenuItem;
+    miScale9: TMenuItem;
+    miScale10: TMenuItem;
+    miScale11: TMenuItem;
+    miScale12: TMenuItem;
+    miScale13: TMenuItem;
+    miScale14: TMenuItem;
+    miScale15: TMenuItem;
+    miScale16: TMenuItem;
+    miScale17: TMenuItem;
+    miScale18: TMenuItem;
+
+    miDrawGlucoseLevelDelta: TMenuItem;
+    miSeparator1: TMenuItem;
     pm: TPopupMenu;
     tmr: TTimer;
     pb: TProgressBar;
     tmrProgressBar: TTimer;
     al: TActionList;
-    actDrawSugarLevel: TAction;
-    actDrawSugarLines: TAction;
-    actDrawLastSugarLevel: TAction;
-    miDrawLastSugarLevel: TMenuItem;
-    miDrawSugarLevel: TMenuItem;
-    miDrawSugarLines: TMenuItem;
-    miN1: TMenuItem;
+    actDrawGlucoseLevel: TAction;
+    actDrawGlucoseLines: TAction;
+    actDrawLastGlucoseLevel: TAction;
+    miDrawLastGlucoseLevel: TMenuItem;
+    miDrawGlucoseLevel: TMenuItem;
+    miDrawGlucoseLines: TMenuItem;
+    miSeparator2: TMenuItem;
     actVisitNightscoutSite: TAction;
     miVisitNightscoutSite: TMenuItem;
     actShowCheckNewDataProgressBar: TAction;
     miShowCheckNewDataProgressBar: TMenuItem;
     actHelp: TAction;
     miHelp: TMenuItem;
-    actDrawLastSugarLevelDate: TAction;
-    miDrawLastSugarLevelDate: TMenuItem;
+    actDrawLastGlucoseLevelDate: TAction;
+    miDrawLastGlucoseLevelDate: TMenuItem;
     actSetNightscoutSite: TAction;
     miSetNightscoutSite: TMenuItem;
-    miN2: TMenuItem;
-    miN3: TMenuItem;
+
+    miSeparator3: TMenuItem;
     actExit: TAction;
     miExit: TMenuItem;
     actSetCheckInterval: TAction;
@@ -68,20 +97,21 @@ type
     actDrawHorzGuideLines: TAction;
     miDrawVertGuideLines: TMenuItem;
     miDrawHorzGuideLines: TMenuItem;
-    actDrawSugarSlope: TAction;
-    miDrawSugarSlope: TMenuItem;
-    actDrawSugarExtremePoints: TAction;
-    miDrawSugarExtremePoints: TMenuItem;
+    actDrawGlucoseSlope: TAction;
+    miDrawGlucoseSlope: TMenuItem;
+    actDrawGlucoseExtremePoints: TAction;
+    miDrawGlucoseExtremePoints: TMenuItem;
     actSetCountOfEntriesToRecive: TAction;
-    Setcountofentriestorecive1: TMenuItem;
+    miSetCountOfEntriesToRecive: TMenuItem;
     actShowSettings: TAction;
-    Showsettings1: TMenuItem;
+    miShowSettings: TMenuItem;
     actDrawAlertLines: TAction;
-    Drawalertlines1: TMenuItem;
+    miDrawAlertLines: TMenuItem;
     actFullScreen: TAction;
-    Fullscreen1: TMenuItem;
-    actDrawSugarLevelPoints: TAction;
-    Drawsugarlevelpoints1: TMenuItem;
+    miFullScreen: TMenuItem;
+    actDrawGlucoseLevelPoints: TAction;
+    miDrawGlucoseLevelPoints: TMenuItem;
+    procedure DoScaleIndexClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -91,12 +121,12 @@ type
     procedure FormMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure CheckStaleDataAlarms;
+    procedure DoOpacityPercentClick(Sender: TObject);
     procedure tmrTimer(Sender: TObject);
     procedure tmrProgressBarTimer(Sender: TObject);
     procedure DoDrawStageExecute(Sender: TObject);
     procedure actVisitNightscoutSiteExecute(Sender: TObject);
     procedure actShowCheckNewDataProgressBarExecute(Sender: TObject);
-    procedure actHelpExecute(Sender: TObject);
     procedure actSetNightscoutSiteExecute(Sender: TObject);
     procedure actExitExecute(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -125,6 +155,8 @@ type
     WasAlphaBlend: Boolean;
     BoundsRectLoaded: TRect;
     procedure CreateDrawPanel();
+    procedure DrawTextStrokedText(cnv: TCanvas; const Text: string; const X,
+      Y: Integer; const TextColor: TColor);
     procedure ResetWindowBoundsToDefault();
     procedure SaveOptions();
     procedure LoadOptions();
@@ -132,7 +164,7 @@ type
     procedure SetActionCheckProperty(Action: TAction; Checked: Boolean; DrawStage: TDrawStage);
     function GetArrowRect(Slope: string; ArrowAreaRect: TRect; var OutPoints: TRect): Boolean;
     procedure DrawArrow(P1, P2: TPoint; DrawArrowEnd: boolean; Canvas: TCanvas;
-      SugarSlopeColor: TColor; ArrowWidth: Integer);
+      GlucoseSlopeColor: TColor; ArrowWidth: Integer);
     procedure DoDrawStages(DrawStages: TDrawStages);
     procedure DrawTextInCenter(const Text: string);
     procedure DoDraw(Sender: TObject);
@@ -147,6 +179,7 @@ type
     function GetDrawStageSize(DrawStage: TDrawStage; ScaleIndex: Integer = -1): Integer;
     procedure HardInvalidate();
     procedure ApplyWindowSettings();
+    procedure SetScaleIndex(ScaleIndex: Integer);
   end;
 
 var
@@ -178,6 +211,19 @@ begin
 end;
 
 { TfMain }
+
+procedure TfMain.SetScaleIndex(ScaleIndex: Integer);
+var
+  i: Integer;
+begin
+  if Settings.SetScaleIndex(ScaleIndex) then
+    HardInvalidate();
+
+  for i := 0 to miScale.Count - 1 do
+    miScale.Items[i].Checked := miScale.Items[i].Tag = ScaleIndex;
+
+  miScale.Caption := 'Scale (' + IntToStr(ScaleIndex * 10) + '%)'
+end;
 
 procedure TfMain.DoDrawStageExecute(Sender: TObject);
 var
@@ -241,7 +287,7 @@ var
 begin
   al.State := asSuspended;
   Count := IntToStr(Settings.CountOfEntriesToRecive);
-  if InputQuery('Count of entries', 'Type in the count of sugar entries to recieve from Nightscout site', Count) then
+  if InputQuery('Count of entries', 'Type in the count of glucose entries to recieve from Nightscout site', Count) then
   begin
     CanSetCount := TryStrToInt(Count, CountEntered);
     CanSetCount := CanSetCount and (CountEntered >= 2) and (CountEntered <= 200);
@@ -291,11 +337,6 @@ begin
   pb.Visible := Settings.ShowCheckNewDataProgressBar;
 end;
 
-procedure TfMain.actHelpExecute(Sender: TObject);
-begin
-
-end;
-
 procedure TfMain.DoShowSettingsExecute(Sender: TObject);
 begin
   FormStyle := fsNormal;
@@ -315,22 +356,16 @@ begin
   Settings.ShowWindowBorder := TAction(Sender).Checked;
   OldWindowRect := BoundsRect;
   if TAction(Sender).Checked then
-  begin
-    BorderStyle := bsSizeable;
-  end
+    BorderStyle := bsSizeable
   else
-  begin
     BorderStyle := bsNone;
-  end;
 
   if not Settings.FullScreen then
   begin
     // Reset window bounds after FullScreen turning off if window bounds are so big
     if (Abs(OldWindowRect.Right) - Abs(OldWindowRect.Left) + cMoveWindowDelta >= Screen.Width) or
-      (Abs(OldWindowRect.Bottom) - Abs(OldWindowRect.Top) + cMoveWindowDelta >= Screen.Height) then
-    begin
-      ResetWindowBoundsToDefault();
-    end
+       (Abs(OldWindowRect.Bottom) - Abs(OldWindowRect.Top) + cMoveWindowDelta >= Screen.Height) then
+      ResetWindowBoundsToDefault()
     else
       BoundsRect := OldWindowRect;
   end;
@@ -341,8 +376,8 @@ var
   WindowRect: TRect;
 begin
   WindowRect.Left := Ceil(Screen.Width * 0.75);
-  WindowRect.Right := Screen.Width;
   WindowRect.Top := Ceil(Screen.Height * 0.75);
+  WindowRect.Right := Screen.Width;
   WindowRect.Bottom := Screen.Height;
   OffsetRect(WindowRect, -cMoveWindowDelta, -Screen.Height div 2);
   BoundsRect := WindowRect;
@@ -429,6 +464,14 @@ begin
       VK_UP:    SetAlphaBlendValue(Settings.AlphaBlendValue + cAlphaBlendValueDelta);
       VK_DOWN:  SetAlphaBlendValue(Settings.AlphaBlendValue - cAlphaBlendValueDelta);
     end;
+  end
+  else if Shift = [ssCtrl] then
+  begin
+    // Scale
+    case Key of
+      VK_UP:   SetScaleIndex(Settings.ScaleIndex + 1);
+      VK_DOWN: SetScaleIndex(Settings.ScaleIndex - 1);
+    end;
   end;
 end;
 
@@ -476,6 +519,16 @@ begin
   Invalidate();
 end;
 
+procedure TfMain.DoOpacityPercentClick(Sender: TObject);
+begin
+  SetAlphaBlendValue(Round(255 * TComponent(Sender).Tag / 100));
+end;
+
+procedure TfMain.DoScaleIndexClick(Sender: TObject);
+begin
+  SetScaleIndex(TComponent(Sender).Tag);
+end;
+
 procedure TfMain.FormMouseEnter(Sender: TObject);
 begin
   WasAlphaBlend := AlphaBlend;
@@ -496,19 +549,12 @@ var
 begin
   Direction := IfThen(WheelDelta > 0, 1, -1);
 
-  if Shift = [ssAlt] then
-  begin
-    SetAlphaBlendValue(Settings.AlphaBlendValue + cAlphaBlendValueDelta * Direction);
-  end
-  else if Shift = [] then
-  begin
-    if Settings.SetScaleIndex(Settings.ScaleIndex + Direction) then
-      HardInvalidate;
-  end
+  if Shift = [] then
+    SetScaleIndex(Settings.ScaleIndex + Direction)
+  else if Shift = [ssAlt] then
+    SetAlphaBlendValue(Settings.AlphaBlendValue + cAlphaBlendValueDelta * Direction)
   else if Shift = [ssShift] then
-  begin
     SetFormBounds(Direction);
-  end;
 end;
 
 procedure TfMain.SetFormBounds(Direction: Integer);
@@ -563,12 +609,12 @@ var
   i: Integer;
 begin
   case DrawStage of
-    dsLastSugarLevel: i :=1;
-    dsSugarLevel: i := 2;
-    dsLastSugarLevelDate: i := 3;
-    dsSugarLines: i := 4;
-    dsSugarSlope: i := 5;
-    dsSugarLevelDelta: i := 6;
+    dsLastGlucoseLevel: i :=1;
+    dsGlucoseLevel: i := 2;
+    dsLastGlucoseLevelDate: i := 3;
+    dsGlucoseLines: i := 4;
+    dsGlucoseSlope: i := 5;
+    dsGlucoseLevelDelta: i := 6;
   else
     Result:= Font.Size;
     Exit;
@@ -655,14 +701,14 @@ begin
     Settings.TimeZoneCorrection := ini.ReadInteger('Main', 'TimeZoneCorrection', Settings.TimeZoneCorrection);
     Settings.CountOfEntriesToRecive := ini.ReadInteger('Main', 'CountOfEntriesToRecive', Settings.CountOfEntriesToRecive);
 
-    DrawStageChecked := ini.ReadBool('Visual', 'dsLastSugarLevel', Settings.IsInDrawStage(dsLastSugarLevel));
-    SetActionCheckProperty(actDrawLastSugarLevel, DrawStageChecked, dsLastSugarLevel);
+    DrawStageChecked := ini.ReadBool('Visual', 'dsLastGlucoseLevel', Settings.IsInDrawStage(dsLastGlucoseLevel));
+    SetActionCheckProperty(actDrawLastGlucoseLevel, DrawStageChecked, dsLastGlucoseLevel);
 
-    DrawStageChecked := ini.ReadBool('Visual', 'dsSugarLines', Settings.IsInDrawStage(dsSugarLines));
-    SetActionCheckProperty(actDrawSugarLines, DrawStageChecked, dsSugarLines);
+    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseLines', Settings.IsInDrawStage(dsGlucoseLines));
+    SetActionCheckProperty(actDrawGlucoseLines, DrawStageChecked, dsGlucoseLines);
 
-    DrawStageChecked := ini.ReadBool('Visual', 'dsSugarLevel', Settings.IsInDrawStage(dsSugarLevel));
-    SetActionCheckProperty(actDrawSugarLevel, DrawStageChecked, dsSugarLevel);
+    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseLevel', Settings.IsInDrawStage(dsGlucoseLevel));
+    SetActionCheckProperty(actDrawGlucoseLevel, DrawStageChecked, dsGlucoseLevel);
 
     DrawStageChecked := ini.ReadBool('Visual', 'dsHorzGuideLines', Settings.IsInDrawStage(dsHorzGuideLines));
     SetActionCheckProperty(actDrawHorzGuideLines, DrawStageChecked, dsHorzGuideLines);
@@ -670,23 +716,23 @@ begin
     DrawStageChecked := ini.ReadBool('Visual', 'dsVertGuideLines', Settings.IsInDrawStage(dsVertGuideLines));
     SetActionCheckProperty(actDrawVertGuideLines, DrawStageChecked, dsVertGuideLines);
 
-    DrawStageChecked := ini.ReadBool('Visual', 'dsLastSugarLevelDate', Settings.IsInDrawStage(dsLastSugarLevelDate));
-    SetActionCheckProperty(actDrawLastSugarLevelDate, DrawStageChecked, dsLastSugarLevelDate);
+    DrawStageChecked := ini.ReadBool('Visual', 'dsLastGlucoseLevelDate', Settings.IsInDrawStage(dsLastGlucoseLevelDate));
+    SetActionCheckProperty(actDrawLastGlucoseLevelDate, DrawStageChecked, dsLastGlucoseLevelDate);
 
-    DrawStageChecked := ini.ReadBool('Visual', 'dsSugarSlope', Settings.IsInDrawStage(dsSugarSlope));
-    SetActionCheckProperty(actDrawSugarSlope, DrawStageChecked, dsSugarSlope);
+    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseSlope', Settings.IsInDrawStage(dsGlucoseSlope));
+    SetActionCheckProperty(actDrawGlucoseSlope, DrawStageChecked, dsGlucoseSlope);
 
-    DrawStageChecked := ini.ReadBool('Visual', 'dsSugarExtremePoints', Settings.IsInDrawStage(dsSugarExtremePoints));
-    SetActionCheckProperty(actDrawSugarExtremePoints, DrawStageChecked, dsSugarExtremePoints);
+    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseExtremePoints', Settings.IsInDrawStage(dsGlucoseExtremePoints));
+    SetActionCheckProperty(actDrawGlucoseExtremePoints, DrawStageChecked, dsGlucoseExtremePoints);
 
     DrawStageChecked := ini.ReadBool('Visual', 'dsAlertLines', Settings.IsInDrawStage(dsAlertLines));
     SetActionCheckProperty(actDrawAlertLines, DrawStageChecked, dsAlertLines);
 
-    DrawStageChecked := ini.ReadBool('Visual', 'dsSugarLevelPoints', Settings.IsInDrawStage(dsSugarLevelPoints));
-    SetActionCheckProperty(actDrawSugarLevelPoints, DrawStageChecked, dsSugarLevelPoints);
+    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseLevelPoints', Settings.IsInDrawStage(dsGlucoseLevelPoints));
+    SetActionCheckProperty(actDrawGlucoseLevelPoints, DrawStageChecked, dsGlucoseLevelPoints);
 
-    DrawStageChecked := ini.ReadBool('Visual', 'dsSugarLevelDelta', Settings.IsInDrawStage(dsSugarLevelDelta));
-    SetActionCheckProperty(actDrawSugarLevelDelta, DrawStageChecked, dsSugarLevelDelta);
+    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseLevelDelta', Settings.IsInDrawStage(dsGlucoseLevelDelta));
+    SetActionCheckProperty(actDrawGlucoseLevelDelta, DrawStageChecked, dsGlucoseLevelDelta);
 
     Settings.ShowCheckNewDataProgressBar := ini.ReadBool('Visual', 'ShowCheckNewDataProgressBar', Settings.ShowCheckNewDataProgressBar);
 
@@ -697,7 +743,7 @@ begin
 
     SetAlphaBlendValue(ini.ReadInteger('Visual', 'AlphaBlendValue', Settings.AlphaBlendValue));
 
-    Settings.SetScaleIndex(ini.ReadInteger('Visual', 'ScaleIndex', Settings.ScaleIndex));
+    SetScaleIndex(ini.ReadInteger('Visual', 'ScaleIndex', Settings.ScaleIndex));
     Settings.ShowWindowBorder := ini.ReadBool('Visual', 'ShowWindowBorder', Settings.ShowWindowBorder);
     Settings.FullScreen := ini.ReadBool('Visual', 'FullScreen', Settings.FullScreen);
 
@@ -731,17 +777,17 @@ begin
     ini.WriteInteger('Main', 'TimeZoneCorrection', Settings.TimeZoneCorrection);
     ini.WriteInteger('Main', 'CheckInterval', Settings.CheckInterval);
 
-    ini.WriteBool('Visual', 'dsLastSugarLevel',     Settings.IsInDrawStage(dsLastSugarLevel));
-    ini.WriteBool('Visual', 'dsSugarLines',         Settings.IsInDrawStage(dsSugarLines));
-    ini.WriteBool('Visual', 'dsSugarLevel',         Settings.IsInDrawStage(dsSugarLevel));
+    ini.WriteBool('Visual', 'dsLastGlucoseLevel',     Settings.IsInDrawStage(dsLastGlucoseLevel));
+    ini.WriteBool('Visual', 'dsGlucoseLines',         Settings.IsInDrawStage(dsGlucoseLines));
+    ini.WriteBool('Visual', 'dsGlucoseLevel',         Settings.IsInDrawStage(dsGlucoseLevel));
     ini.WriteBool('Visual', 'dsHorzGuideLines',     Settings.IsInDrawStage(dsHorzGuideLines));
     ini.WriteBool('Visual', 'dsVertGuideLines',     Settings.IsInDrawStage(dsVertGuideLines));
-    ini.WriteBool('Visual', 'dsLastSugarLevelDate', Settings.IsInDrawStage(dsLastSugarLevelDate));
-    ini.WriteBool('Visual', 'dsSugarSlope',         Settings.IsInDrawStage(dsSugarSlope));
-    ini.WriteBool('Visual', 'dsSugarExtremePoints', Settings.IsInDrawStage(dsSugarExtremePoints));
+    ini.WriteBool('Visual', 'dsLastGlucoseLevelDate', Settings.IsInDrawStage(dsLastGlucoseLevelDate));
+    ini.WriteBool('Visual', 'dsGlucoseSlope',         Settings.IsInDrawStage(dsGlucoseSlope));
+    ini.WriteBool('Visual', 'dsGlucoseExtremePoints', Settings.IsInDrawStage(dsGlucoseExtremePoints));
     ini.WriteBool('Visual', 'dsAlertLines',         Settings.IsInDrawStage(dsAlertLines));
-    ini.WriteBool('Visual', 'dsSugarLevelPoints',   Settings.IsInDrawStage(dsSugarLevelPoints));
-    ini.WriteBool('Visual', 'dsSugarLevelDelta',    Settings.IsInDrawStage(dsSugarLevelDelta));
+    ini.WriteBool('Visual', 'dsGlucoseLevelPoints',   Settings.IsInDrawStage(dsGlucoseLevelPoints));
+    ini.WriteBool('Visual', 'dsGlucoseLevelDelta',    Settings.IsInDrawStage(dsGlucoseLevelDelta));
 
     ini.WriteBool('Visual', 'ShowCheckNewDataProgressBar', Settings.ShowCheckNewDataProgressBar);
     ini.WriteBool('Visual', 'ShowWindowBorder', Settings.ShowWindowBorder);
@@ -777,7 +823,7 @@ end;
 
 procedure TfMain.SetAlphaBlendValue(Value: Integer);
 begin     
-  if Value > 255 then
+  if Value >= 255 then
   begin
     AlphaBlend := False;
     Settings.AlphaBlendValue := 255;
@@ -791,6 +837,7 @@ begin
     AlphaBlend := True;
   end;
   AlphaBlendValue := Settings.AlphaBlendValue;
+  miOpacity.Caption := 'Opacity (' + IntToStr(Round(Settings.AlphaBlendValue / 255 * 100 )) + '%)';
 end;
 
 function TfMain.SetCheckIntervalByString(Value: string): Boolean;
@@ -945,13 +992,13 @@ begin
 end;
 
 procedure TfMain.DrawArrow(P1, P2: TPoint; DrawArrowEnd: boolean;
-  Canvas: TCanvas; SugarSlopeColor: TColor; ArrowWidth: Integer);
+  Canvas: TCanvas; GlucoseSlopeColor: TColor; ArrowWidth: Integer);
 var
   Angle, Distance: Double;
   ArrowLength: Integer;
   p3, p4: TPoint;
 begin
-  Canvas.Pen.Color := SugarSlopeColor;
+  Canvas.Pen.Color := GlucoseSlopeColor;
   Canvas.Pen.Width := ArrowWidth;
   Canvas.MoveTo(p1.X, p1.Y);
   Canvas.LineTo(p2.X, p2.Y);
@@ -980,31 +1027,30 @@ begin
   cnv := DrawPanel.Canvas;
   cnv.Brush.Color := Color;
   SetBkMode(cnv.Handle, TRANSPARENT);
-  cnv.Font.Size := GetDrawStageSize(dsLastSugarLevel);
+  cnv.Font.Size := GetDrawStageSize(dsLastGlucoseLevel);
   TextSize := cnv.TextExtent(Text);
   TextPoint.X := Floor((DrawPanel.Width - TextSize.cx) / 2);
   TextPoint.Y := Floor((DrawPanel.Height - TextSize.cy - (DrawPanel.Height / 10)) / 2);
-  cnv.Font.Color := cLastSugarLevelColor;
+  cnv.Font.Color := cLastGlucoseLevelColor;
   cnv.TextOut(TextPoint.X, TextPoint.Y, Text);
 end;
 
 procedure TfMain.DoDrawStages(DrawStages: TDrawStages);
 const
-  cMarginX = 0.9;
+  cMarginX = 0.85;
   cMarginY = 0.7;
 var
-  i, x, y, EntriesCount, SlopeRectWidth, ArrowCount, ArrowOffsetX, MaxY, SugarLevelPointRadius: integer;
+  i, x, y, EntriesCount, SlopeRectWidth, ArrowCount, ArrowOffsetX, MaxY, GlucoseLevelPointRadius: integer;
   cnv: TCanvas;
   EntryWidth, EntryHeight, MarginX, MarginY: Double;
   Entry, LastEntry: TNightscoutEntry;
   Text, TextWithSlope: string;
   TextSize: TSize;
-  OffsetPoints: array [0..7] of TPoint;
-  LastSugarLevelPoint: TPoint;
+  LastGlucoseLevelPoint, GlucoseMarker: TPoint;
   SlopeRect, ArrowRect: TRect;
-  CanDrawArrow, NeedDrawSugarExtremePoints: Boolean;
-  LastSugarLevelDateColor, FontColor: TColor;
-  SugarSlopeScaleIndex: Byte;
+  CanDrawArrow, NeedDrawGlucoseExtremePoints: Boolean;
+  LastGlucoseLevelDateColor, FontColor: TColor;
+  GlucoseSlopeScaleIndex: Byte;
 begin
 
   EntriesCount := Entries.Count;
@@ -1017,15 +1063,15 @@ begin
   EntryWidth := (DrawPanel.Width * cMarginX) / (EntriesCount - 1);
   if Settings.IsInDrawStage(dsAlertLines) then
   begin
-    MaxY := Max(Settings.UrgentHighGlucoseAlarm, Entries.GetMaxSugar);
+    MaxY := Max(Settings.UrgentHighGlucoseAlarm, Entries.GetMaxGlucose);
     EntryHeight := (DrawPanel.Height * cMarginY) /
-      (Entries.GetMaxSugarDelta(Settings.UrgentLowGlucoseAlarm, Settings.UrgentHighGlucoseAlarm) + 1);
+      (Entries.GetMaxGlucoseDelta(Settings.UrgentLowGlucoseAlarm, Settings.UrgentHighGlucoseAlarm) + 1);
   end
   else
   begin
-    MaxY := Entries.GetMaxSugar;
+    MaxY := Entries.GetMaxGlucose;
     EntryHeight := (DrawPanel.Height * cMarginY) /
-      (Entries.GetMaxSugarDelta(-1, -1) + 1);
+      (Entries.GetMaxGlucoseDelta(-1, -1) + 1);
   end;
 
   MarginX := DrawPanel.Width * (1 - cMarginX) / 2;
@@ -1067,16 +1113,16 @@ begin
     cnv.LineTo(DrawPanel.Width, y);
   end;
 
-  if dsSugarLines in DrawStages then
+  if dsGlucoseLines in DrawStages then
   begin
     for i := 0 to EntriesCount - 1 do
     begin
       Entry := Entries[i];
       x := Floor(EntryWidth * i + MarginX);
-      y := Floor(EntryHeight * (MaxY - Entry.Sugar) + MarginY);
+      y := Floor(EntryHeight * (MaxY - Entry.Glucose) + MarginY);
 
-      cnv.Pen.Color := Settings.GetColorBySugarLevel(Entry.Sugar);
-      cnv.Pen.Width := GetDrawStageSize(dsSugarLines);
+      cnv.Pen.Color := Settings.GetColorByGlucoseLevel(Entry.Glucose);
+      cnv.Pen.Width := GetDrawStageSize(dsGlucoseLines);
 
       if i = 0 then
         cnv.MoveTo(x, y)
@@ -1085,136 +1131,112 @@ begin
     end;
   end;
 
-  if (dsSugarLevelPoints in DrawStages) or (dsSugarLevel in DrawStages) or
-    (dsSugarExtremePoints in DrawStages) then
+  if (dsGlucoseLevelPoints in DrawStages) or (dsGlucoseLevel in DrawStages) or
+    (dsGlucoseExtremePoints in DrawStages) then
   begin
     for i := 0 to EntriesCount - 1 do
     begin
       Entry := Entries[i];
       x := Floor(EntryWidth * i + MarginX);
-      y := Floor(EntryHeight * (MaxY - Entry.Sugar) + MarginY);
+      y := Floor(EntryHeight * (MaxY - Entry.Glucose) + MarginY);
 
-      if (dsSugarLevelPoints in DrawStages) then
+      if (dsGlucoseLevelPoints in DrawStages) then
       begin
-        SugarLevelPointRadius := GetDrawStageSize(dsSugarLines) * 2;
-        cnv.Brush.Color := Settings.GetColorBySugarLevel(Entry.Sugar);
+        GlucoseLevelPointRadius := GetDrawStageSize(dsGlucoseLines) * 2;
+        cnv.Brush.Color := Settings.GetColorByGlucoseLevel(Entry.Glucose);
         cnv.Pen.Color := cnv.Brush.Color;
         cnv.Pen.Width := 1;
-        cnv.Ellipse(x - SugarLevelPointRadius,
-                    y - SugarLevelPointRadius,
-                    x + SugarLevelPointRadius,
-                    y + SugarLevelPointRadius);
+        cnv.Ellipse(x - GlucoseLevelPointRadius,
+                    y - GlucoseLevelPointRadius,
+                    x + GlucoseLevelPointRadius,
+                    y + GlucoseLevelPointRadius);
       end;
 
-      cnv.Font.Size := GetDrawStageSize(dsSugarLevel);
-      Text := ' ' + Entry.GetSugarStr(Settings.IsMmolL) + ' ';
+      cnv.Font.Size := GetDrawStageSize(dsGlucoseLevel);
+      Text := ' ' + Entry.GetGlucoseStr(Settings.IsMmolL) + ' ';
       TextSize := cnv.TextExtent(Text);
-      NeedDrawSugarExtremePoints := (dsSugarExtremePoints in DrawStages) and
+      NeedDrawGlucoseExtremePoints := (dsGlucoseExtremePoints in DrawStages) and
           ((i = 0) or (i = EntriesCount - 1) or
-          (Entry.Sugar = Entries.GetMaxSugar) or
-          (Entry.Sugar = Entries.GetMinSugar));
+          (Entry.Glucose = Entries.GetMaxGlucose) or
+          (Entry.Glucose = Entries.GetMinGlucose));
 
-      if (dsSugarLevel in DrawStages) and not NeedDrawSugarExtremePoints then
+      GlucoseMarker.X := Floor(x - TextSize.cx / 2);
+      GlucoseMarker.Y := Floor(y - TextSize.cy / 2);
+
+
+      if (dsGlucoseLevel in DrawStages) and not NeedDrawGlucoseExtremePoints then
       begin
-        cnv.Brush.Color := cSugarLevelBrushColor;
-        cnv.Font.Color := cSugarLevelColor;
-        // Draw sugar level value in the center of graph point
-        cnv.TextOut(
-          Floor(x - TextSize.cx / 2),
-          Floor(y - TextSize.cy / 2),
-          Text);
+        cnv.Brush.Color := cGlucoseLevelBrushColor;
+        cnv.Font.Color := cGlucoseLevelColor;
+        // Draw glucose level value in the center of graph point
+        cnv.TextOut(GlucoseMarker.X, GlucoseMarker.Y, Text);
         cnv.MoveTo(x, y);
       end;
 
-      if NeedDrawSugarExtremePoints then
+      if NeedDrawGlucoseExtremePoints then
       begin
-        cnv.Brush.Color := cSugarExtremePointsBrushColor;
-        cnv.Font.Color := cSugarExtremePointsColor;
-        cnv.TextOut(
-          Floor(x - TextSize.cx / 2),
-          Floor(y - TextSize.cy / 2),
-          Text);
+        cnv.Brush.Color := cGlucoseExtremePointsBrushColor;
+        cnv.Font.Color := cGlucoseExtremePointsColor;
+        cnv.TextOut(GlucoseMarker.X, GlucoseMarker.Y, Text);
         cnv.MoveTo(x, y);
       end;
     end;
   end;
 
   if (NeedStaleDataBlink and StaleAlarmBlinkTrigger) or
-    (not NeedStaleDataBlink and (dsLastSugarLevelDate in DrawStages)) then
+    (not NeedStaleDataBlink and (dsLastGlucoseLevelDate in DrawStages)) then
   begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
-    Text := Settings.GetLastSugarLevelDateText(LastEntry, LastSugarLevelDateColor);
-    cnv.Font.Color := LastSugarLevelDateColor;
-    SetMaximumDrawStageSizeToCanvas(dsLastSugarLevelDate, Text, cnv);
+    Text := Settings.GetLastGlucoseLevelDateText(LastEntry, LastGlucoseLevelDateColor);
+    SetMaximumDrawStageSizeToCanvas(dsLastGlucoseLevelDate, Text, cnv);
     TextSize := cnv.TextExtent(Text);
-    cnv.TextOut(
+    DrawTextStrokedText(cnv, Text,
       Floor(DrawPanel.Width - TextSize.cx - 5),
       Floor(DrawPanel.Height - TextSize.cy),
-      Text);
+      LastGlucoseLevelDateColor);
   end;
 
-  if dsSugarLevelDelta in DrawStages then
+  if dsGlucoseLevelDelta in DrawStages then
   begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
-    Text := Entries.GetSugarLevelDeltaText(Settings.IsMmolL);
-    SetMaximumDrawStageSizeToCanvas(dsSugarLevelDelta, Text, cnv);
+    Text := Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL);
+    SetMaximumDrawStageSizeToCanvas(dsGlucoseLevelDelta, Text, cnv);
     TextSize := cnv.TextExtent(Text);
-    cnv.Font.Color := cSugarLevelDeltaColor;
-    cnv.TextOut((DrawPanel.Width - TextSize.cx) div 2,  0, Text);
+    DrawTextStrokedText(cnv, Text, (DrawPanel.Width - TextSize.cx) div 2,  0, cGlucoseLevelDeltaColor);
   end;
 
-  if (dsLastSugarLevel in DrawStages) or (dsSugarSlope in DrawStages)  then
+  if (dsLastGlucoseLevel in DrawStages) or (dsGlucoseSlope in DrawStages)  then
   begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
-    Text := LastEntry.GetSugarStr(Settings.IsMmolL);
+    Text := LastEntry.GetGlucoseStr(Settings.IsMmolL);
 
     TextWithSlope := Text;
-    if dsSugarSlope in DrawStages then
+    if dsGlucoseSlope in DrawStages then
       TextWithSlope := TextWithSlope + '.....';
 
-    SugarSlopeScaleIndex := SetMaximumDrawStageSizeToCanvas(dsLastSugarLevel, TextWithSlope, cnv);
+    GlucoseSlopeScaleIndex := SetMaximumDrawStageSizeToCanvas(dsLastGlucoseLevel, TextWithSlope, cnv);
     TextSize := cnv.TextExtent(Text);
-    LastSugarLevelPoint.X := Floor((DrawPanel.Width - TextSize.cx) / 2);
-    if dsSugarSlope in DrawStages then
-      LastSugarLevelPoint.X := LastSugarLevelPoint.X - Floor((TextSize.cx / 4));
-    LastSugarLevelPoint.Y := Floor((DrawPanel.Height - TextSize.cy - (DrawPanel.Height / 10)) / 2);
+    LastGlucoseLevelPoint.X := Floor((DrawPanel.Width - TextSize.cx) / 2);
+    if dsGlucoseSlope in DrawStages then
+      LastGlucoseLevelPoint.X := LastGlucoseLevelPoint.X - Floor((TextSize.cx / 4));
+    LastGlucoseLevelPoint.Y := Floor((DrawPanel.Height - TextSize.cy - (DrawPanel.Height / 10)) / 2);
 
-    if (LastEntry.Sugar <= Settings.UrgentLowGlucoseAlarm) or
-      (LastEntry.Sugar >= Settings.UrgentHighGlucoseAlarm) then
+    if (LastEntry.Glucose <= Settings.UrgentLowGlucoseAlarm) or
+      (LastEntry.Glucose >= Settings.UrgentHighGlucoseAlarm) then
       FontColor := cUrgentAlarmColor
-    else if (LastEntry.Sugar <= Settings.LowGlucoseAlarm) or
-      (LastEntry.Sugar >= Settings.HighGlucoseAlarm) then
+    else if (LastEntry.Glucose <= Settings.LowGlucoseAlarm) or
+      (LastEntry.Glucose >= Settings.HighGlucoseAlarm) then
       FontColor := cAlarmColor
     else
-      FontColor := cLastSugarLevelColor;
+      FontColor := cLastGlucoseLevelColor;
 
-    if dsLastSugarLevel in DrawStages then
-    begin
-      // Draw sugar level value in the center of graph point
-      OffsetPoints[0] := Point( 0, -3);
-      OffsetPoints[1] := Point( 2, -2);
-      OffsetPoints[2] := Point( 3,  0);
-      OffsetPoints[3] := Point( 2,  2);
-      OffsetPoints[4] := Point( 0,  3);
-      OffsetPoints[5] := Point(-2,  2);
-      OffsetPoints[6] := Point(-3,  0);
-      OffsetPoints[7] := Point(-2, -2);
-      // Draw stroke
-      cnv.Font.Color := Color;
-      for i := 0 to High(OffsetPoints) do
-        cnv.TextOut(
-          LastSugarLevelPoint.X + OffsetPoints[i].X,
-          LastSugarLevelPoint.Y + OffsetPoints[i].Y, Text);
+    if dsLastGlucoseLevel in DrawStages then
+      DrawTextStrokedText(cnv, Text, LastGlucoseLevelPoint.X, LastGlucoseLevelPoint.Y, FontColor);
 
-      // Draw main text
-      cnv.Font.Color := FontColor;
-      cnv.TextOut(LastSugarLevelPoint.X, LastSugarLevelPoint.Y, Text);
-    end;
-
-    if dsSugarSlope in DrawStages then
+    if dsGlucoseSlope in DrawStages then
     begin
       SlopeRectWidth := TextSize.cx div 2;
       SlopeRect := Rect(0, 0, SlopeRectWidth, TextSize.cy);
@@ -1222,17 +1244,43 @@ begin
       CanDrawArrow := GetArrowRect(LastEntry.Slope, SlopeRect, ArrowRect);
 
       ArrowCount := LastEntry.GetArrowCountOfSlope;
-      ArrowOffsetX := LastSugarLevelPoint.X + Floor((TextSize.cx * 1.2));
-      OffsetRect(ArrowRect, ArrowOffsetX, LastSugarLevelPoint.Y); // Move SlopeRect to the left side of dsLastSugarLevel text
+      ArrowOffsetX := LastGlucoseLevelPoint.X + Floor((TextSize.cx * 1.2));
+      OffsetRect(ArrowRect, ArrowOffsetX, LastGlucoseLevelPoint.Y); // Move SlopeRect to the left side of dsLastGlucoseLevel text
 
       for i := 1 to ArrowCount do
       begin
-        DrawArrow(ArrowRect.TopLeft, ArrowRect.BottomRight, CanDrawArrow, cnv, FontColor, SugarSlopeScaleIndex);
+        DrawArrow(ArrowRect.TopLeft, ArrowRect.BottomRight, CanDrawArrow, cnv, FontColor, GlucoseSlopeScaleIndex);
         ArrowOffsetX := Floor((SlopeRect.Right - SlopeRect.Left) / 1.5);
         OffsetRect(ArrowRect, ArrowOffsetX, 0);
       end;
     end;
   end;
+end;
+
+procedure TfMain.DrawTextStrokedText(cnv: TCanvas; const Text: string; const X, Y: Integer; const TextColor: TColor);
+var
+  OffsetPoints: array [0..7] of TPoint;
+  i: Integer;
+begin
+  // Draw glucose level value in the center of graph point
+  OffsetPoints[0] := Point( 0, -3);
+  OffsetPoints[1] := Point( 2, -2);
+  OffsetPoints[2] := Point( 3,  0);
+  OffsetPoints[3] := Point( 2,  2);
+  OffsetPoints[4] := Point( 0,  3);
+  OffsetPoints[5] := Point(-2,  2);
+  OffsetPoints[6] := Point(-3,  0);
+  OffsetPoints[7] := Point(-2, -2);
+  cnv.Font.Color := Color;
+
+  for i := 0 to High(OffsetPoints) do
+    cnv.TextOut(
+      X + OffsetPoints[i].X,
+      Y + OffsetPoints[i].Y, Text);
+
+  // Draw main text
+  cnv.Font.Color := TextColor;
+  cnv.TextOut(X, Y, Text);
 end;
 
 procedure TfMain.DoDraw(Sender: TObject);
@@ -1247,7 +1295,7 @@ procedure TfMain.DoUpdateCallerFormWithSettings;
 begin
   HardInvalidate;
   ApplyWindowSettings;
-  Settings.SetScaleIndex(Settings.ScaleIndex);
+  SetScaleIndex(Settings.ScaleIndex);
   SetAlphaBlendValue(Settings.AlphaBlendValue);
 end;
 

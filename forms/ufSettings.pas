@@ -24,7 +24,7 @@ type
   TfSettings = class(TForm)
     btnOK: TButton;
     btnCancel: TButton;
-    cbDrawSugarLevelDelta: TCheckBox;
+    cbDrawGlucoseLevelDelta: TCheckBox;
     cbEnableGlucoseLevelAlarms: TCheckBox;
     cbEnableStaleDataAlarms: TCheckBox;
     gbGlucoseLevelAlarms: TGroupBox;
@@ -47,12 +47,12 @@ type
     cbIsMmolL: TCheckBox;
     cbDrawHorzGuideLines: TCheckBox;
     cbDrawVertGuideLines: TCheckBox;
-    cbDrawLastSugarLevel: TCheckBox;
-    cbDrawLastSugarLevelDate: TCheckBox;
-    cbDrawSugarExtremePoints: TCheckBox;
-    cbDrawSugarLevel: TCheckBox;
-    cbDrawSugarLines: TCheckBox;
-    cbDrawSugarSlope: TCheckBox;
+    cbDrawLastGlucoseLevel: TCheckBox;
+    cbDrawLastGlucoseLevelDate: TCheckBox;
+    cbDrawGlucoseExtremePoints: TCheckBox;
+    cbDrawGlucoseLevel: TCheckBox;
+    cbDrawGlucoseLines: TCheckBox;
+    cbDrawGlucoseSlope: TCheckBox;
     cbShowCheckNewDataProgressBar: TCheckBox;
     cbShowWindowBorder: TCheckBox;
     seCheckInterval: TSpinEdit;
@@ -74,7 +74,7 @@ type
     cbDrawAlertLines: TCheckBox;
     lblTimeZoneCorrection: TLabel;
     seTimeZoneCorrection: TSpinEdit;
-    cbDrawSugarLevelPoints: TCheckBox;
+    cbDrawGlucoseLevelPoints: TCheckBox;
     tsHelp: TTabSheet;
     tsAbout: TTabSheet;
     tsMain: TTabSheet;
@@ -156,17 +156,17 @@ begin
 
   cbShowCheckNewDataProgressBar.OnClick := DoChange;
   cbDrawHorzGuideLines.OnClick := DoChange;
-  cbDrawLastSugarLevel.OnClick := DoChange;
-  cbDrawLastSugarLevelDate.OnClick := DoChange;
-  cbDrawSugarExtremePoints.OnClick := DoChange;
-  cbDrawSugarLevel.OnClick := DoChange;
-  cbDrawSugarLines.OnClick := DoChange;
-  cbDrawSugarSlope.OnClick := DoChange;
+  cbDrawLastGlucoseLevel.OnClick := DoChange;
+  cbDrawLastGlucoseLevelDate.OnClick := DoChange;
+  cbDrawGlucoseExtremePoints.OnClick := DoChange;
+  cbDrawGlucoseLevel.OnClick := DoChange;
+  cbDrawGlucoseLines.OnClick := DoChange;
+  cbDrawGlucoseSlope.OnClick := DoChange;
   cbDrawVertGuideLines.OnClick := DoChange;
   cbShowWindowBorder.OnClick := DoChange;
   cbDrawAlertLines.OnClick := DoChange;
-  cbDrawSugarLevelPoints.OnClick := DoChange;
-  cbDrawSugarLevelDelta.OnClick := DoChange;
+  cbDrawGlucoseLevelPoints.OnClick := DoChange;
+  cbDrawGlucoseLevelDelta.OnClick := DoChange;
 end;
 
 procedure TfSettings.FormDestroy(Sender: TObject);
@@ -188,7 +188,7 @@ begin
 
     if Component.Tag = SpinEdit.Tag then
     begin
-      TLabel(Component).Caption := TNightscoutEntry.GetSugarStr(SpinEdit.Value, True);
+      TLabel(Component).Caption := TNightscoutEntry.GetGlucoseStr(SpinEdit.Value, True);
       Break;
     end;
   end;
@@ -211,16 +211,16 @@ end;
 procedure TfSettings.AssignSettingsToComponents;
 begin
   cbDrawHorzGuideLines.Checked := NewSettings.IsInDrawStage(dsHorzGuideLines);
-  cbDrawLastSugarLevel.Checked := NewSettings.IsInDrawStage(dsLastSugarLevel);
-  cbDrawLastSugarLevelDate.Checked := NewSettings.IsInDrawStage(dsLastSugarLevelDate);
-  cbDrawSugarExtremePoints.Checked := NewSettings.IsInDrawStage(dsSugarExtremePoints);
-  cbDrawSugarLevel.Checked := NewSettings.IsInDrawStage(dsSugarLevel);
-  cbDrawSugarLines.Checked := NewSettings.IsInDrawStage(dsSugarLines);
-  cbDrawSugarSlope.Checked := NewSettings.IsInDrawStage(dsSugarSlope);
+  cbDrawLastGlucoseLevel.Checked := NewSettings.IsInDrawStage(dsLastGlucoseLevel);
+  cbDrawLastGlucoseLevelDate.Checked := NewSettings.IsInDrawStage(dsLastGlucoseLevelDate);
+  cbDrawGlucoseExtremePoints.Checked := NewSettings.IsInDrawStage(dsGlucoseExtremePoints);
+  cbDrawGlucoseLevel.Checked := NewSettings.IsInDrawStage(dsGlucoseLevel);
+  cbDrawGlucoseLines.Checked := NewSettings.IsInDrawStage(dsGlucoseLines);
+  cbDrawGlucoseSlope.Checked := NewSettings.IsInDrawStage(dsGlucoseSlope);
   cbDrawVertGuideLines.Checked := NewSettings.IsInDrawStage(dsVertGuideLines);
   cbDrawAlertLines.Checked := NewSettings.IsInDrawStage(dsAlertLines);
-  cbDrawSugarLevelPoints.Checked := NewSettings.IsInDrawStage(dsSugarLevelPoints);
-  cbDrawSugarLevelDelta.Checked := NewSettings.IsInDrawStage(dsSugarLevelDelta);
+  cbDrawGlucoseLevelPoints.Checked := NewSettings.IsInDrawStage(dsGlucoseLevelPoints);
+  cbDrawGlucoseLevelDelta.Checked := NewSettings.IsInDrawStage(dsGlucoseLevelDelta);
 
   cbEnableGlucoseLevelAlarms.Checked := NewSettings.EnableGlucoseLevelAlarms;
   cbEnableStaleDataAlarms.Checked := NewSettings.EnableStaleDataAlarms;
@@ -263,16 +263,16 @@ begin
   NewSettings.EnableStaleDataAlarms := cbEnableStaleDataAlarms.Checked;
 
   NewSettings.SwitchDrawStage(dsHorzGuideLines, cbDrawHorzGuideLines.Checked);
-  NewSettings.SwitchDrawStage(dsLastSugarLevel, cbDrawLastSugarLevel.Checked);
-  NewSettings.SwitchDrawStage(dsLastSugarLevelDate, cbDrawLastSugarLevelDate.Checked);
-  NewSettings.SwitchDrawStage(dsSugarExtremePoints, cbDrawSugarExtremePoints.Checked);
-  NewSettings.SwitchDrawStage(dsSugarLevel, cbDrawSugarLevel.Checked);
-  NewSettings.SwitchDrawStage(dsSugarLines, cbDrawSugarLines.Checked);
-  NewSettings.SwitchDrawStage(dsSugarSlope, cbDrawSugarSlope.Checked);
+  NewSettings.SwitchDrawStage(dsLastGlucoseLevel, cbDrawLastGlucoseLevel.Checked);
+  NewSettings.SwitchDrawStage(dsLastGlucoseLevelDate, cbDrawLastGlucoseLevelDate.Checked);
+  NewSettings.SwitchDrawStage(dsGlucoseExtremePoints, cbDrawGlucoseExtremePoints.Checked);
+  NewSettings.SwitchDrawStage(dsGlucoseLevel, cbDrawGlucoseLevel.Checked);
+  NewSettings.SwitchDrawStage(dsGlucoseLines, cbDrawGlucoseLines.Checked);
+  NewSettings.SwitchDrawStage(dsGlucoseSlope, cbDrawGlucoseSlope.Checked);
   NewSettings.SwitchDrawStage(dsVertGuideLines, cbDrawVertGuideLines.Checked);
   NewSettings.SwitchDrawStage(dsAlertLines, cbDrawAlertLines.Checked);
-  NewSettings.SwitchDrawStage(dsSugarLevelPoints, cbDrawSugarLevelPoints.Checked);
-  NewSettings.SwitchDrawStage(dsSugarLevelDelta, cbDrawSugarLevelDelta.Checked);
+  NewSettings.SwitchDrawStage(dsGlucoseLevelPoints, cbDrawGlucoseLevelPoints.Checked);
+  NewSettings.SwitchDrawStage(dsGlucoseLevelDelta, cbDrawGlucoseLevelDelta.Checked);
 
   NewSettings.ShowCheckNewDataProgressBar := cbShowCheckNewDataProgressBar.Checked;
   NewSettings.ShowWindowBorder := cbShowWindowBorder.Checked;

@@ -12,47 +12,47 @@ uses
 const
   cDrawStageSizes : array [1..6, 1..18] of Integer =
     (
-      (14, 17, 28, 32, 40, 48, 60, 72, 88, 100, 116, 130, 160, 200, 240, 280, 340, 400), // Font size for dsLastSugarLevel
-      ( 6,  7,  7,  8,  8,  9,  9, 10, 11,  11,  12,  13,  14,  15,  16,  17,  18,  20), // Font size for dsSugarLevel
-      ( 7,  8,  8,  9, 10, 11, 12, 13, 14,  15,  18,  20,  24,  30,  38,  48,  60,  70), // Font size for dsLastSugarLevelDate
-      ( 1,  1,  1,  2,  2,  2,  2,  2,  2,   3,   3,   3,   4,   4,   5,   5,   6,   7), // Line thickness for dsSugarLines
-      ( 1,  1,  3,  3,  3,  4,  5,  6,  7,   8,   9,  10,  12,  15,  20,  26,  38,  50), // Line thickness for dsSugarSlope
-      ( 7,  8,  9, 10, 11, 12, 13, 15, 17,  19,  23,  26,  30,  36,  46,  58,  70,  86)  // Font size for dsSugarLevelDelta
+      (14, 17, 28, 32, 40, 48, 60, 72, 88, 100, 116, 130, 160, 200, 240, 280, 340, 400), // Font size for dsLastGlucoseLevel
+      ( 6,  7,  7,  8,  8,  9,  9, 10, 11,  11,  12,  13,  14,  15,  16,  17,  18,  20), // Font size for dsGlucoseLevel
+      ( 7,  8,  8,  9, 10, 11, 12, 13, 14,  15,  18,  20,  24,  30,  38,  48,  60,  70), // Font size for dsLastGlucoseLevelDate
+      ( 1,  1,  1,  2,  2,  2,  2,  2,  2,   3,   3,   3,   4,   4,   5,   5,   6,   7), // Line thickness for dsGlucoseLines
+      ( 1,  1,  3,  3,  3,  4,  5,  6,  7,   8,   9,  10,  12,  15,  20,  26,  38,  50), // Line thickness for dsGlucoseSlope
+      ( 7,  8,  9, 10, 11, 12, 13, 15, 17,  19,  23,  26,  30,  36,  46,  58,  70,  86)  // Font size for dsGlucoseLevelDelta
     );
 
   cProgressBarHeights: array[1..18]  of Byte =
     ( 3,  3,  3,  3,  5,  5,  5,  5,  6,   6,   7,   8,   9,  10,  11,  12,  13,  14);  // Progress bar height
 
   cWarningColor = clRed;
-  cLastSugarLevelColor = clWhite;
-  cSugarLinesColor = $00FF8000;
-  cSugarLevelColor = clWhite;
-  cSugarLevelBrushColor = clGreen;
+  cLastGlucoseLevelColor = clWhite;
+  cGlucoseLinesColor = $00FF8000;
+  cGlucoseLevelColor = clWhite;
+  cGlucoseLevelBrushColor = clGreen;
   cHorzGuideLinesColor = $00161616;
   cVertGuideLinesColor = $00161616;
-  cLastSugarLevelDateColor = clGreen;
-  cSugarSlopeColor = clWhite;
-  cSugarExtremePointsColor = clWhite ;
-  cSugarExtremePointsBrushColor = clBlue;
-  cSugarLevelDeltaColor = clWhite;
+  cLastGlucoseLevelDateColor = clGreen;
+  cGlucoseSlopeColor = clWhite;
+  cGlucoseExtremePointsColor = clWhite ;
+  cGlucoseExtremePointsBrushColor = clBlue;
+  cGlucoseLevelDeltaColor = clWhite;
 
-  cHighSugarColor = clWhite;
-  cHighSugarBrushColor = clYellow;
-  cLowSugarColor = clWhite;
-  cLowSugarBrushColor = clRed;
+  cHighGlucoseColor = clWhite;
+  cHighGlucoseBrushColor = clYellow;
+  cLowGlucoseColor = clWhite;
+  cLowGlucoseBrushColor = clRed;
 
   cUrgentAlarmColor = clRed;
   cAlarmColor = clYellow;
 
-  cSugarLevelPointsColor = $00FF8000;
+  cGlucoseLevelPointsColor = $00FF8000;
 
   cMoveWindowDelta = 10;
   cAlphaBlendValueDelta = 10;
 
 type
-  TDrawStage = (dsLastSugarLevel, dsSugarLines, dsSugarLevel, dsHorzGuideLines,
-    dsVertGuideLines, dsLastSugarLevelDate, dsSugarSlope, dsSugarExtremePoints,
-    dsAlertLines, dsSugarLevelPoints, dsSugarLevelDelta);
+  TDrawStage = (dsLastGlucoseLevel, dsGlucoseLines, dsGlucoseLevel, dsHorzGuideLines,
+    dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope, dsGlucoseExtremePoints,
+    dsAlertLines, dsGlucoseLevelPoints, dsGlucoseLevelDelta);
   TDrawStages = set of TDrawStage;
 
   { TSettings }
@@ -82,11 +82,11 @@ type
       ): Integer;
   public
     constructor Create();
-    function GetColorBySugarLevel(Sugar: Integer): TColor;
+    function GetColorByGlucoseLevel(Glucose: Integer): TColor;
     function IsStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
     function IsUrgentStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
     function Clone(): TSettings;
-    function GetLastSugarLevelDateText(Entry: TNightscoutEntry; out OutColor: TColor): string;
+    function GetLastGlucoseLevelDateText(Entry: TNightscoutEntry; out OutColor: TColor): string;
     function IsInDrawStage(DrawStage: TDrawStage): Boolean; overload;
     function IsInDrawStage(ADrawStages: TDrawStages): Boolean; overload;
     function SetScaleIndex(Index: Integer): Boolean;
@@ -125,7 +125,7 @@ var
 begin
   Result := True;
   Intersection := ADrawStages * DrawStages;
-  for i := dsLastSugarLevel to dsSugarLevelPoints do
+  for i := dsLastGlucoseLevel to dsGlucoseLevelPoints do
     if not ((i in Intersection) and (i in ADrawStages)) then
     begin
       Result := False;
@@ -190,9 +190,9 @@ end;
 
 constructor TSettings.Create();
 begin
-  DrawStages := [dsLastSugarLevel, dsSugarLines, dsHorzGuideLines,
-    dsVertGuideLines, dsLastSugarLevelDate, dsSugarSlope, dsSugarExtremePoints,
-    dsSugarLevelDelta];
+  DrawStages := [dsLastGlucoseLevel, dsGlucoseLines, dsHorzGuideLines,
+    dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope, dsGlucoseExtremePoints,
+    dsGlucoseLevelDelta];
   AlphaBlendValue := 200;
   CheckInterval := 20;
   CountOfEntriesToRecive := 40;
@@ -213,14 +213,14 @@ begin
   TimeZoneCorrection := 0;
 end;
 
-function TSettings.GetColorBySugarLevel(Sugar: Integer): TColor;
+function TSettings.GetColorByGlucoseLevel(Glucose: Integer): TColor;
 begin
-  if (Sugar >= UrgentHighGlucoseAlarm) or (Sugar <= UrgentLowGlucoseAlarm) then
+  if (Glucose >= UrgentHighGlucoseAlarm) or (Glucose <= UrgentLowGlucoseAlarm) then
     Result := cUrgentAlarmColor
-  else if (Sugar >= HighGlucoseAlarm) or (Sugar <= LowGlucoseAlarm) then
-    Result := cHighSugarBrushColor
+  else if (Glucose >= HighGlucoseAlarm) or (Glucose <= LowGlucoseAlarm) then
+    Result := cHighGlucoseBrushColor
   else
-    Result := cSugarLinesColor;
+    Result := cGlucoseLinesColor;
 end;
 
 function TSettings.GetEntryMinsWithTimeZoneCorrection(Entry: TNightscoutEntry): Integer;
@@ -260,7 +260,7 @@ begin
   Result := OldScaleIndex <> ScaleIndex;
 end;
 
-function TSettings.GetLastSugarLevelDateText(Entry: TNightscoutEntry; out OutColor: TColor): string;
+function TSettings.GetLastGlucoseLevelDateText(Entry: TNightscoutEntry; out OutColor: TColor): string;
 var
   Days, Hours, Mins: Int64;
   DaysStr, HoursStr, MinsStr: string;
@@ -273,7 +273,7 @@ begin
   if Mins >= StaleDataAlarm then
     OutColor := cWarningColor
   else
-    OutColor := cLastSugarLevelDateColor;
+    OutColor := cLastGlucoseLevelDateColor;
 
   if Mins < 1 then
   begin

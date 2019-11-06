@@ -1,7 +1,7 @@
 object fMain: TfMain
-  Left = -413
+  Left = 1998
   Height = 157
-  Top = 164
+  Top = 309
   Width = 301
   AlphaBlend = True
   AlphaBlendValue = 230
@@ -49,52 +49,52 @@ object fMain: TfMain
       Action = actSetUnitOfMeasureMmolL
       AutoCheck = True
     end
-    object Setcountofentriestorecive1: TMenuItem
+    object miSetCountOfEntriesToRecive: TMenuItem
       Action = actSetCountOfEntriesToRecive
     end
     object miSetCheckInterval: TMenuItem
       Action = actSetCheckInterval
     end
-    object Showsettings1: TMenuItem
+    object miShowSettings: TMenuItem
       Action = actShowSettings
     end
-    object miN2: TMenuItem
+    object miSeparator1: TMenuItem
       Caption = '-'
     end
-    object miDrawLastSugarLevel: TMenuItem
-      Action = actDrawLastSugarLevel
+    object miDrawLastGlucoseLevel: TMenuItem
+      Action = actDrawLastGlucoseLevel
       AutoCheck = True
     end
-    object miDrawSugarSlope: TMenuItem
-      Action = actDrawSugarSlope
+    object miDrawGlucoseSlope: TMenuItem
+      Action = actDrawGlucoseSlope
       AutoCheck = True
     end
-    object miDrawSugarLevelDelta: TMenuItem
-      Action = actDrawSugarLevelDelta
+    object miDrawGlucoseLevelDelta: TMenuItem
+      Action = actDrawGlucoseLevelDelta
       AutoCheck = True
     end
-    object miDrawSugarLines: TMenuItem
-      Action = actDrawSugarLines
+    object miDrawGlucoseLines: TMenuItem
+      Action = actDrawGlucoseLines
       AutoCheck = True
     end
-    object miDrawSugarExtremePoints: TMenuItem
-      Action = actDrawSugarExtremePoints
+    object miDrawGlucoseExtremePoints: TMenuItem
+      Action = actDrawGlucoseExtremePoints
       AutoCheck = True
     end
-    object Drawsugarlevelpoints1: TMenuItem
-      Action = actDrawSugarLevelPoints
+    object miDrawGlucoseLevelPoints: TMenuItem
+      Action = actDrawGlucoseLevelPoints
       AutoCheck = True
     end
-    object Drawalertlines1: TMenuItem
+    object miDrawAlertLines: TMenuItem
       Action = actDrawAlertLines
       AutoCheck = True
     end
-    object miDrawLastSugarLevelDate: TMenuItem
-      Action = actDrawLastSugarLevelDate
+    object miDrawLastGlucoseLevelDate: TMenuItem
+      Action = actDrawLastGlucoseLevelDate
       AutoCheck = True
     end
-    object miDrawSugarLevel: TMenuItem
-      Action = actDrawSugarLevel
+    object miDrawGlucoseLevel: TMenuItem
+      Action = actDrawGlucoseLevel
       AutoCheck = True
     end
     object miDrawVertGuideLines: TMenuItem
@@ -105,6 +105,9 @@ object fMain: TfMain
       Action = actDrawHorzGuideLines
       AutoCheck = True
     end
+    object miSeparator4: TMenuItem
+      Caption = '-'
+    end
     object miShowWindowBorder: TMenuItem
       Action = actShowWindowBorder
       AutoCheck = True
@@ -113,20 +116,147 @@ object fMain: TfMain
       Action = actShowCheckNewDataProgressBar
       AutoCheck = True
     end
-    object Fullscreen1: TMenuItem
+    object miFullScreen: TMenuItem
       Action = actFullScreen
       AutoCheck = True
     end
-    object miN1: TMenuItem
+    object miScale: TMenuItem
+      Caption = 'Scale'
+      object miScale18: TMenuItem
+        Tag = 18
+        Caption = 'Scale 180%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale17: TMenuItem
+        Tag = 17
+        Caption = 'Scale 170%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale16: TMenuItem
+        Tag = 16
+        Caption = 'Scale 160%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale15: TMenuItem
+        Tag = 15
+        Caption = 'Scale 150%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale14: TMenuItem
+        Tag = 14
+        Caption = 'Scale 140%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale13: TMenuItem
+        Tag = 13
+        Caption = 'Scale 130%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale12: TMenuItem
+        Tag = 12
+        Caption = 'Scale 120%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale11: TMenuItem
+        Tag = 11
+        Caption = 'Scale 110%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale10: TMenuItem
+        Tag = 10
+        Caption = 'Scale 100%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale9: TMenuItem
+        Tag = 9
+        Caption = 'Scale 90%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale8: TMenuItem
+        Tag = 8
+        Caption = 'Scale 80%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale7: TMenuItem
+        Tag = 7
+        Caption = 'Scale 70%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale6: TMenuItem
+        Tag = 6
+        Caption = 'Scale 60%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale5: TMenuItem
+        Tag = 5
+        Caption = 'Scale 50%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale4: TMenuItem
+        Tag = 4
+        Caption = 'Scale 40%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale3: TMenuItem
+        Tag = 3
+        Caption = 'Scale 30%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale2: TMenuItem
+        Tag = 2
+        Caption = 'Scale 20%'
+        OnClick = DoScaleIndexClick
+      end
+      object miScale1: TMenuItem
+        Tag = 1
+        Caption = 'Scale 10%'
+        OnClick = DoScaleIndexClick
+      end
+    end
+    object miOpacity: TMenuItem
+      Caption = 'Opacity'
+      object miOpacity100: TMenuItem
+        Tag = 100
+        Caption = 'Opacity 100%'
+        OnClick = DoOpacityPercentClick
+      end
+      object miOpacity90: TMenuItem
+        Tag = 90
+        Caption = 'Opacity 90%'
+        OnClick = DoOpacityPercentClick
+      end
+      object miOpacity75: TMenuItem
+        Tag = 75
+        Caption = 'Opacity 75%'
+        OnClick = DoOpacityPercentClick
+      end
+      object miOpacity50: TMenuItem
+        Tag = 50
+        Caption = 'Opacity 50%'
+        OnClick = DoOpacityPercentClick
+      end
+      object miOpacity25: TMenuItem
+        Tag = 25
+        Caption = 'Opacity 25%'
+        OnClick = DoOpacityPercentClick
+      end
+      object miOpacity15: TMenuItem
+        Tag = 15
+        Caption = 'Opacity 15%'
+        OnClick = DoOpacityPercentClick
+      end
+    end
+    object miSeparator2: TMenuItem
       Caption = '-'
     end
     object miVisitNightscoutSite: TMenuItem
       Action = actVisitNightscoutSite
     end
     object miHelp: TMenuItem
+      Tag = 4
       Action = actHelp
     end
-    object miN3: TMenuItem
+    object miSeparator3: TMenuItem
       Caption = '-'
     end
     object miExit: TMenuItem
@@ -149,37 +279,37 @@ object fMain: TfMain
   object al: TActionList
     left = 208
     top = 8
-    object actDrawLastSugarLevel: TAction
+    object actDrawLastGlucoseLevel: TAction
       Category = 'Draw options'
       AutoCheck = True
-      Caption = 'Draw last sugar level'
+      Caption = 'Draw last glucose level'
       Checked = True
       OnExecute = DoDrawStageExecute
       ShortCut = 49
     end
-    object actDrawSugarLines: TAction
+    object actDrawGlucoseLines: TAction
       Tag = 1
       Category = 'Draw options'
       AutoCheck = True
-      Caption = 'Draw sugar lines'
+      Caption = 'Draw glucose lines'
       Checked = True
       OnExecute = DoDrawStageExecute
       ShortCut = 52
     end
-    object actDrawSugarExtremePoints: TAction
+    object actDrawGlucoseExtremePoints: TAction
       Tag = 7
       Category = 'Draw options'
       AutoCheck = True
-      Caption = 'Draw sugar extreme points'
+      Caption = 'Draw glucose extreme points'
       Checked = True
       OnExecute = DoDrawStageExecute
       ShortCut = 53
     end
-    object actDrawSugarLevel: TAction
+    object actDrawGlucoseLevel: TAction
       Tag = 2
       Category = 'Draw options'
       AutoCheck = True
-      Caption = 'Draw sugar level'
+      Caption = 'Draw glucose level'
       Checked = True
       OnExecute = DoDrawStageExecute
       ShortCut = 57
@@ -203,20 +333,20 @@ object fMain: TfMain
       OnExecute = DoDrawStageExecute
       ShortCut = 76
     end
-    object actDrawSugarSlope: TAction
+    object actDrawGlucoseSlope: TAction
       Tag = 6
       Category = 'Draw options'
       AutoCheck = True
-      Caption = 'Draw sugar slope'
+      Caption = 'Draw glucose slope'
       Checked = True
       OnExecute = DoDrawStageExecute
       ShortCut = 50
     end
-    object actDrawLastSugarLevelDate: TAction
+    object actDrawLastGlucoseLevelDate: TAction
       Tag = 5
       Category = 'Draw options'
       AutoCheck = True
-      Caption = 'Draw last sugar level date'
+      Caption = 'Draw last glucose level date'
       Checked = True
       OnExecute = DoDrawStageExecute
       ShortCut = 56
@@ -230,18 +360,18 @@ object fMain: TfMain
       OnExecute = DoDrawStageExecute
       ShortCut = 55
     end
-    object actDrawSugarLevelPoints: TAction
+    object actDrawGlucoseLevelPoints: TAction
       Tag = 9
       Category = 'Draw options'
       AutoCheck = True
-      Caption = 'Draw sugar level points'
+      Caption = 'Draw glucose level points'
       Checked = True
       OnExecute = DoDrawStageExecute
       ShortCut = 54
     end
     object actVisitNightscoutSite: TAction
       Category = 'Other'
-      Caption = 'Visit Nightscout Site'
+      Caption = 'Visit Nightscout site'
       OnExecute = actVisitNightscoutSiteExecute
       ShortCut = 86
     end
@@ -259,10 +389,9 @@ object fMain: TfMain
       Caption = 'Help'
       OnExecute = DoShowSettingsExecute
       ShortCut = 112
-      Visible = False
     end
     object actSetNightscoutSite: TAction
-      Category = 'Other'
+      Category = 'Settings'
       Caption = 'Set Nightscout site URL'
       OnExecute = actSetNightscoutSiteExecute
       ShortCut = 83
@@ -274,7 +403,7 @@ object fMain: TfMain
       ShortCut = 88
     end
     object actSetCheckInterval: TAction
-      Category = 'Options'
+      Category = 'Settings'
       Caption = 'Set time interval to check new data (secs)'
       OnExecute = actSetCheckIntervalExecute
       ShortCut = 73
@@ -287,20 +416,20 @@ object fMain: TfMain
       ShortCut = 66
     end
     object actSetUnitOfMeasureMmolL: TAction
-      Category = 'Options'
+      Category = 'Settings'
       AutoCheck = True
       Caption = 'Set to mmol/l'
       OnExecute = actSetUnitOfMeasureMmolLExecute
       ShortCut = 77
     end
     object actSetCountOfEntriesToRecive: TAction
-      Category = 'Options'
+      Category = 'Settings'
       Caption = 'Set count of entries to recive'
       OnExecute = actSetCountOfEntriesToReciveExecute
       ShortCut = 67
     end
     object actShowSettings: TAction
-      Category = 'Options'
+      Category = 'Other'
       Caption = 'Show settings'
       OnExecute = DoShowSettingsExecute
       ShortCut = 120
@@ -312,11 +441,11 @@ object fMain: TfMain
       OnExecute = actFullScreenExecute
       ShortCut = 122
     end
-    object actDrawSugarLevelDelta: TAction
+    object actDrawGlucoseLevelDelta: TAction
       Tag = 10
       Category = 'Draw options'
       AutoCheck = True
-      Caption = 'Draw sugar level delta'
+      Caption = 'Draw glucose level delta'
       Checked = True
       OnExecute = DoDrawStageExecute
       ShortCut = 51
