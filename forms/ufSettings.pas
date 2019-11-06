@@ -30,6 +30,7 @@ type
     gbGlucoseLevelAlarms: TGroupBox;
     Image1: TImage;
     lblHighGlucoseAlarm: TLabel;
+    Memo1: TMemo;
     pc: TPageControl;
     seHighGlucoseAlarm: TSpinEdit;
     lblLowGlucoseAlarm: TLabel;
@@ -74,6 +75,7 @@ type
     lblTimeZoneCorrection: TLabel;
     seTimeZoneCorrection: TSpinEdit;
     cbDrawSugarLevelPoints: TCheckBox;
+    tsHelp: TTabSheet;
     tsAbout: TTabSheet;
     tsMain: TTabSheet;
     tsVisual: TTabSheet;
@@ -94,8 +96,10 @@ type
   public
     class function ShowForm(AOwner: TComponent; Settings: TSettings;
       OnUpdateCallerFormWithSettings: TOnUpdateCallerFormWithSettings;
-      OnTryLoadEntriesData: TOnTryLoadEntriesData): Boolean;
-    constructor CreateSpecial(AOwner: TComponent; Settings: TSettings);
+  OnTryLoadEntriesData: TOnTryLoadEntriesData; ActivePageIndex: Integer=0
+  ): Boolean;
+    constructor CreateSpecial(AOwner: TComponent; Settings: TSettings;
+      ActivePageIndex: Integer=0);
     procedure AssignComponentsOnChangeEvent;
   end;
 
@@ -121,7 +125,7 @@ begin
   end;
 end;
 
-constructor TfSettings.CreateSpecial(AOwner: TComponent; Settings: TSettings);
+constructor TfSettings.CreateSpecial(AOwner: TComponent; Settings: TSettings; ActivePageIndex: Integer = 0);
 begin
   inherited Create(AOwner);
   OldSettings := Settings;
@@ -129,7 +133,7 @@ begin
   TmpSettings := Settings.Clone;
   AssignSettingsToComponents();
   AssignComponentsOnChangeEvent();
-  pc.ActivePage := tsMain;
+  pc.ActivePageIndex := ActivePageIndex;
   if Assigned(OnUpdateCallerFormWithSettings) then
     OnUpdateCallerFormWithSettings;
 end;
@@ -281,11 +285,11 @@ end;
 
 class function TfSettings.ShowForm(AOwner: TComponent; Settings: TSettings;
   OnUpdateCallerFormWithSettings: TOnUpdateCallerFormWithSettings;
-  OnTryLoadEntriesData: TOnTryLoadEntriesData): Boolean;
+  OnTryLoadEntriesData: TOnTryLoadEntriesData; ActivePageIndex: Integer = 0): Boolean;
 var
   F: TfSettings;
 begin
-  F := TfSettings.CreateSpecial(AOwner, Settings);
+  F := TfSettings.CreateSpecial(AOwner, Settings, ActivePageIndex);
   try
     F.OnUpdateCallerFormWithSettings := OnUpdateCallerFormWithSettings;
     F.OnTryLoadEntriesData := OnTryLoadEntriesData;

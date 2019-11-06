@@ -254,13 +254,15 @@ object fMain: TfMain
       ShortCut = 80
     end
     object actHelp: TAction
+      Tag = 4
       Category = 'Other'
       Caption = 'Help'
-      OnExecute = actHelpExecute
+      OnExecute = DoShowSettingsExecute
       ShortCut = 112
+      Visible = False
     end
     object actSetNightscoutSite: TAction
-      Category = 'Options'
+      Category = 'Other'
       Caption = 'Set Nightscout site URL'
       OnExecute = actSetNightscoutSiteExecute
       ShortCut = 83
@@ -298,9 +300,9 @@ object fMain: TfMain
       ShortCut = 67
     end
     object actShowSettings: TAction
-      Category = 'Other'
+      Category = 'Options'
       Caption = 'Show settings'
-      OnExecute = actShowSettingsExecute
+      OnExecute = DoShowSettingsExecute
       ShortCut = 120
     end
     object actFullScreen: TAction

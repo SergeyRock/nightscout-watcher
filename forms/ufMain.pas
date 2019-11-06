@@ -108,7 +108,7 @@ type
     procedure FormMouseEnter(Sender: TObject);
     procedure FormMouseLeave(Sender: TObject);
     procedure actSetCountOfEntriesToReciveExecute(Sender: TObject);
-    procedure actShowSettingsExecute(Sender: TObject);
+    procedure DoShowSettingsExecute(Sender: TObject);
     procedure actFullScreenExecute(Sender: TObject);
   private
     StaleAlarmBlinkTrigger: Boolean;
@@ -217,38 +217,6 @@ begin
   actShowWindowBorderExecute(actShowWindowBorder);
 end;
 
-procedure TfMain.actHelpExecute(Sender: TObject);
-var
-  Help: string;
-begin
-  Help := 'Hot keys:' + #13#10#13#10 +
-    'LEFT/RIGHT/UP/DOWN – Move window on the screen' + #13#10 +
-    'SHIFT + LEFT/RIGHT/UP/DOWN or MouseWheel – Resize window' + #13#10 +
-    'ALT + UP/DOWN/MouseWheel – Increase/Decrease window opacity' + #13#10 +
-    'RightClick – Show popup menu' + #13#10#13#10 +
-    'S – Set Nightscout site URL' + #13#10 +
-    'M – Set unit of measure to mmol/l' + #13#10 +
-    'C – Set count of entries to recieve from site' + #13#10 +
-    'F9 - Show settings window' + #13#10 +
-    'I – Set time interval of new data checking' + #13#10#13#10 +
-    '1 – Draw latest blood sugar level' + #13#10 +
-    '2 – Draw sugar lines' + #13#10 +
-    '3 – Draw sugar level values' + #13#10 +
-    '4 – Draw vertical guidelines' + #13#10 +
-//    '5 – Draw horizontal guidelines' + #13#10 +
-    '6 – Draw time of last sugar level value' + #13#10 +
-    '7 – Draw sugar slope' + #13#10 +
-    '8 – Draw sugar extreme points' + #13#10 +
-    'B – Show window border' + #13#10 +
-    'P – Show new data checking progress bar' + #13#10 +
-    'F11 – Show in full screen' + #13#10 +
-    'V/DoubleClick – Visit your Nightscout site' + #13#10#13#10 +
-    'Developer:' + #13#10 +
-    'Sergey Oleynikov (D1T for ' + IntToStr(YearOf(Now) - 1995) + '+)' + #13#10;
-
-  MessageDlg(Help, mtInformation, [mbOk], -1);
-end;
-
 procedure TfMain.actSetCheckIntervalExecute(Sender: TObject);
 var
   CheckIntervalStr, Msg: string;
@@ -323,11 +291,16 @@ begin
   pb.Visible := Settings.ShowCheckNewDataProgressBar;
 end;
 
-procedure TfMain.actShowSettingsExecute(Sender: TObject);
+procedure TfMain.actHelpExecute(Sender: TObject);
+begin
+
+end;
+
+procedure TfMain.DoShowSettingsExecute(Sender: TObject);
 begin
   FormStyle := fsNormal;
   try
-    TfSettings.ShowForm(Self, Settings, DoUpdateCallerFormWithSettings, LoadEntriesData);
+    TfSettings.ShowForm(Self, Settings, DoUpdateCallerFormWithSettings, LoadEntriesData, TAction(Sender).Tag);
     DoUpdateCallerFormWithSettings();
     tmrTimer(tmr);
   finally

@@ -42,9 +42,9 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 585
-    ActivePage = tsMain
+    ActivePage = tsHelp
     Align = alTop
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 2
     object tsMain: TTabSheet
       Caption = 'Main'
@@ -1834,6 +1834,53 @@ object fSettings: TfSettings
         }
         Proportional = True
         Stretch = True
+      end
+    end
+    object tsHelp: TTabSheet
+      Caption = 'Help'
+      ClientHeight = 400
+      ClientWidth = 577
+      object Memo1: TMemo
+        Left = 8
+        Height = 385
+        Top = 8
+        Width = 560
+        BorderStyle = bsNone
+        Lines.Strings = (
+          'Hot keys:'
+          'LEFT/RIGHT/UP/DOWN – Move window on the screen'
+          'SHIFT + LEFT/RIGHT/UP/DOWN or MouseWheel – Resize window'
+          'ALT + UP/DOWN/MouseWheel – Increase/Decrease window opacity'
+          'RightClick – Show popup menu'
+          ''
+          'S – Set Nightscout site URL'
+          'M – Set unit of measure to mmol/l'
+          'C – Set count of entries to recieve from site'
+          'I – Set time interval of new data checking'
+          'F9 - Show settings window'
+          ''
+          '1 – Draw latest glucose level value'
+          '2 – Draw glucose slope'
+          '3 – Draw glucose level delta'
+          '4 – Draw glucose lines'
+          '5 – Draw glucose extreme points'
+          '6 – Draw glucose level points'
+          '7 – Draw alert lines'
+          '8 – Draw spended time since last glucose level data was recieved'
+          '9 – Draw glucose level values'
+          'L – Draw vertical guidelines'
+          'B – Show window border'
+          'P – Show new data checking progress bar'
+          'F11 – Show in full screen'
+          ''
+          'V/DoubleClick – Visit your Nightscout site'
+          'F1 - This help'
+          ''
+          'X - Exit'
+        )
+        ParentColor = True
+        ScrollBars = ssAutoVertical
+        TabOrder = 0
       end
     end
   end
