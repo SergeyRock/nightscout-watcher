@@ -12,7 +12,7 @@ uses
 {$ELSE}
   LCLIntf, LCLType,
 {$ENDIF}
-  uSettings, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  uSettings, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Spin, ComCtrls, ExtCtrls;
 
 type
@@ -25,6 +25,7 @@ type
     btnOK: TButton;
     btnCancel: TButton;
     cbDrawGlucoseLevelDelta: TCheckBox;
+    cbDrawGlucoseAvg: TCheckBox;
     cbEnableGlucoseLevelAlarms: TCheckBox;
     cbEnableStaleDataAlarms: TCheckBox;
     gbGlucoseLevelAlarms: TGroupBox;
@@ -100,10 +101,8 @@ type
   public
     class function ShowForm(AOwner: TComponent; Settings: TSettings;
       OnUpdateCallerFormWithSettings: TOnUpdateCallerFormWithSettings;
-  OnTryLoadEntriesData: TOnTryLoadEntriesData; ActivePageIndex: Integer=0
-  ): Boolean;
-    constructor CreateSpecial(AOwner: TComponent; Settings: TSettings;
-      ActivePageIndex: Integer=0);
+      OnTryLoadEntriesData: TOnTryLoadEntriesData; ActivePageIndex: Integer=0): Boolean;
+    constructor CreateSpecial(AOwner: TComponent; Settings: TSettings; ActivePageIndex: Integer=0);
     procedure AssignComponentsOnChangeEvent;
   end;
 
@@ -173,6 +172,7 @@ begin
   cbDrawAlertLines.OnClick := DoChange;
   cbDrawGlucoseLevelPoints.OnClick := DoChange;
   cbDrawGlucoseLevelDelta.OnClick := DoChange;
+  cbDrawGlucoseAvg.OnClick := DoChange;
 end;
 
 procedure TfSettings.FormDestroy(Sender: TObject);
@@ -240,6 +240,7 @@ begin
   cbDrawAlertLines.Checked := NewSettings.IsInDrawStage(dsAlertLines);
   cbDrawGlucoseLevelPoints.Checked := NewSettings.IsInDrawStage(dsGlucoseLevelPoints);
   cbDrawGlucoseLevelDelta.Checked := NewSettings.IsInDrawStage(dsGlucoseLevelDelta);
+  cbDrawGlucoseAvg.Checked := NewSettings.IsInDrawStage(dsGlucoseAvg);
 
   cbEnableGlucoseLevelAlarms.Checked := NewSettings.EnableGlucoseLevelAlarms;
   cbEnableStaleDataAlarms.Checked := NewSettings.EnableStaleDataAlarms;
@@ -292,6 +293,7 @@ begin
   NewSettings.SwitchDrawStage(dsAlertLines, cbDrawAlertLines.Checked);
   NewSettings.SwitchDrawStage(dsGlucoseLevelPoints, cbDrawGlucoseLevelPoints.Checked);
   NewSettings.SwitchDrawStage(dsGlucoseLevelDelta, cbDrawGlucoseLevelDelta.Checked);
+  NewSettings.SwitchDrawStage(dsGlucoseAvg, cbDrawGlucoseAvg.Checked);
 
   NewSettings.ShowCheckNewDataProgressBar := cbShowCheckNewDataProgressBar.Checked;
   NewSettings.ShowWindowBorder := cbShowWindowBorder.Checked;

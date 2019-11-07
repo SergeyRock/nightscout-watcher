@@ -1,7 +1,7 @@
 object fMain: TfMain
-  Left = 805
+  Left = 801
   Height = 157
-  Top = 426
+  Top = 422
   Width = 301
   AlphaBlend = True
   AlphaBlendValue = 230
@@ -95,6 +95,10 @@ object fMain: TfMain
     end
     object miDrawGlucoseLevel: TMenuItem
       Action = actDrawGlucoseLevel
+      AutoCheck = True
+    end
+    object miDrawGlucoseAvg: TMenuItem
+      Action = actDrawGlucoseAvg
       AutoCheck = True
     end
     object miDrawVertGuideLines: TMenuItem
@@ -449,6 +453,15 @@ object fMain: TfMain
       Checked = True
       OnExecute = DoDrawStageExecute
       ShortCut = 51
+    end
+    object actDrawGlucoseAvg: TAction
+      Tag = 11
+      Category = 'Draw options'
+      AutoCheck = True
+      Caption = 'Draw glucose average'
+      Checked = True
+      OnExecute = DoDrawStageExecute
+      ShortCut = 65
     end
   end
 end

@@ -10,14 +10,15 @@ uses
   Graphics, uNightscout;
 
 const
-  cDrawStageSizes : array [1..6, 1..18] of Integer =
+  cDrawStageSizes : array [1..7, 1..18] of Integer =
     (
       (14, 17, 28, 32, 40, 48, 60, 72, 88, 100, 116, 130, 160, 200, 240, 280, 340, 400), // Font size for dsLastGlucoseLevel
       ( 6,  7,  7,  8,  8,  9,  9, 10, 11,  11,  12,  13,  14,  15,  16,  17,  18,  20), // Font size for dsGlucoseLevel
       ( 7,  8,  8,  9, 10, 11, 12, 13, 14,  15,  18,  20,  24,  30,  38,  48,  60,  70), // Font size for dsLastGlucoseLevelDate
       ( 1,  1,  1,  2,  2,  2,  2,  2,  2,   3,   3,   3,   4,   4,   5,   5,   6,   7), // Line thickness for dsGlucoseLines
       ( 1,  1,  3,  3,  3,  4,  5,  6,  7,   8,   9,  10,  12,  15,  20,  26,  38,  50), // Line thickness for dsGlucoseSlope
-      ( 7,  8,  9, 10, 11, 12, 13, 15, 17,  19,  23,  26,  30,  36,  46,  58,  70,  86)  // Font size for dsGlucoseLevelDelta
+      ( 7,  8,  9, 10, 11, 12, 13, 15, 17,  19,  23,  26,  30,  36,  46,  58,  70,  86), // Font size for dsGlucoseAvg
+      ( 7,  8,  8,  9, 10, 11, 12, 13, 14,  15,  18,  20,  24,  30,  38,  48,  60,  70)  // Font size for dsGlucoseLevelDelta
     );
 
   cProgressBarHeights: array[1..18]  of Byte =
@@ -52,7 +53,7 @@ const
 type
   TDrawStage = (dsLastGlucoseLevel, dsGlucoseLines, dsGlucoseLevel, dsHorzGuideLines,
     dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope, dsGlucoseExtremePoints,
-    dsAlertLines, dsGlucoseLevelPoints, dsGlucoseLevelDelta);
+    dsAlertLines, dsGlucoseLevelPoints, dsGlucoseLevelDelta, dsGlucoseAvg);
   TDrawStages = set of TDrawStage;
 
   { TSettings }
@@ -78,8 +79,7 @@ type
     UrgentLowGlucoseAlarm: Integer;
     UrgentStaleDataAlarm: Integer;
   private
-    function GetEntryMinsWithTimeZoneCorrection(Entry: TNightscoutEntry
-      ): Integer;
+    function GetEntryMinsWithTimeZoneCorrection(Entry: TNightscoutEntry): Integer;
   public
     constructor Create();
     function GetColorByGlucoseLevel(Glucose: Integer): TColor;
@@ -125,7 +125,8 @@ var
 begin
   Result := True;
   Intersection := ADrawStages * DrawStages;
-  for i := dsLastGlucoseLevel to dsGlucoseLevelPoints do
+  // TODO: Do autodefine of last value of TDrawStages
+  for i := dsLastGlucoseLevel to dsGlucoseAvg do
     if not ((i in Intersection) and (i in ADrawStages)) then
     begin
       Result := False;
@@ -192,7 +193,7 @@ constructor TSettings.Create();
 begin
   DrawStages := [dsLastGlucoseLevel, dsGlucoseLines, dsHorzGuideLines,
     dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope, dsGlucoseExtremePoints,
-    dsGlucoseLevelDelta];
+    dsGlucoseLevelDelta, dsGlucoseAvg];
   AlphaBlendValue := 200;
   CheckInterval := 20;
   CountOfEntriesToRecive := 40;

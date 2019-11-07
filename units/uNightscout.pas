@@ -36,10 +36,12 @@ type
   { TNightscoutEntryList }
 
   TNightscoutEntryList = class (TObjectList)
+  private
   protected
     procedure SetItem(Index: Integer; const Value: TNightscoutEntry);
     function GetItem(Index: Integer): TNightscoutEntry;
   public
+    function GetAvgGlucoseStr(IsMmolL: Boolean): string;
     function GetMaxGlucoseDelta(MinValue, MaxValue: Integer): Integer;
     function GetMaxGlucose(): Integer;
     function GetMinGlucose(): Integer;
@@ -81,6 +83,21 @@ begin
     IfThen(MinValue = -1, GetMinGlucose, Min(GetMinGlucose, MinValue));
 end;
 
+function TNightscoutEntryList.GetAvgGlucoseStr(IsMmolL: Boolean): string;
+var
+  i, GlucoseSum: Integer;
+begin
+  Result := '';
+
+  if Count = 0 then
+    Exit;
+
+  GlucoseSum := 0;
+  for i := 0 to Count - 1 do
+    Inc(GlucoseSum, Items[i].Glucose);
+
+  Result := TNightscoutEntry.GetGlucoseStr(Round(GlucoseSum / Count), IsMmolL);
+end;
 function TNightscoutEntryList.GetMinGlucose(): Integer;
 var
   i: Integer;

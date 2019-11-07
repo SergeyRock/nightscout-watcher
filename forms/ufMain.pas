@@ -31,6 +31,8 @@ type
 
   TfMain = class(TForm)
     actDrawGlucoseLevelDelta: TAction;
+    actDrawGlucoseAvg: TAction;
+    miDrawGlucoseAvg: TMenuItem;
     miSeparator4: TMenuItem;
     miOpacity15: TMenuItem;
     miOpacity100: TMenuItem;
@@ -615,6 +617,7 @@ begin
     dsGlucoseLines: i := 4;
     dsGlucoseSlope: i := 5;
     dsGlucoseLevelDelta: i := 6;
+    dsGlucoseAvg: i := 7;
   else
     Result:= Font.Size;
     Exit;
@@ -734,6 +737,9 @@ begin
     DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseLevelDelta', Settings.IsInDrawStage(dsGlucoseLevelDelta));
     SetActionCheckProperty(actDrawGlucoseLevelDelta, DrawStageChecked, dsGlucoseLevelDelta);
 
+    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseAvg', Settings.IsInDrawStage(dsGlucoseAvg));
+    SetActionCheckProperty(actDrawGlucoseAvg, DrawStageChecked, dsGlucoseAvg);
+
     Settings.ShowCheckNewDataProgressBar := ini.ReadBool('Visual', 'ShowCheckNewDataProgressBar', Settings.ShowCheckNewDataProgressBar);
 
     BoundsRectLoaded.Left := ini.ReadInteger('Visual', 'WindowLeft', Screen.Width div 2);
@@ -780,14 +786,15 @@ begin
     ini.WriteBool('Visual', 'dsLastGlucoseLevel',     Settings.IsInDrawStage(dsLastGlucoseLevel));
     ini.WriteBool('Visual', 'dsGlucoseLines',         Settings.IsInDrawStage(dsGlucoseLines));
     ini.WriteBool('Visual', 'dsGlucoseLevel',         Settings.IsInDrawStage(dsGlucoseLevel));
-    ini.WriteBool('Visual', 'dsHorzGuideLines',     Settings.IsInDrawStage(dsHorzGuideLines));
-    ini.WriteBool('Visual', 'dsVertGuideLines',     Settings.IsInDrawStage(dsVertGuideLines));
+    ini.WriteBool('Visual', 'dsHorzGuideLines',       Settings.IsInDrawStage(dsHorzGuideLines));
+    ini.WriteBool('Visual', 'dsVertGuideLines',       Settings.IsInDrawStage(dsVertGuideLines));
     ini.WriteBool('Visual', 'dsLastGlucoseLevelDate', Settings.IsInDrawStage(dsLastGlucoseLevelDate));
     ini.WriteBool('Visual', 'dsGlucoseSlope',         Settings.IsInDrawStage(dsGlucoseSlope));
     ini.WriteBool('Visual', 'dsGlucoseExtremePoints', Settings.IsInDrawStage(dsGlucoseExtremePoints));
-    ini.WriteBool('Visual', 'dsAlertLines',         Settings.IsInDrawStage(dsAlertLines));
+    ini.WriteBool('Visual', 'dsAlertLines',           Settings.IsInDrawStage(dsAlertLines));
     ini.WriteBool('Visual', 'dsGlucoseLevelPoints',   Settings.IsInDrawStage(dsGlucoseLevelPoints));
     ini.WriteBool('Visual', 'dsGlucoseLevelDelta',    Settings.IsInDrawStage(dsGlucoseLevelDelta));
+    ini.WriteBool('Visual', 'dsGlucoseAvg',           Settings.IsInDrawStage(dsGlucoseAvg));
 
     ini.WriteBool('Visual', 'ShowCheckNewDataProgressBar', Settings.ShowCheckNewDataProgressBar);
     ini.WriteBool('Visual', 'ShowWindowBorder', Settings.ShowWindowBorder);
@@ -1204,6 +1211,16 @@ begin
     SetMaximumDrawStageSizeToCanvas(dsGlucoseLevelDelta, Text, cnv);
     TextSize := cnv.TextExtent(Text);
     DrawTextStrokedText(cnv, Text, (DrawPanel.Width - TextSize.cx) div 2,  0, cGlucoseLevelDeltaColor);
+  end;
+
+  if dsGlucoseAvg in DrawStages then
+  begin
+    cnv.Brush.Color := Color;
+    SetBkMode(cnv.Handle, TRANSPARENT);
+    Text := 'Avg: ' + Entries.GetAvgGlucoseStr(Settings.IsMmolL);
+    SetMaximumDrawStageSizeToCanvas(dsGlucoseLevelDelta, Text, cnv);
+    TextSize := cnv.TextExtent(Text);
+    DrawTextStrokedText(cnv, Text, cSmallMargin, (DrawPanel.Height - TextSize.cy) - cSmallMargin, cGlucoseLevelDeltaColor);
   end;
 
   if (dsLastGlucoseLevel in DrawStages) or (dsGlucoseSlope in DrawStages)  then
