@@ -36,6 +36,7 @@ const
   cGlucoseExtremePointsColor = clWhite ;
   cGlucoseExtremePointsBrushColor = clBlue;
   cGlucoseLevelDeltaColor = clWhite;
+  cGlucoseAvgColor = clWhite;
 
   cHighGlucoseColor = clWhite;
   cHighGlucoseBrushColor = clYellow;

@@ -1055,7 +1055,7 @@ var
   Text, TextWithSlope: string;
   TextSize: TSize;
   LastGlucoseLevelPoint, GlucoseMarker: TPoint;
-  SlopeRect, ArrowRect: TRect;
+  SlopeRect, ArrowRect, TextRect: TRect;
   CanDrawArrow, NeedDrawGlucoseExtremePoints: Boolean;
   LastGlucoseLevelDateColor, FontColor: TColor;
   GlucoseSlopeScaleIndex: Byte;
@@ -1068,7 +1068,7 @@ begin
 
   cnv := DrawPanel.Canvas;
   EntryWidth := (DrawPanel.Width * cMarginX) / (EntriesCount - 1);
-  if Settings.IsInDrawStage(dsAlertLines) then
+  if dsAlertLines in DrawStages then
   begin
     MaxY := Max(Settings.UrgentHighGlucoseAlarm, Entries.GetMaxGlucose);
     EntryHeight := (DrawPanel.Height * cMarginY) /
@@ -1141,6 +1141,8 @@ begin
   if (dsGlucoseLevelPoints in DrawStages) or (dsGlucoseLevel in DrawStages) or
     (dsGlucoseExtremePoints in DrawStages) then
   begin
+    cnv.Pen.Color := clBlack;
+    cnv.Pen.Width := 1;
     for i := 0 to EntriesCount - 1 do
     begin
       Entry := Entries[i];
@@ -1151,7 +1153,6 @@ begin
       begin
         GlucoseLevelPointRadius := GetDrawStageSize(dsGlucoseLines) * 2;
         cnv.Brush.Color := Settings.GetColorByGlucoseLevel(Entry.Glucose);
-        cnv.Pen.Color := cnv.Brush.Color;
         cnv.Pen.Width := 1;
         cnv.Ellipse(x - GlucoseLevelPointRadius,
                     y - GlucoseLevelPointRadius,
@@ -1162,29 +1163,35 @@ begin
       cnv.Font.Size := GetDrawStageSize(dsGlucoseLevel);
       Text := Entry.GetGlucoseStr(Settings.IsMmolL);
       TextSize := cnv.TextExtent(Text);
-      NeedDrawGlucoseExtremePoints := (dsGlucoseExtremePoints in DrawStages) and
-          ((i = 0) or (i = EntriesCount - 1) or
-          (Entry.Glucose = Entries.GetMaxGlucose) or
-          (Entry.Glucose = Entries.GetMinGlucose));
+      NeedDrawGlucoseExtremePoints :=
+        (dsGlucoseExtremePoints in DrawStages) and
+        ((i = 0) or
+         (i = EntriesCount - 1) or
+         (Entry.Glucose = Entries.GetMaxGlucose) or
+         (Entry.Glucose = Entries.GetMinGlucose));
 
       GlucoseMarker.X := Floor(x - TextSize.cx / 2);
       GlucoseMarker.Y := Floor(y - TextSize.cy / 2);
+      TextRect := Rect(GlucoseMarker.X, GlucoseMarker.Y, GlucoseMarker.X + TextSize.cx, GlucoseMarker.Y + TextSize.cy);
+      InflateRect(TextRect, 2, 1);
 
       if (dsGlucoseLevel in DrawStages) and not NeedDrawGlucoseExtremePoints then
       begin
         cnv.Brush.Color := cGlucoseLevelBrushColor;
         cnv.Font.Color := cGlucoseLevelColor;
         // Draw glucose level value in the center of graph point
+        cnv.Rectangle(TextRect);
         cnv.TextOut(GlucoseMarker.X, GlucoseMarker.Y, Text);
-        cnv.MoveTo(x, y);
+        //cnv.MoveTo(x, y);
       end;
 
       if NeedDrawGlucoseExtremePoints then
       begin
         cnv.Brush.Color := cGlucoseExtremePointsBrushColor;
         cnv.Font.Color := cGlucoseExtremePointsColor;
+        cnv.Rectangle(TextRect);
         cnv.TextOut(GlucoseMarker.X, GlucoseMarker.Y, Text);
-        cnv.MoveTo(x, y);
+        //cnv.MoveTo(x, y);
       end;
     end;
   end;
@@ -1218,9 +1225,9 @@ begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
     Text := 'Avg: ' + Entries.GetAvgGlucoseStr(Settings.IsMmolL);
-    SetMaximumDrawStageSizeToCanvas(dsGlucoseLevelDelta, Text, cnv);
+    SetMaximumDrawStageSizeToCanvas(dsGlucoseAvg, Text, cnv);
     TextSize := cnv.TextExtent(Text);
-    DrawTextStrokedText(cnv, Text, cSmallMargin, (DrawPanel.Height - TextSize.cy) - cSmallMargin, cGlucoseLevelDeltaColor);
+    DrawTextStrokedText(cnv, Text, cSmallMargin, (DrawPanel.Height - TextSize.cy) - cSmallMargin, cGlucoseAvgColor);
   end;
 
   if (dsLastGlucoseLevel in DrawStages) or (dsGlucoseSlope in DrawStages)  then
