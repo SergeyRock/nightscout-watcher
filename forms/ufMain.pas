@@ -551,10 +551,10 @@ begin
 
   if Shift = [] then
     SetScaleIndex(Settings.ScaleIndex + Direction)
-  else if Shift = [ssAlt] then
-    SetAlphaBlendValue(Settings.AlphaBlendValue + cAlphaBlendValueDelta * Direction)
   else if Shift = [ssShift] then
-    SetFormBounds(Direction);
+    SetFormBounds(Direction)
+  else if Shift = [ssAlt] then
+    SetAlphaBlendValue(Settings.AlphaBlendValue + cAlphaBlendValueDelta * Direction);
 end;
 
 procedure TfMain.SetFormBounds(Direction: Integer);
@@ -1039,6 +1039,7 @@ procedure TfMain.DoDrawStages(DrawStages: TDrawStages);
 const
   cMarginX = 0.85;
   cMarginY = 0.7;
+  cSmallMargin = 5;
 var
   i, x, y, EntriesCount, SlopeRectWidth, ArrowCount, ArrowOffsetX, MaxY, GlucoseLevelPointRadius: integer;
   cnv: TCanvas;
@@ -1052,7 +1053,6 @@ var
   LastGlucoseLevelDateColor, FontColor: TColor;
   GlucoseSlopeScaleIndex: Byte;
 begin
-
   EntriesCount := Entries.Count;
   if EntriesCount < 1 then
     Exit;
@@ -1090,7 +1090,7 @@ begin
     end;
   end;
 
-  if Settings.IsInDrawStage(dsAlertLines) then
+  if dsAlertLines in DrawStages then
   begin
     cnv.Pen.Width := 1;
     cnv.Pen.Color := cUrgentAlarmColor;
@@ -1153,7 +1153,7 @@ begin
       end;
 
       cnv.Font.Size := GetDrawStageSize(dsGlucoseLevel);
-      Text := ' ' + Entry.GetGlucoseStr(Settings.IsMmolL) + ' ';
+      Text := Entry.GetGlucoseStr(Settings.IsMmolL);
       TextSize := cnv.TextExtent(Text);
       NeedDrawGlucoseExtremePoints := (dsGlucoseExtremePoints in DrawStages) and
           ((i = 0) or (i = EntriesCount - 1) or
@@ -1162,7 +1162,6 @@ begin
 
       GlucoseMarker.X := Floor(x - TextSize.cx / 2);
       GlucoseMarker.Y := Floor(y - TextSize.cy / 2);
-
 
       if (dsGlucoseLevel in DrawStages) and not NeedDrawGlucoseExtremePoints then
       begin
@@ -1192,8 +1191,8 @@ begin
     SetMaximumDrawStageSizeToCanvas(dsLastGlucoseLevelDate, Text, cnv);
     TextSize := cnv.TextExtent(Text);
     DrawTextStrokedText(cnv, Text,
-      Floor(DrawPanel.Width - TextSize.cx - 5),
-      Floor(DrawPanel.Height - TextSize.cy),
+      Floor(DrawPanel.Width - TextSize.cx - cSmallMargin),
+      Floor(DrawPanel.Height - TextSize.cy - cSmallMargin),
       LastGlucoseLevelDateColor);
   end;
 

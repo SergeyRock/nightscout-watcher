@@ -29,6 +29,8 @@ type
     cbEnableStaleDataAlarms: TCheckBox;
     gbGlucoseLevelAlarms: TGroupBox;
     Image1: TImage;
+    lblDeveloper: TLabel;
+    lblGitHubLink: TLabel;
     lblHighGlucoseAlarm: TLabel;
     Memo1: TMemo;
     pc: TPageControl;
@@ -84,6 +86,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure DoChange(Sender: TObject);
     procedure DoGlucoseAlarmChange(Sender: TObject);
+    procedure lblGitHubLinkClick(Sender: TObject);
+    procedure pcChange(Sender: TObject);
   private
     OldSettings: TSettings;
     TmpSettings: TSettings;
@@ -134,8 +138,10 @@ begin
   AssignSettingsToComponents();
   AssignComponentsOnChangeEvent();
   pc.ActivePageIndex := ActivePageIndex;
+  pcChange(pc);
   if Assigned(OnUpdateCallerFormWithSettings) then
     OnUpdateCallerFormWithSettings;
+  lblDeveloper.Caption := Format('Developer: Sergey Oleynikov (D1T for %d years)', [CurrentYear - 1995]);
 end;
 
 procedure TfSettings.AssignComponentsOnChangeEvent;
@@ -198,6 +204,19 @@ procedure TfSettings.DoGlucoseAlarmChange(Sender: TObject);
 begin
   AssignGlucoseAlertInMmolL(TSpinEdit(Sender));
   DoChange(Sender);
+end;
+
+procedure TfSettings.lblGitHubLinkClick(Sender: TObject);
+begin
+  OpenDocument(TLabel(Sender).Caption);
+end;
+
+procedure TfSettings.pcChange(Sender: TObject);
+begin
+  Caption := '';
+  if pc.ActivePageIndex < 3 then
+    Caption := 'Settings. ';
+  Caption := Caption + pc.ActivePage.Caption;
 end;
 
 procedure TfSettings.DoChange(Sender: TObject);
