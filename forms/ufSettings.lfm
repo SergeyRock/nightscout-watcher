@@ -42,9 +42,9 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 585
-    ActivePage = tsVisual
+    ActivePage = tsMain
     Align = alTop
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 2
     OnChange = pcChange
     object tsMain: TTabSheet
@@ -65,13 +65,13 @@ object fSettings: TfSettings
         ParentFont = False
         WordWrap = True
       end
-      object lblCountOfEntriesToRecieve: TLabel
+      object lblCountOfEntriesToReceive: TLabel
         Left = 13
         Height = 19
         Top = 174
         Width = 186
         AutoSize = False
-        Caption = 'Count of entries to recieve'
+        Caption = 'Count of entries to receive'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -131,7 +131,7 @@ object fSettings: TfSettings
         TabOrder = 2
         Value = 5
       end
-      object seCountOfEntriesToRecive: TSpinEdit
+      object seCountOfEntriesToReceive: TSpinEdit
         Left = 224
         Height = 27
         Top = 170
@@ -1906,7 +1906,7 @@ object fSettings: TfSettings
           '5 – Draw glucose extreme points'
           '6 – Draw glucose level points'
           '7 – Draw alert lines'
-          '8 – Draw spended time since last glucose level data was recieved'
+          '8 – Draw spent time since last glucose level data was received'
           '9 – Draw glucose level values'
           'A – Draw average glucose level'
           'L – Draw vertical guidelines'

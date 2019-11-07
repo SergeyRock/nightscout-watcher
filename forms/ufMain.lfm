@@ -428,7 +428,7 @@ object fMain: TfMain
     end
     object actSetCountOfEntriesToRecive: TAction
       Category = 'Settings'
-      Caption = 'Set count of entries to recive'
+      Caption = 'Set count of entries to receive'
       OnExecute = actSetCountOfEntriesToReciveExecute
       ShortCut = 67
     end

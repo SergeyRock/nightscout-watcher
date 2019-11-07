@@ -59,9 +59,9 @@ type
     cbShowCheckNewDataProgressBar: TCheckBox;
     cbShowWindowBorder: TCheckBox;
     seCheckInterval: TSpinEdit;
-    seCountOfEntriesToRecive: TSpinEdit;
+    seCountOfEntriesToReceive: TSpinEdit;
     lblCheckInterval: TLabel;
-    lblCountOfEntriesToRecieve: TLabel;
+    lblCountOfEntriesToReceive: TLabel;
     eNightscoutSite: TEdit;
     lblNightscoutSite: TLabel;
     sbScale: TScrollBar;
@@ -251,7 +251,7 @@ begin
   sbScale.Max := Length(cDrawStageSizes[1]);
   sbScale.Position := NewSettings.ScaleIndex;
   seCheckInterval.Value := NewSettings.CheckInterval;
-  seCountOfEntriesToRecive.Value := NewSettings.CountOfEntriesToRecive;
+  seCountOfEntriesToReceive.Value := NewSettings.CountOfEntriesToRecive;
   seHighGlucoseAlarm.Value := NewSettings.HighGlucoseAlarm;
   seLowGlucoseAlarm.Value := NewSettings.LowGlucoseAlarm;
   seStaleDataAlarm.Value := NewSettings.StaleDataAlarm;
@@ -270,7 +270,7 @@ end;
 procedure TfSettings.AssignComponentsToSettings;
 begin
   NewSettings.CheckInterval := seCheckInterval.Value;
-  NewSettings.CountOfEntriesToRecive := seCountOfEntriesToRecive.Value;
+  NewSettings.CountOfEntriesToRecive := seCountOfEntriesToReceive.Value;
 
   NewSettings.HighGlucoseAlarm := seHighGlucoseAlarm.Value;
   NewSettings.LowGlucoseAlarm := seLowGlucoseAlarm.Value;
