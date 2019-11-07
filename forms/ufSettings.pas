@@ -33,7 +33,7 @@ type
     lblDeveloper: TLabel;
     lblGitHubLink: TLabel;
     lblHighGlucoseAlarm: TLabel;
-    Memo1: TMemo;
+    mHelp: TMemo;
     pc: TPageControl;
     seHighGlucoseAlarm: TSpinEdit;
     lblLowGlucoseAlarm: TLabel;

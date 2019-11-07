@@ -1,6 +1,7 @@
 # Project 
 tmp/
 AutomaticConversion.log
+*.bat
 
 # Lazarus compiler-generated binaries (safe to delete)
 *.exe

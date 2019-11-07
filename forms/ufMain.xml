@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Component>
+    <component name="fMain" class="TfMain">
+      <properties>
+        <integer name="Left" value="801"/>
+        <integer name="Height" value="157"/>
+        <integer name="Top" value="422"/>
+        <integer name="Width" value="301"/>
+        <boolean name="AlphaBlend" value="true"/>
+        <integer name="AlphaBlendValue" value="230"/>
+        <set name="BorderIcons" value=""/>
+        <ident name="BorderStyle" value="bsNone"/>
+        <string name="Caption" value="NightscoutWatcher"/>
+        <integer name="ClientHeight" value="157"/>
+        <integer name="ClientWidth" value="301"/>
+        <ident name="Color" value="clBlack"/>
+        <integer name="Constraints.MinHeight" value="50"/>
+        <integer name="Constraints.MinWidth" value="80"/>
+        <ident name="Font.Color" value="clWindowText"/>
+        <integer name="Font.Height" value="-11"/>
+        <string name="Font.Name" value="Tahoma"/>
+        <ident name="FormStyle" value="fsSystemStayOnTop"/>
+        <boolean name="KeyPreview" value="true"/>
+        <ident name="Position" value="poDefault"/>
+        <string name="LCLVersion" value="2.0.6.0"/>
+      </properties>
+      <children>
+        <component name="pb" class="TProgressBar">
+          <properties>
+            <integer name="Left" value="0"/>
+            <integer name="Height" value="5"/>
+            <integer name="Top" value="152"/>
+            <integer name="Width" value="301"/>
+            <ident name="Align" value="alBottom"/>
+            <integer name="Position" value="10"/>
+            <boolean name="Smooth" value="true"/>
+            <integer name="TabOrder" value="0"/>
+          </properties>
+        </component>
+        <component name="pm" class="TPopupMenu">
+          <properties>
+            <integer name="left" value="240"/>
+            <integer name="top" value="8"/>
+          </properties>
+          <children>
+            <component name="miSetNightscoutSite" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actSetNightscoutSite"/>
+              </properties>
+            </component>
+            <component name="miSetUnitOfMeasureMmolL" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actSetUnitOfMeasureMmolL"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miSetCountOfEntriesToRecive" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actSetCountOfEntriesToRecive"/>
+              </properties>
+            </component>
+            <component name="miSetCheckInterval" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actSetCheckInterval"/>
+              </properties>
+            </component>
+            <component name="miShowSettings" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actShowSettings"/>
+              </properties>
+            </component>
+            <component name="miSeparator1" class="TMenuItem">
+              <properties>
+                <string name="Caption" value="-"/>
+              </properties>
+            </component>
+            <component name="miDrawLastGlucoseLevel" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actDrawLastGlucoseLevel"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miDrawGlucoseSlope" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actDrawGlucoseSlope"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miDrawGlucoseLevelDelta" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actDrawGlucoseLevelDelta"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miDrawGlucoseLines" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actDrawGlucoseLines"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miDrawGlucoseExtremePoints" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actDrawGlucoseExtremePoints"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miDrawGlucoseLevelPoints" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actDrawGlucoseLevelPoints"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miDrawAlertLines" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actDrawAlertLines"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miDrawLastGlucoseLevelDate" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actDrawLastGlucoseLevelDate"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miDrawGlucoseLevel" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actDrawGlucoseLevel"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miDrawGlucoseAvg" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actDrawGlucoseAvg"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miDrawVertGuideLines" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actDrawVertGuideLines"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miDrawHorzGuideLines" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actDrawHorzGuideLines"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miSeparator4" class="TMenuItem">
+              <properties>
+                <string name="Caption" value="-"/>
+              </properties>
+            </component>
+            <component name="miShowWindowBorder" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actShowWindowBorder"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miShowCheckNewDataProgressBar" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actShowCheckNewDataProgressBar"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miFullScreen" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actFullScreen"/>
+                <boolean name="AutoCheck" value="true"/>
+              </properties>
+            </component>
+            <component name="miScale" class="TMenuItem">
+              <properties>
+                <string name="Caption" value="Scale"/>
+              </properties>
+              <children>
+                <component name="miScale18" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="18"/>
+                    <string name="Caption" value="Scale 180%"/>
+                  </properties>
+                </component>
+                <component name="miScale17" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="17"/>
+                    <string name="Caption" value="Scale 170%"/>
+                  </properties>
+                </component>
+                <component name="miScale16" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="16"/>
+                    <string name="Caption" value="Scale 160%"/>
+                  </properties>
+                </component>
+                <component name="miScale15" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="15"/>
+                    <string name="Caption" value="Scale 150%"/>
+                  </properties>
+                </component>
+                <component name="miScale14" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="14"/>
+                    <string name="Caption" value="Scale 140%"/>
+                  </properties>
+                </component>
+                <component name="miScale13" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="13"/>
+                    <string name="Caption" value="Scale 130%"/>
+                  </properties>
+                </component>
+                <component name="miScale12" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="12"/>
+                    <string name="Caption" value="Scale 120%"/>
+                  </properties>
+                </component>
+                <component name="miScale11" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="11"/>
+                    <string name="Caption" value="Scale 110%"/>
+                  </properties>
+                </component>
+                <component name="miScale10" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="10"/>
+                    <string name="Caption" value="Scale 100%"/>
+                  </properties>
+                </component>
+                <component name="miScale9" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="9"/>
+                    <string name="Caption" value="Scale 90%"/>
+                  </properties>
+                </component>
+                <component name="miScale8" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="8"/>
+                    <string name="Caption" value="Scale 80%"/>
+                  </properties>
+                </component>
+                <component name="miScale7" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="7"/>
+                    <string name="Caption" value="Scale 70%"/>
+                  </properties>
+                </component>
+                <component name="miScale6" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="6"/>
+                    <string name="Caption" value="Scale 60%"/>
+                  </properties>
+                </component>
+                <component name="miScale5" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="5"/>
+                    <string name="Caption" value="Scale 50%"/>
+                  </properties>
+                </component>
+                <component name="miScale4" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="4"/>
+                    <string name="Caption" value="Scale 40%"/>
+                  </properties>
+                </component>
+                <component name="miScale3" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="3"/>
+                    <string name="Caption" value="Scale 30%"/>
+                  </properties>
+                </component>
+                <component name="miScale2" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="2"/>
+                    <string name="Caption" value="Scale 20%"/>
+                  </properties>
+                </component>
+                <component name="miScale1" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="1"/>
+                    <string name="Caption" value="Scale 10%"/>
+                  </properties>
+                </component>
+              </children>
+            </component>
+            <component name="miOpacity" class="TMenuItem">
+              <properties>
+                <string name="Caption" value="Opacity"/>
+              </properties>
+              <children>
+                <component name="miOpacity100" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="100"/>
+                    <string name="Caption" value="Opacity 100%"/>
+                  </properties>
+                </component>
+                <component name="miOpacity90" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="90"/>
+                    <string name="Caption" value="Opacity 90%"/>
+                  </properties>
+                </component>
+                <component name="miOpacity75" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="75"/>
+                    <string name="Caption" value="Opacity 75%"/>
+                  </properties>
+                </component>
+                <component name="miOpacity50" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="50"/>
+                    <string name="Caption" value="Opacity 50%"/>
+                  </properties>
+                </component>
+                <component name="miOpacity25" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="25"/>
+                    <string name="Caption" value="Opacity 25%"/>
+                  </properties>
+                </component>
+                <component name="miOpacity15" class="TMenuItem">
+                  <properties>
+                    <integer name="Tag" value="15"/>
+                    <string name="Caption" value="Opacity 15%"/>
+                  </properties>
+                </component>
+              </children>
+            </component>
+            <component name="miSeparator2" class="TMenuItem">
+              <properties>
+                <string name="Caption" value="-"/>
+              </properties>
+            </component>
+            <component name="miVisitNightscoutSite" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actVisitNightscoutSite"/>
+              </properties>
+            </component>
+            <component name="miHelp" class="TMenuItem">
+              <properties>
+                <integer name="Tag" value="4"/>
+                <ident name="Action" value="actHelp"/>
+              </properties>
+            </component>
+            <component name="miSeparator3" class="TMenuItem">
+              <properties>
+                <string name="Caption" value="-"/>
+              </properties>
+            </component>
+            <component name="miExit" class="TMenuItem">
+              <properties>
+                <ident name="Action" value="actExit"/>
+              </properties>
+            </component>
+          </children>
+        </component>
+        <component name="tmr" class="TTimer">
+          <properties>
+            <boolean name="Enabled" value="false"/>
+            <integer name="Interval" value="20000"/>
+            <integer name="left" value="8"/>
+            <integer name="top" value="8"/>
+          </properties>
+        </component>
+        <component name="tmrProgressBar" class="TTimer">
+          <properties>
+            <boolean name="Enabled" value="false"/>
+            <integer name="left" value="40"/>
+            <integer name="top" value="8"/>
+          </properties>
+        </component>
+        <component name="al" class="TActionList">
+          <properties>
+            <integer name="left" value="208"/>
+            <integer name="top" value="8"/>
+          </properties>
+          <children>
+            <component name="actDrawLastGlucoseLevel" class="TAction">
+              <properties>
+                <string name="Category" value="Draw options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Draw last glucose level"/>
+                <boolean name="Checked" value="true"/>
+                <integer name="ShortCut" value="49"/>
+              </properties>
+            </component>
+            <component name="actDrawGlucoseLines" class="TAction">
+              <properties>
+                <integer name="Tag" value="1"/>
+                <string name="Category" value="Draw options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Draw glucose lines"/>
+                <boolean name="Checked" value="true"/>
+                <integer name="ShortCut" value="52"/>
+              </properties>
+            </component>
+            <component name="actDrawGlucoseExtremePoints" class="TAction">
+              <properties>
+                <integer name="Tag" value="7"/>
+                <string name="Category" value="Draw options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Draw glucose extreme points"/>
+                <boolean name="Checked" value="true"/>
+                <integer name="ShortCut" value="53"/>
+              </properties>
+            </component>
+            <component name="actDrawGlucoseLevel" class="TAction">
+              <properties>
+                <integer name="Tag" value="2"/>
+                <string name="Category" value="Draw options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Draw glucose level"/>
+                <boolean name="Checked" value="true"/>
+                <integer name="ShortCut" value="57"/>
+              </properties>
+            </component>
+            <component name="actDrawHorzGuideLines" class="TAction">
+              <properties>
+                <integer name="Tag" value="3"/>
+                <string name="Category" value="Draw options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Draw horizontal guide lines"/>
+                <boolean name="Checked" value="true"/>
+                <integer name="ShortCut" value="72"/>
+                <boolean name="Visible" value="false"/>
+              </properties>
+            </component>
+            <component name="actDrawVertGuideLines" class="TAction">
+              <properties>
+                <integer name="Tag" value="4"/>
+                <string name="Category" value="Draw options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Draw vertical guide lines"/>
+                <boolean name="Checked" value="true"/>
+                <integer name="ShortCut" value="76"/>
+              </properties>
+            </component>
+            <component name="actDrawGlucoseSlope" class="TAction">
+              <properties>
+                <integer name="Tag" value="6"/>
+                <string name="Category" value="Draw options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Draw glucose slope"/>
+                <boolean name="Checked" value="true"/>
+                <integer name="ShortCut" value="50"/>
+              </properties>
+            </component>
+            <component name="actDrawLastGlucoseLevelDate" class="TAction">
+              <properties>
+                <integer name="Tag" value="5"/>
+                <string name="Category" value="Draw options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Draw last glucose level date"/>
+                <boolean name="Checked" value="true"/>
+                <integer name="ShortCut" value="56"/>
+              </properties>
+            </component>
+            <component name="actDrawAlertLines" class="TAction">
+              <properties>
+                <integer name="Tag" value="8"/>
+                <string name="Category" value="Draw options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Draw alert lines"/>
+                <boolean name="Checked" value="true"/>
+                <integer name="ShortCut" value="55"/>
+              </properties>
+            </component>
+            <component name="actDrawGlucoseLevelPoints" class="TAction">
+              <properties>
+                <integer name="Tag" value="9"/>
+                <string name="Category" value="Draw options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Draw glucose level points"/>
+                <boolean name="Checked" value="true"/>
+                <integer name="ShortCut" value="54"/>
+              </properties>
+            </component>
+            <component name="actVisitNightscoutSite" class="TAction">
+              <properties>
+                <string name="Category" value="Other"/>
+                <string name="Caption" value="Visit Nightscout site"/>
+                <integer name="ShortCut" value="86"/>
+              </properties>
+            </component>
+            <component name="actShowCheckNewDataProgressBar" class="TAction">
+              <properties>
+                <string name="Category" value="Show options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Show new data checking progress bar"/>
+                <boolean name="Checked" value="true"/>
+                <integer name="ShortCut" value="80"/>
+              </properties>
+            </component>
+            <component name="actHelp" class="TAction">
+              <properties>
+                <integer name="Tag" value="4"/>
+                <string name="Category" value="Other"/>
+                <string name="Caption" value="Help"/>
+                <integer name="ShortCut" value="112"/>
+              </properties>
+            </component>
+            <component name="actSetNightscoutSite" class="TAction">
+              <properties>
+                <string name="Category" value="Settings"/>
+                <string name="Caption" value="Set Nightscout site URL"/>
+                <integer name="ShortCut" value="83"/>
+              </properties>
+            </component>
+            <component name="actExit" class="TAction">
+              <properties>
+                <string name="Category" value="Other"/>
+                <string name="Caption" value="Exit"/>
+                <integer name="ShortCut" value="88"/>
+              </properties>
+            </component>
+            <component name="actSetCheckInterval" class="TAction">
+              <properties>
+                <string name="Category" value="Settings"/>
+                <string name="Caption" value="Set time interval to check new data (secs)"/>
+                <integer name="ShortCut" value="73"/>
+              </properties>
+            </component>
+            <component name="actShowWindowBorder" class="TAction">
+              <properties>
+                <string name="Category" value="Show options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Show window border"/>
+                <integer name="ShortCut" value="66"/>
+              </properties>
+            </component>
+            <component name="actSetUnitOfMeasureMmolL" class="TAction">
+              <properties>
+                <string name="Category" value="Settings"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Set to mmol/l"/>
+                <integer name="ShortCut" value="77"/>
+              </properties>
+            </component>
+            <component name="actSetCountOfEntriesToRecive" class="TAction">
+              <properties>
+                <string name="Category" value="Settings"/>
+                <string name="Caption" value="Set count of entries to recive"/>
+                <integer name="ShortCut" value="67"/>
+              </properties>
+            </component>
+            <component name="actShowSettings" class="TAction">
+              <properties>
+                <string name="Category" value="Other"/>
+                <string name="Caption" value="Show settings"/>
+                <integer name="ShortCut" value="120"/>
+              </properties>
+            </component>
+            <component name="actFullScreen" class="TAction">
+              <properties>
+                <string name="Category" value="Show options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Full screen"/>
+                <integer name="ShortCut" value="122"/>
+              </properties>
+            </component>
+            <component name="actDrawGlucoseLevelDelta" class="TAction">
+              <properties>
+                <integer name="Tag" value="10"/>
+                <string name="Category" value="Draw options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Draw glucose level delta"/>
+                <boolean name="Checked" value="true"/>
+                <integer name="ShortCut" value="51"/>
+              </properties>
+            </component>
+            <component name="actDrawGlucoseAvg" class="TAction">
+              <properties>
+                <integer name="Tag" value="11"/>
+                <string name="Category" value="Draw options"/>
+                <boolean name="AutoCheck" value="true"/>
+                <string name="Caption" value="Draw glucose average"/>
+                <boolean name="Checked" value="true"/>
+                <integer name="ShortCut" value="65"/>
+              </properties>
+            </component>
+          </children>
+        </component>
+      </children>
+    </component>
+  </Component>
+</CONFIG>

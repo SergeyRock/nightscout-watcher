@@ -1,7 +1,7 @@
 object fSettings: TfSettings
-  Left = 659
+  Left = 381
   Height = 500
-  Top = 251
+  Top = 196
   Width = 585
   Caption = 'Settings'
   ClientHeight = 500
@@ -173,7 +173,7 @@ object fSettings: TfSettings
       end
     end
     object tsVisual: TTabSheet
-      Caption = 'Visual'
+      Caption = 'Diagram'
       ClientHeight = 400
       ClientWidth = 577
       object lblScale: TLabel
@@ -193,9 +193,9 @@ object fSettings: TfSettings
         Left = 16
         Height = 19
         Top = 332
-        Width = 86
+        Width = 59
         Anchors = [akLeft, akBottom]
-        Caption = 'AlphaBlend:'
+        Caption = 'Opacity:'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -1876,7 +1876,7 @@ object fSettings: TfSettings
       Caption = 'Help'
       ClientHeight = 400
       ClientWidth = 577
-      object Memo1: TMemo
+      object mHelp: TMemo
         Left = 0
         Height = 400
         Top = 0
@@ -1890,7 +1890,7 @@ object fSettings: TfSettings
           'LEFT/RIGHT/UP/DOWN – Move window on the screen'
           'SHIFT + LEFT/RIGHT/UP/DOWN/MouseWheel – Resize window'
           'ALT + UP/DOWN/MouseWheel – Increase/Decrease window opacity'
-          'CTRL + UP/DOWN or MouseWheel – Scale'
+          'CTRL + UP/DOWN or MouseWheel – Increase/Decrease scale'
           'RightClick – Show popup menu'
           ''
           'S – Set Nightscout site URL'
@@ -1908,6 +1908,7 @@ object fSettings: TfSettings
           '7 – Draw alert lines'
           '8 – Draw spended time since last glucose level data was recieved'
           '9 – Draw glucose level values'
+          'A – Draw average glucose level'
           'L – Draw vertical guidelines'
           'B – Show window border'
           'P – Show new data checking progress bar'
