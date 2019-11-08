@@ -182,6 +182,7 @@ type
     procedure HardInvalidate();
     procedure ApplyWindowSettings();
     procedure SetScaleIndex(ScaleIndex: Integer);
+    procedure UpdateApplicationTitle();
   end;
 
 var
@@ -876,12 +877,15 @@ end;
 procedure TfMain.HardInvalidate();
 begin
   // Crutch for Invalidate bug on Win7 and lower
-  Width := Width + 1;
-  Width := Width - 1;
   if WindowState = wsMaximized then
   begin
     AlphaBlend := not AlphaBlend;
     AlphaBlend := not AlphaBlend;
+  end
+  else
+  begin
+    Width := Width + 1;
+    Width := Width - 1;
   end;
   pb.Height := cProgressBarHeights[Settings.ScaleIndex];
   Invalidate;
@@ -928,6 +932,7 @@ begin
   else
     actSetNightscoutSiteExecute(actSetNightscoutSite);
 
+  UpdateApplicationTitle();
   HardInvalidate();
 end;
 
@@ -1332,5 +1337,16 @@ begin
   actFullScreenExecute(actFullScreen);
 end;
 
+procedure TfMain.UpdateApplicationTitle();
+var
+  LastEntryGlucose: String;
+begin
+  Application.Title := 'Nightscout Watcher';
+  if Entries.Count < 1 then
+    Exit;
+
+  LastEntryGlucose := Entries.Last.GetGlucoseStr(Settings.IsMmolL);
+  Application.Title := Format('%s (%s) - %s', [LastEntryGlucose, Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL), Application.Title]);
+end;
 
 end.
