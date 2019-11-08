@@ -5,13 +5,13 @@ The main prerequisite is availability of your own [nightscout site](https://gith
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.07-2355.png)
 
 ## Installation
-1. Download appropriate release
+1. Download appropriate [release](https://github.com/SergeyRock/nightscout-watcher/releases)
 2. Start executable
 3. Type in url of your Nightscout site
 
 ## Main settings
 After start the application you must type in the url of your Nightscout site.
-All available settings are placed on settings window (F9) on through popup menu.
+All available settings are placed on settings window (F9) and through popup menu.
 
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.07-5343.png)
 
@@ -84,4 +84,13 @@ It allows to set up different glucose data to show on diagram such as:
 - X - Exit
 
 ## Sources
-It is written on Lazarus and can be compile on Windows, Linux, OS X, Android operating systems.
+It is written on [Lazarus](https://en.wikipedia.org/wiki/Lazarus_(IDE)) and can be compiled on Windows, Linux, OS X, Android operating systems.
+
+## Gallery
+
+![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-28698.png)
+
+![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-27016.png)
+![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-27065.png)
+![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-26977.png)
+![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-27709.png)
