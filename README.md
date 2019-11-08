@@ -2,7 +2,7 @@
 The main purpose of the application is to show glucose level on your monitor in background mode to control glucose level in more convenient way. It`s especially useful for office workers who spend a lot of time working on computer.
 The main prerequisite is availability of your own [nightscout site](https://github.com/nightscout/cgm-remote-monitor).
 
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.07-2355.png)
+![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-26222.png)
 
 ## Installation
 1. Download appropriate [release](https://github.com/SergeyRock/nightscout-watcher/releases)
