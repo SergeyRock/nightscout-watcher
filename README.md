@@ -24,7 +24,7 @@ The main settings are:
 
 ## Diagram options
 
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.07-4481.png)
+![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-16314.png)
 
 It allows to set up different glucose data to show on diagram such as:
 - Current glucose level value
