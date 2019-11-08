@@ -2,7 +2,7 @@
 The main purpose of the application is to show glucose level on your monitor in background mode to control glucose level in more convenient way. It`s especially useful for office workers who spend a lot of time working on computer.
 The main prerequisite is availability of your own [nightscout site](https://github.com/nightscout/cgm-remote-monitor).
 
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-26222.png)
+![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-14854.png)
 
 ## Installation
 1. Download appropriate [release](https://github.com/SergeyRock/nightscout-watcher/releases)
@@ -38,8 +38,11 @@ It allows to set up different glucose data to show on diagram such as:
 - Glucose slope
 - Last glucose level date
 - Last glucose level
+
+Also available:
 - Vertical guide lines
 - Scale
+- Wallpaper (jpeg only)
 
 ## Window options
 - Make window full screen (F11)
@@ -72,6 +75,7 @@ It allows to set up different glucose data to show on diagram such as:
 - 7 – Draw alert lines
 - 8 – Draw spent time since last glucose level data was received
 - 9 – Draw glucose level values
+- W – Draw wallpaper
 - A – Draw average glucose level
 - L – Draw vertical guidelines
 - B – Show window border
@@ -87,6 +91,8 @@ It allows to set up different glucose data to show on diagram such as:
 It is written on [Lazarus](https://en.wikipedia.org/wiki/Lazarus_(IDE)) and can be compiled on Windows, Linux, OS X, Android operating systems.
 
 ## Gallery
+
+![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-15615.png) 
 
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-28698.png)
 
