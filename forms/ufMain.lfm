@@ -23,6 +23,8 @@ object fMain: TfMain
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnMouseDown = FormMouseDown
+  OnMouseEnter = FormMouseEnter
+  OnMouseLeave = FormMouseLeave
   OnMouseMove = FormMouseMove
   OnMouseUp = FormMouseUp
   OnMouseWheel = FormMouseWheel

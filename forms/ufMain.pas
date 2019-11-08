@@ -377,6 +377,7 @@ begin
     else
       BoundsRect := OldWindowRect;
   end;
+  HardInvalidate();
 end;
 
 procedure TfMain.ResetWindowBoundsToDefault();
@@ -898,6 +899,7 @@ end;
 
 procedure TfMain.HardInvalidate();
 begin
+  OnResize := nil;
   // Crutch for Invalidate bug on Win7 and lower
   if WindowState = wsMaximized then
   begin
@@ -911,6 +913,7 @@ begin
   end;
   pb.Height := cProgressBarHeights[Settings.ScaleIndex];
   Invalidate;
+  OnResize := FormResize;
 end;
 
 function TfMain.SetNightscoutUrl(Url: string): Boolean;

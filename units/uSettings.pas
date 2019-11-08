@@ -22,7 +22,7 @@ const
     );
 
   cProgressBarHeights: array[1..18]  of Byte =
-    ( 3,  3,  3,  3,  5,  5,  5,  5,  6,   6,   7,   8,   9,  10,  11,  12,  13,  14);  // Progress bar height
+      ( 3,  3,  3,  3,  5,  5,  5,  5,  6,   6,   7,   8,   9,  10,  11,  12,  13,  14);  // Progress bar height
 
   cWarningColor = clRed;
   cLastGlucoseLevelColor = clWhite;
