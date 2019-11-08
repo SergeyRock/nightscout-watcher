@@ -22,18 +22,22 @@ type
   { TfSettings }
 
   TfSettings = class(TForm)
+    btnLoadWallpaper: TButton;
     btnOK: TButton;
     btnCancel: TButton;
     cbDrawGlucoseLevelDelta: TCheckBox;
     cbDrawGlucoseAvg: TCheckBox;
     cbEnableGlucoseLevelAlarms: TCheckBox;
     cbEnableStaleDataAlarms: TCheckBox;
+    cbDrawWallpaper: TCheckBox;
+    eWallpaper: TEdit;
     gbGlucoseLevelAlarms: TGroupBox;
     Image1: TImage;
     lblDeveloper: TLabel;
     lblGitHubLink: TLabel;
     lblHighGlucoseAlarm: TLabel;
     mHelp: TMemo;
+    odWallpaper: TOpenDialog;
     pc: TPageControl;
     seHighGlucoseAlarm: TSpinEdit;
     lblLowGlucoseAlarm: TLabel;
@@ -84,6 +88,7 @@ type
     tsVisual: TTabSheet;
     tsAlerts: TTabSheet;
     procedure btnOKClick(Sender: TObject);
+    procedure btnLoadWallpaperClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure DoChange(Sender: TObject);
     procedure DoGlucoseAlarmChange(Sender: TObject);
@@ -125,6 +130,15 @@ begin
   begin
     ModalResult := mrNone;
     Exit;
+  end;
+end;
+
+procedure TfSettings.btnLoadWallpaperClick(Sender: TObject);
+begin
+  if odWallpaper.Execute then
+  begin
+    eWallpaper.Text := odWallpaper.FileName;
+    DoChange(eWallpaper);
   end;
 end;
 
@@ -173,6 +187,7 @@ begin
   cbDrawGlucoseLevelPoints.OnClick := DoChange;
   cbDrawGlucoseLevelDelta.OnClick := DoChange;
   cbDrawGlucoseAvg.OnClick := DoChange;
+  cbDrawWallpaper.OnClick := DoChange;
 end;
 
 procedure TfSettings.FormDestroy(Sender: TObject);
@@ -241,6 +256,8 @@ begin
   cbDrawGlucoseLevelPoints.Checked := NewSettings.IsInDrawStage(dsGlucoseLevelPoints);
   cbDrawGlucoseLevelDelta.Checked := NewSettings.IsInDrawStage(dsGlucoseLevelDelta);
   cbDrawGlucoseAvg.Checked := NewSettings.IsInDrawStage(dsGlucoseAvg);
+  cbDrawWallpaper.Checked := NewSettings.IsInDrawStage(dsWallpaper);
+  eWallpaper.Text := NewSettings.WallpaperFileName;
 
   cbEnableGlucoseLevelAlarms.Checked := NewSettings.EnableGlucoseLevelAlarms;
   cbEnableStaleDataAlarms.Checked := NewSettings.EnableStaleDataAlarms;
@@ -294,6 +311,7 @@ begin
   NewSettings.SwitchDrawStage(dsGlucoseLevelPoints, cbDrawGlucoseLevelPoints.Checked);
   NewSettings.SwitchDrawStage(dsGlucoseLevelDelta, cbDrawGlucoseLevelDelta.Checked);
   NewSettings.SwitchDrawStage(dsGlucoseAvg, cbDrawGlucoseAvg.Checked);
+  NewSettings.SwitchDrawStage(dsWallpaper, cbDrawWallpaper.Checked);
 
   NewSettings.ShowCheckNewDataProgressBar := cbShowCheckNewDataProgressBar.Checked;
   NewSettings.ShowWindowBorder := cbShowWindowBorder.Checked;
@@ -302,6 +320,7 @@ begin
   NewSettings.ScaleIndex := sbScale.Position;
   NewSettings.AlphaBlendValue := sbAlphaBlend.Position;
   NewSettings.TimeZoneCorrection := seTimeZoneCorrection.Value;
+  NewSettings.WallpaperFileName := eWallpaper.Text;
 end;
 
 class function TfSettings.ShowForm(AOwner: TComponent; Settings: TSettings;

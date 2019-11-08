@@ -26,6 +26,7 @@ object fMain: TfMain
   OnMouseMove = FormMouseMove
   OnMouseUp = FormMouseUp
   OnMouseWheel = FormMouseWheel
+  OnResize = FormResize
   OnShow = FormShow
   Position = poDefault
   LCLVersion = '2.0.6.0'
@@ -107,6 +108,10 @@ object fMain: TfMain
     end
     object miDrawHorzGuideLines: TMenuItem
       Action = actDrawHorzGuideLines
+      AutoCheck = True
+    end
+    object miDrawWallpaper: TMenuItem
+      Action = actDrawWallpaper
       AutoCheck = True
     end
     object miSeparator4: TMenuItem
@@ -462,6 +467,14 @@ object fMain: TfMain
       Checked = True
       OnExecute = DoDrawStageExecute
       ShortCut = 65
+    end
+    object actDrawWallpaper: TAction
+      Tag = 12
+      Category = 'Draw options'
+      AutoCheck = True
+      Caption = 'Draw wallpaper'
+      OnExecute = DoDrawStageExecute
+      ShortCut = 87
     end
   end
 end

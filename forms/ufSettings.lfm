@@ -2,10 +2,10 @@ object fSettings: TfSettings
   Left = 381
   Height = 500
   Top = 196
-  Width = 585
+  Width = 570
   Caption = 'Settings'
   ClientHeight = 500
-  ClientWidth = 585
+  ClientWidth = 570
   Color = clBtnFace
   Constraints.MinHeight = 500
   Constraints.MinWidth = 570
@@ -28,7 +28,7 @@ object fSettings: TfSettings
     TabOrder = 0
   end
   object btnCancel: TButton
-    Left = 392
+    Left = 377
     Height = 36
     Top = 447
     Width = 82
@@ -41,16 +41,17 @@ object fSettings: TfSettings
     Left = 0
     Height = 432
     Top = 0
-    Width = 585
-    ActivePage = tsMain
+    Width = 570
+    ActivePage = tsVisual
     Align = alTop
-    TabIndex = 0
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabIndex = 1
     TabOrder = 2
     OnChange = pcChange
     object tsMain: TTabSheet
       Caption = 'Main'
       ClientHeight = 400
-      ClientWidth = 577
+      ClientWidth = 562
       object lblCheckInterval: TLabel
         Left = 13
         Height = 19
@@ -149,7 +150,7 @@ object fSettings: TfSettings
         Left = 13
         Height = 27
         Top = 40
-        Width = 551
+        Width = 536
         Anchors = [akTop, akLeft, akRight]
         Font.Color = clWindowText
         Font.Height = -16
@@ -175,9 +176,9 @@ object fSettings: TfSettings
     object tsVisual: TTabSheet
       Caption = 'Diagram'
       ClientHeight = 400
-      ClientWidth = 577
+      ClientWidth = 562
       object lblScale: TLabel
-        Left = 16
+        Left = 13
         Height = 19
         Top = 266
         Width = 42
@@ -190,7 +191,7 @@ object fSettings: TfSettings
         ParentFont = False
       end
       object lblAlphaBlend: TLabel
-        Left = 16
+        Left = 13
         Height = 19
         Top = 332
         Width = 59
@@ -203,7 +204,7 @@ object fSettings: TfSettings
         ParentFont = False
       end
       object cbDrawHorzGuideLines: TCheckBox
-        Left = 256
+        Left = 253
         Height = 23
         Top = 102
         Width = 213
@@ -216,7 +217,7 @@ object fSettings: TfSettings
         Visible = False
       end
       object cbDrawVertGuideLines: TCheckBox
-        Left = 256
+        Left = 253
         Height = 23
         Top = 72
         Width = 193
@@ -228,7 +229,7 @@ object fSettings: TfSettings
         TabOrder = 9
       end
       object cbDrawLastGlucoseLevel: TCheckBox
-        Left = 16
+        Left = 13
         Height = 23
         Top = 16
         Width = 181
@@ -240,7 +241,7 @@ object fSettings: TfSettings
         TabOrder = 0
       end
       object cbDrawLastGlucoseLevelDate: TCheckBox
-        Left = 16
+        Left = 13
         Height = 23
         Top = 224
         Width = 216
@@ -252,7 +253,7 @@ object fSettings: TfSettings
         TabOrder = 7
       end
       object cbDrawGlucoseExtremePoints: TCheckBox
-        Left = 16
+        Left = 13
         Height = 23
         Top = 102
         Width = 225
@@ -264,7 +265,7 @@ object fSettings: TfSettings
         TabOrder = 3
       end
       object cbDrawGlucoseLevel: TCheckBox
-        Left = 16
+        Left = 13
         Height = 23
         Top = 163
         Width = 152
@@ -276,7 +277,7 @@ object fSettings: TfSettings
         TabOrder = 5
       end
       object cbDrawGlucoseLines: TCheckBox
-        Left = 16
+        Left = 13
         Height = 23
         Top = 72
         Width = 152
@@ -288,7 +289,7 @@ object fSettings: TfSettings
         TabOrder = 2
       end
       object cbDrawGlucoseSlope: TCheckBox
-        Left = 16
+        Left = 13
         Height = 23
         Top = 44
         Width = 157
@@ -300,9 +301,9 @@ object fSettings: TfSettings
         TabOrder = 1
       end
       object cbShowCheckNewDataProgressBar: TCheckBox
-        Left = 256
+        Left = 253
         Height = 23
-        Top = 194
+        Top = 164
         Width = 288
         Caption = 'Show new data checking progress bar'
         Font.Color = clWindowText
@@ -312,9 +313,9 @@ object fSettings: TfSettings
         TabOrder = 12
       end
       object cbShowWindowBorder: TCheckBox
-        Left = 256
+        Left = 253
         Height = 23
-        Top = 163
+        Top = 133
         Width = 171
         Caption = 'Show window border'
         Font.Color = clWindowText
@@ -324,11 +325,11 @@ object fSettings: TfSettings
         TabOrder = 11
       end
       object sbScale: TScrollBar
-        Left = 16
+        Left = 13
         Height = 17
         Top = 294
-        Width = 533
-        Anchors = [akLeft, akBottom]
+        Width = 535
+        Anchors = [akLeft, akRight, akBottom]
         Max = 15
         Min = 1
         PageSize = 0
@@ -336,11 +337,11 @@ object fSettings: TfSettings
         TabOrder = 13
       end
       object sbAlphaBlend: TScrollBar
-        Left = 16
+        Left = 13
         Height = 17
         Top = 360
-        Width = 533
-        Anchors = [akLeft, akBottom]
+        Width = 535
+        Anchors = [akLeft, akRight, akBottom]
         Max = 255
         Min = 1
         PageSize = 0
@@ -348,7 +349,7 @@ object fSettings: TfSettings
         TabOrder = 14
       end
       object cbDrawAlertLines: TCheckBox
-        Left = 16
+        Left = 13
         Height = 23
         Top = 194
         Width = 130
@@ -360,7 +361,7 @@ object fSettings: TfSettings
         TabOrder = 6
       end
       object cbDrawGlucoseLevelPoints: TCheckBox
-        Left = 16
+        Left = 13
         Height = 23
         Top = 133
         Width = 200
@@ -372,7 +373,7 @@ object fSettings: TfSettings
         TabOrder = 4
       end
       object cbDrawGlucoseLevelDelta: TCheckBox
-        Left = 256
+        Left = 253
         Height = 23
         Top = 16
         Width = 191
@@ -384,7 +385,7 @@ object fSettings: TfSettings
         TabOrder = 8
       end
       object cbDrawGlucoseAvg: TCheckBox
-        Left = 256
+        Left = 253
         Height = 23
         Top = 44
         Width = 175
@@ -395,11 +396,45 @@ object fSettings: TfSettings
         ParentFont = False
         TabOrder = 15
       end
+      object eWallpaper: TEdit
+        Left = 253
+        Height = 27
+        Top = 224
+        Width = 232
+        Anchors = [akTop, akLeft, akRight]
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        ParentFont = False
+        TabOrder = 16
+      end
+      object btnLoadWallpaper: TButton
+        Left = 495
+        Height = 27
+        Top = 224
+        Width = 53
+        Anchors = [akTop, akRight]
+        Caption = '. . .'
+        OnClick = btnLoadWallpaperClick
+        TabOrder = 17
+      end
+      object cbDrawWallpaper: TCheckBox
+        Left = 253
+        Height = 23
+        Top = 194
+        Width = 304
+        Caption = 'Draw wallpaper. Type in filename (jpg):'
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        ParentFont = False
+        TabOrder = 18
+      end
     end
     object tsAlerts: TTabSheet
       Caption = 'Alerts'
       ClientHeight = 400
-      ClientWidth = 577
+      ClientWidth = 562
       object gbGlucoseLevelAlarms: TGroupBox
         Left = 8
         Height = 247
@@ -626,7 +661,7 @@ object fSettings: TfSettings
     object tsAbout: TTabSheet
       Caption = 'About'
       ClientHeight = 400
-      ClientWidth = 577
+      ClientWidth = 562
       object Image1: TImage
         Left = 8
         Height = 114
@@ -1875,12 +1910,12 @@ object fSettings: TfSettings
     object tsHelp: TTabSheet
       Caption = 'Help'
       ClientHeight = 400
-      ClientWidth = 577
+      ClientWidth = 562
       object mHelp: TMemo
         Left = 0
         Height = 400
         Top = 0
-        Width = 577
+        Width = 562
         Align = alClient
         BorderStyle = bsNone
         HideSelection = False
@@ -1925,5 +1960,11 @@ object fSettings: TfSettings
         TabOrder = 0
       end
     end
+  end
+  object odWallpaper: TOpenDialog
+    Filter = '*.jp*g|*.jp*g'
+    Options = [ofFileMustExist, ofEnableSizing, ofViewDetail, ofAutoPreview]
+    left = 509
+    top = 136
   end
 end

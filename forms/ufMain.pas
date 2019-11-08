@@ -32,6 +32,8 @@ type
   TfMain = class(TForm)
     actDrawGlucoseLevelDelta: TAction;
     actDrawGlucoseAvg: TAction;
+    actDrawWallpaper: TAction;
+    miDrawWallpaper: TMenuItem;
     miDrawGlucoseAvg: TMenuItem;
     miSeparator4: TMenuItem;
     miOpacity15: TMenuItem;
@@ -60,7 +62,6 @@ type
     miScale16: TMenuItem;
     miScale17: TMenuItem;
     miScale18: TMenuItem;
-
     miDrawGlucoseLevelDelta: TMenuItem;
     miSeparator1: TMenuItem;
     pm: TPopupMenu;
@@ -85,7 +86,6 @@ type
     miDrawLastGlucoseLevelDate: TMenuItem;
     actSetNightscoutSite: TAction;
     miSetNightscoutSite: TMenuItem;
-
     miSeparator3: TMenuItem;
     actExit: TAction;
     miExit: TMenuItem;
@@ -124,6 +124,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure CheckStaleDataAlarms;
     procedure DoOpacityPercentClick(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure tmrTimer(Sender: TObject);
     procedure tmrProgressBarTimer(Sender: TObject);
     procedure DoDrawStageExecute(Sender: TObject);
@@ -156,9 +157,12 @@ type
     Connected: Boolean;
     WasAlphaBlend: Boolean;
     BoundsRectLoaded: TRect;
+    Wallpaper: TBitmap;
+    WallpaperJPG: TJPEGImage;
     procedure CreateDrawPanel();
     procedure DrawTextStrokedText(cnv: TCanvas; const Text: string; const X,
       Y: Integer; const TextColor: TColor);
+    function LoadWallpeper(const FileName: string): Boolean;
     procedure ResetWindowBoundsToDefault();
     procedure SaveOptions();
     procedure LoadOptions();
@@ -338,6 +342,7 @@ procedure TfMain.actShowCheckNewDataProgressBarExecute(Sender: TObject);
 begin
   Settings.ShowCheckNewDataProgressBar := TAction(Sender).Checked;
   pb.Visible := Settings.ShowCheckNewDataProgressBar;
+  LoadWallpeper(Settings.WallpaperFileName);
 end;
 
 procedure TfMain.DoShowSettingsExecute(Sender: TObject);
@@ -418,6 +423,8 @@ end;
 procedure TfMain.FormCreate(Sender: TObject);
 begin
   Loaded := False;
+  Wallpaper := TBitmap.Create();
+  WallpaperJPG := TJPEGImage.Create();
   StaleAlarmBlinkTrigger := False;
   Settings := TSettings.Create();
 
@@ -434,6 +441,8 @@ begin
   SaveOptions();
   FreeAndNil(Entries);
   FreeAndNil(Settings);
+  FreeAndNil(WallpaperJPG);
+  FreeAndNil(Wallpaper);
 end;
 
 procedure TfMain.FormKeyDown(Sender: TObject; var Key: Word;
@@ -525,6 +534,11 @@ end;
 procedure TfMain.DoOpacityPercentClick(Sender: TObject);
 begin
   SetAlphaBlendValue(Round(255 * TComponent(Sender).Tag / 100));
+end;
+
+procedure TfMain.FormResize(Sender: TObject);
+begin
+  LoadWallpeper(Settings.WallpaperFileName);
 end;
 
 procedure TfMain.DoScaleIndexClick(Sender: TObject);
@@ -741,6 +755,10 @@ begin
     DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseAvg', Settings.IsInDrawStage(dsGlucoseAvg));
     SetActionCheckProperty(actDrawGlucoseAvg, DrawStageChecked, dsGlucoseAvg);
 
+    DrawStageChecked := ini.ReadBool('Visual', 'dsWallpaper', Settings.IsInDrawStage(dsWallpaper));
+    SetActionCheckProperty(actDrawWallpaper, DrawStageChecked, dsWallpaper);
+    Settings.WallpaperFileName := ini.ReadString('Main', 'WallpaperFileName', '');
+
     Settings.ShowCheckNewDataProgressBar := ini.ReadBool('Visual', 'ShowCheckNewDataProgressBar', Settings.ShowCheckNewDataProgressBar);
 
     BoundsRectLoaded.Left := ini.ReadInteger('Visual', 'WindowLeft', Screen.Width div 2);
@@ -769,6 +787,7 @@ begin
   RefreshCheckInterval();
   BoundsRect := BoundsRectLoaded;
   ApplyWindowSettings();
+  LoadWallpeper(Settings.WallpaperFileName);
   HardInvalidate();
 end;
 
@@ -796,6 +815,9 @@ begin
     ini.WriteBool('Visual', 'dsGlucoseLevelPoints',   Settings.IsInDrawStage(dsGlucoseLevelPoints));
     ini.WriteBool('Visual', 'dsGlucoseLevelDelta',    Settings.IsInDrawStage(dsGlucoseLevelDelta));
     ini.WriteBool('Visual', 'dsGlucoseAvg',           Settings.IsInDrawStage(dsGlucoseAvg));
+    ini.WriteBool('Visual', 'dsWallpaper',            Settings.IsInDrawStage(dsWallpaper));
+
+    ini.WriteString('Main', 'WallpaperFileName', Settings.WallpaperFileName);
 
     ini.WriteBool('Visual', 'ShowCheckNewDataProgressBar', Settings.ShowCheckNewDataProgressBar);
     ini.WriteBool('Visual', 'ShowWindowBorder', Settings.ShowWindowBorder);
@@ -1073,6 +1095,10 @@ begin
 
   cnv := DrawPanel.Canvas;
   EntryWidth := (DrawPanel.Width * cMarginX) / (EntriesCount - 1);
+
+  if (dsWallpaper in DrawStages) and not Wallpaper.Empty then
+    cnv.Draw(0, 0, Wallpaper);
+
   if dsAlertLines in DrawStages then
   begin
     MaxY := Max(Settings.UrgentHighGlucoseAlarm, Entries.GetMaxGlucose);
@@ -1321,10 +1347,31 @@ end;
 
 procedure TfMain.DoUpdateCallerFormWithSettings;
 begin
-  HardInvalidate;
   ApplyWindowSettings;
   SetScaleIndex(Settings.ScaleIndex);
   SetAlphaBlendValue(Settings.AlphaBlendValue);
+  LoadWallpeper(Settings.WallpaperFileName);
+  HardInvalidate;
+end;
+
+function TfMain.LoadWallpeper(const FileName: string): Boolean;
+begin
+  try
+    if (FileName <> '') and FileExists(FileName) then
+      WallpaperJPG.LoadFromFile(FileName)
+    else
+      WallpaperJPG.Clear;
+
+    Wallpaper.Clear;
+    Wallpaper.Width  := DrawPanel.Width;
+    Wallpaper.Height := DrawPanel.Height;
+    Wallpaper.Canvas.StretchDraw(Rect(0, 0, DrawPanel.Width, DrawPanel.Height), WallpaperJPG);
+
+    Result := True;
+  except
+    Wallpaper.Clear;
+    Result := False;
+  end;
 end;
 
 procedure TfMain.ApplyWindowSettings();

@@ -54,7 +54,7 @@ const
 type
   TDrawStage = (dsLastGlucoseLevel, dsGlucoseLines, dsGlucoseLevel, dsHorzGuideLines,
     dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope, dsGlucoseExtremePoints,
-    dsAlertLines, dsGlucoseLevelPoints, dsGlucoseLevelDelta, dsGlucoseAvg);
+    dsAlertLines, dsGlucoseLevelPoints, dsGlucoseLevelDelta, dsGlucoseAvg, dsWallpaper);
   TDrawStages = set of TDrawStage;
 
   { TSettings }
@@ -79,6 +79,7 @@ type
     UrgentHighGlucoseAlarm: Integer;
     UrgentLowGlucoseAlarm: Integer;
     UrgentStaleDataAlarm: Integer;
+    WallpaperFileName: string;
   private
     function GetEntryMinsWithTimeZoneCorrection(Entry: TNightscoutEntry): Integer;
   public
@@ -127,7 +128,7 @@ begin
   Result := True;
   Intersection := ADrawStages * DrawStages;
   // TODO: Do autodefine of last value of TDrawStages
-  for i := dsLastGlucoseLevel to dsGlucoseAvg do
+  for i := dsLastGlucoseLevel to dsWallpaper do
     if not ((i in Intersection) and (i in ADrawStages)) then
     begin
       Result := False;
@@ -164,6 +165,7 @@ begin
   UrgentLowGlucoseAlarm := Settings.UrgentLowGlucoseAlarm;
   UrgentStaleDataAlarm := Settings.UrgentStaleDataAlarm;
   TimeZoneCorrection := Settings.TimeZoneCorrection;
+  WallpaperFileName := Settings.WallpaperFileName;
 end;
 
 function TSettings.Clone(): TSettings;
@@ -188,6 +190,7 @@ begin
   Result.UrgentLowGlucoseAlarm := UrgentLowGlucoseAlarm;
   Result.UrgentStaleDataAlarm := UrgentStaleDataAlarm;
   Result.TimeZoneCorrection := TimeZoneCorrection;
+  Result.WallpaperFileName := WallpaperFileName;
 end;
 
 constructor TSettings.Create();
@@ -213,6 +216,7 @@ begin
   UrgentLowGlucoseAlarm:= Round(3.3 * cMmolDenominator);
   UrgentStaleDataAlarm:= 40;
   TimeZoneCorrection := 0;
+  WallpaperFileName := '';
 end;
 
 function TSettings.GetColorByGlucoseLevel(Glucose: Integer): TColor;
