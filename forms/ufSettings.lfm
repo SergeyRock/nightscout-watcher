@@ -1,7 +1,7 @@
 object fSettings: TfSettings
-  Left = 381
+  Left = 2414
   Height = 500
-  Top = 196
+  Top = 211
   Width = 570
   Caption = 'Settings'
   ClientHeight = 500
@@ -42,10 +42,10 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 570
-    ActivePage = tsVisual
+    ActivePage = tsAbout
     Align = alTop
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 3
     TabOrder = 2
     OnChange = pcChange
     object tsMain: TTabSheet
@@ -213,7 +213,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 10
+        TabOrder = 11
         Visible = False
       end
       object cbDrawVertGuideLines: TCheckBox
@@ -226,7 +226,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 9
+        TabOrder = 10
       end
       object cbDrawLastGlucoseLevel: TCheckBox
         Left = 13
@@ -310,7 +310,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 12
+        TabOrder = 13
       end
       object cbShowWindowBorder: TCheckBox
         Left = 253
@@ -322,7 +322,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 11
+        TabOrder = 12
       end
       object sbScale: TScrollBar
         Left = 13
@@ -334,7 +334,7 @@ object fSettings: TfSettings
         Min = 1
         PageSize = 0
         Position = 10
-        TabOrder = 13
+        TabOrder = 17
       end
       object sbAlphaBlend: TScrollBar
         Left = 13
@@ -346,7 +346,7 @@ object fSettings: TfSettings
         Min = 1
         PageSize = 0
         Position = 10
-        TabOrder = 14
+        TabOrder = 18
       end
       object cbDrawAlertLines: TCheckBox
         Left = 13
@@ -394,7 +394,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 15
+        TabOrder = 9
       end
       object eWallpaper: TEdit
         Left = 253
@@ -406,7 +406,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 16
+        TabOrder = 15
       end
       object btnLoadWallpaper: TButton
         Left = 495
@@ -416,7 +416,7 @@ object fSettings: TfSettings
         Anchors = [akTop, akRight]
         Caption = '. . .'
         OnClick = btnLoadWallpaperClick
-        TabOrder = 17
+        TabOrder = 16
       end
       object cbDrawWallpaper: TCheckBox
         Left = 253
@@ -428,7 +428,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 18
+        TabOrder = 14
       end
     end
     object tsAlerts: TTabSheet
@@ -1943,6 +1943,7 @@ object fSettings: TfSettings
           '7 – Draw alert lines'
           '8 – Draw spent time since last glucose level data was received'
           '9 – Draw glucose level values'
+          'W – Draw wallpaper'
           'A – Draw average glucose level'
           'L – Draw vertical guidelines'
           'B – Show window border'

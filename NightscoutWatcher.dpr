@@ -19,7 +19,7 @@ uses
 
 begin
   Application.Initialize;
-  Application.Title := 'Nightscout Watcher';
+  Application.Title:='Nightscout Watcher';
   Application.CreateForm(TfMain, fMain);
   Application.Run;
 end.
