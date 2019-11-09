@@ -31,6 +31,7 @@ object fMain: TfMain
   OnResize = FormResize
   OnShow = FormShow
   Position = poDefault
+  ShowHint = True
   LCLVersion = '2.0.6.0'
   object pb: TProgressBar
     Left = 0

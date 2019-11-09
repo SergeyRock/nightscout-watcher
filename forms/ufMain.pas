@@ -187,6 +187,7 @@ type
     procedure ApplyWindowSettings();
     procedure SetScaleIndex(ScaleIndex: Integer);
     procedure UpdateApplicationTitle();
+    procedure UpdateHint();
   end;
 
 var
@@ -395,6 +396,7 @@ end;
 procedure TfMain.actSetUnitOfMeasureMmolLExecute(Sender: TObject);
 begin
   Settings.IsMmolL := TAction(Sender).Checked;
+  UpdateHint();
   HardInvalidate();
 end;
 
@@ -958,8 +960,8 @@ begin
   else
     actSetNightscoutSiteExecute(actSetNightscoutSite);
 
+  UpdateHint();
   UpdateApplicationTitle();
-  Application.Hint := GetHintText();
   HardInvalidate();
 end;
 
@@ -1399,14 +1401,33 @@ begin
   Application.Title := Format('%s (%s) - %s', [LastEntryGlucose, Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL), Application.Title]);
 end;
 
+procedure TfMain.UpdateHint();
+begin
+  DrawPanel.Hint := GetHintText();
+end;
+
 function TfMain.GetHintText(): string;
 var
   DummyColor: TColor;
+  Lst: TStringList;
 begin
-  Result := Format('Count of entries with glucose data: %d', [Entries.Count]);
-  Result := Result + Format('Count of entries to recieve: %d', [Settings.CountOfEntriesToRecive]);
-  Result := Result + Format('Glucose average: %s', [Entries.GetAvgGlucoseStr(Settings.IsMmolL)]);
-  Result := Result + Format('Time has passed since last entry was received: %s', [Settings.GetGlucoseLevelDateText(Entries.Last, DummyColor)]);
+  Lst := TStringList.Create();
+  try
+    Lst.Add(Format('Count of entries with glucose data: %d', [Entries.Count]));
+    Lst.Add(Format('Count of entries to recieve: %d', [Settings.CountOfEntriesToRecive]));
+    Lst.Add(Format('Glucose average: %s', [Entries.GetAvgGlucoseStr(Settings.IsMmolL)]));
+    if Assigned(Entries.First) then
+      Lst.Add(Format('Time of first entry: %s', [DateTimeToStr(Entries.First.Date + Settings.TimeZoneCorrection)]));
+    if Assigned(Entries.Last) then
+    begin
+      Lst.Add(Format('Time of last entry: %s', [DateTimeToStr(Entries.Last.Date + Settings.TimeZoneCorrection)]));
+      Lst.Add(Format('Time has passed since last entry was received: %s', [Settings.GetGlucoseLevelDateText(Entries.Last, DummyColor)]));
+    end;
+    Result := Trim(Lst.Text);
+  finally
+    Lst.Free;
+  end;
+
   // TODO: Difference between date of entries
 end;
 

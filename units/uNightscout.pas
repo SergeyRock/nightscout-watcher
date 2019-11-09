@@ -48,6 +48,7 @@ type
     function GetMinGlucoseMmol(): Double;
     function GetMaxGlucoseMmol(): Double;
     function GetGlucoseLevelDeltaText(IsMmolL: Boolean): string;
+    function First: TNightscoutEntry;
     function Last: TNightscoutEntry;
     procedure RemoveDuplicatesWithTheSameDate();
     procedure LimitEntries(MaxItems: Integer);
@@ -138,6 +139,11 @@ end;
 function TNightscoutEntryList.Last: TNightscoutEntry;
 begin
   Result := TNightscoutEntry(inherited Last);
+end;
+
+function TNightscoutEntryList.First: TNightscoutEntry;
+begin
+  Result := TNightscoutEntry(inherited First);
 end;
 
 procedure TNightscoutEntryList.RemoveDuplicatesWithTheSameDate();
