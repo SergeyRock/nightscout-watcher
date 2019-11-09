@@ -1,8 +1,15 @@
 # Nightscout Watcher
-The main purpose of the application is to show glucose level on your monitor in background mode to control glucose level in more convenient way. It`s especially useful for office workers who spend a lot of time working on computer.
+The main purpose of the application is to show glucose level on your monitor in background mode to control glucose level in more convenient way. It`s especially convinent for office workers who spend a lot of time working on computer.
 The main prerequisite is availability of your own [nightscout site](https://github.com/nightscout/cgm-remote-monitor).
 
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-14854.png)
+![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.09-19675.png)
+
+App receives TSV-data about blood sugar level by requesting url like this: http://oldexcom.herokuapp.com/api/v1/entries?count=40
+
+## Collaboration
+You are allways welcome to connect to this open source project by helping of any kind (e.g. testing, programming, spelling and etc.). 
+Don`t be hesitating if you notice something that can help to improve this project. Just write me an issue.
+PS. I`m not a native english speaker. I`ll be gratefull if you paticipate in correction of [mistakes](https://github.com/SergeyRock/nightscout-watcher/issues).
 
 ## Installation
 1. Download appropriate [release](https://github.com/SergeyRock/nightscout-watcher/releases)
@@ -95,8 +102,10 @@ It is written on [Lazarus](https://en.wikipedia.org/wiki/Lazarus_(IDE)) and can 
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-15615.png) 
 
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-28698.png)
-
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-27016.png)
+
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-27065.png)
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-26977.png)
+![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.09-21634.png)
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-27709.png)
+![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.09-20531.png)
+![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.09-20629.png)
