@@ -159,9 +159,9 @@ type
     BoundsRectLoaded: TRect;
     Wallpaper: TBitmap;
     WallpaperJPG: TJPEGImage;
+    cnv: TCanvas;
     procedure CreateDrawPanel();
-    procedure DrawTextStrokedText(cnv: TCanvas; const Text: string; const X,
-      Y: Integer; const TextColor: TColor);
+    procedure DrawTextStrokedText(const Text: string; const X, Y: Integer; const TextColor: TColor);
     function LoadWallpeper(const FileName: string): Boolean;
     procedure ResetWindowBoundsToDefault();
     procedure SaveOptions();
@@ -169,7 +169,7 @@ type
     function LoadEntriesData: Boolean;
     procedure SetActionCheckProperty(Action: TAction; Checked: Boolean; DrawStage: TDrawStage);
     function GetArrowRect(Slope: string; ArrowAreaRect: TRect; var OutPoints: TRect): Boolean;
-    procedure DrawArrow(P1, P2: TPoint; DrawArrowEnd: boolean; Canvas: TCanvas;
+    procedure DrawArrow(P1, P2: TPoint; DrawArrowEnd: boolean;
       GlucoseSlopeColor: TColor; ArrowWidth: Integer);
     procedure DoDrawStages(DrawStages: TDrawStages);
     procedure DrawTextInCenter(const Text: string);
@@ -177,8 +177,7 @@ type
     procedure DoUpdateCallerFormWithSettings;
     function SetNightscoutUrl(Url: string): Boolean;
     function SetCheckIntervalByString(Value: string): Boolean;
-    function SetMaximumDrawStageSizeToCanvas(DrawStage: TDrawStage; const Text: string;
-      cnv: TCanvas): Byte;
+    function SetMaximumDrawStageSizeToCanvas(DrawStage: TDrawStage; const Text: string): Byte;
     procedure SetAlphaBlendValue(Value: Integer);
     procedure RefreshCheckInterval;
     function GetEntriesUrl: string;
@@ -419,6 +418,8 @@ begin
   DrawPanel.OnMouseEnter := FormMouseEnter;
   DrawPanel.OnMouseLeave := FormMouseLeave;
   DrawPanel.OnDblClick := actVisitNightscoutSite.OnExecute;
+  cnv := DrawPanel.Canvas;
+  cnv.Font.Quality := fqAntialiased;
 end;
 
 procedure TfMain.FormCreate(Sender: TObject);
@@ -882,8 +883,7 @@ begin
   end;
 end;
 
-function TfMain.SetMaximumDrawStageSizeToCanvas(DrawStage: TDrawStage;
-  const Text: string; cnv: TCanvas): Byte;
+function TfMain.SetMaximumDrawStageSizeToCanvas(DrawStage: TDrawStage; const Text: string): Byte;
 var
   TextSize: TSize;
   ScaleIndex: Integer;
@@ -1028,40 +1028,37 @@ begin
   end;
 end;
 
-procedure TfMain.DrawArrow(P1, P2: TPoint; DrawArrowEnd: boolean;
-  Canvas: TCanvas; GlucoseSlopeColor: TColor; ArrowWidth: Integer);
+procedure TfMain.DrawArrow(P1, P2: TPoint; DrawArrowEnd: boolean; GlucoseSlopeColor: TColor; ArrowWidth: Integer);
 var
   Angle, Distance: Double;
   ArrowLength: Integer;
-  p3, p4: TPoint;
+  P3, P4: TPoint;
 begin
-  Canvas.Pen.Color := GlucoseSlopeColor;
-  Canvas.Pen.Width := ArrowWidth;
-  Canvas.MoveTo(p1.X, p1.Y);
-  Canvas.LineTo(p2.X, p2.Y);
+  cnv.Pen.Color := GlucoseSlopeColor;
+  cnv.Pen.Width := ArrowWidth;
+  cnv.MoveTo(P1.X, P1.Y);
+  cnv.LineTo(P2.X, P2.Y);
   if DrawArrowEnd then
   begin
-    Angle:= 180 * ArcTan2(p2.y - p1.y, p2.x - p1.x) / pi;
-    Distance := Sqrt(Sqr(P2.X - p1.X) + Sqr(p2.Y - p1.Y));
+    Angle:= 180 * ArcTan2(P2.y - P1.y, P2.x - P1.x) / pi;
+    Distance := Sqrt(Sqr(P2.X - P1.X) + Sqr(P2.Y - P1.Y));
     ArrowLength := Round(Distance / 3);
 
-    p3 := Point(p2.X + Round(ArrowLength * cos(pi * (Angle + 150) / 180)), p2.y + Round(ArrowLength * sin(pi * (Angle + 150) / 180)));
-    p4 := Point(p2.X + Round(ArrowLength * cos(pi * (Angle - 150) / 180)), p2.y + Round(ArrowLength * sin(pi * (Angle - 150) / 180)));
+    P3 := Point(P2.X + Round(ArrowLength * cos(pi * (Angle + 150) / 180)), P2.y + Round(ArrowLength * sin(pi * (Angle + 150) / 180)));
+    P4 := Point(P2.X + Round(ArrowLength * cos(pi * (Angle - 150) / 180)), P2.y + Round(ArrowLength * sin(pi * (Angle - 150) / 180)));
 
-    Canvas.MoveTo(p2.X,p2.Y);
-    Canvas.LineTo(p3.X,p3.y);
-    Canvas.MoveTo(p2.X,p2.Y);
-    Canvas.LineTo(p4.X,p4.y);
+    cnv.MoveTo(P2.X, P2.Y);
+    cnv.LineTo(P3.X, P3.y);
+    cnv.MoveTo(P2.X, P2.Y);
+    cnv.LineTo(P4.X, P4.y);
   end;
 end;
 
 procedure TfMain.DrawTextInCenter(const Text: string);
 var
-  cnv: TCanvas;
   TextSize: TSize;
   TextPoint: TPoint;
 begin
-  cnv := DrawPanel.Canvas;
   cnv.Brush.Color := Color;
   SetBkMode(cnv.Handle, TRANSPARENT);
   cnv.Font.Size := GetDrawStageSize(dsLastGlucoseLevel);
@@ -1076,10 +1073,10 @@ procedure TfMain.DoDrawStages(DrawStages: TDrawStages);
 const
   cMarginX = 0.85;
   cMarginY = 0.7;
-  cSmallMargin = 5;
+  cSmallMargin = 4;
 var
-  i, x, y, EntriesCount, SlopeRectWidth, ArrowCount, ArrowOffsetX, MaxY, GlucoseLevelPointRadius: integer;
-  cnv: TCanvas;
+  i, x, y, EntriesCount, SlopeRectWidth, ArrowCount, ArrowOffsetX, MaxY, GlucoseLevelPointRadius,
+    SlopeWidth: integer;
   EntryWidth, EntryHeight, MarginX, MarginY: Double;
   Entry, LastEntry: TNightscoutEntry;
   Text, TextWithSlope: string;
@@ -1096,7 +1093,6 @@ begin
 
   LastEntry := Entries.Last;
 
-  cnv := DrawPanel.Canvas;
   EntryWidth := (DrawPanel.Width * cMarginX) / (EntriesCount - 1);
 
   if (dsWallpaper in DrawStages) and not Wallpaper.Empty then
@@ -1236,9 +1232,9 @@ begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
     Text := Settings.GetLastGlucoseLevelDateText(LastEntry, LastGlucoseLevelDateColor);
-    SetMaximumDrawStageSizeToCanvas(dsLastGlucoseLevelDate, Text, cnv);
+    SetMaximumDrawStageSizeToCanvas(dsLastGlucoseLevelDate, Text);
     TextSize := cnv.TextExtent(Text);
-    DrawTextStrokedText(cnv, Text,
+    DrawTextStrokedText(Text,
       Floor(DrawPanel.Width - TextSize.cx - cSmallMargin),
       Floor(DrawPanel.Height - TextSize.cy - cSmallMargin),
       LastGlucoseLevelDateColor);
@@ -1249,9 +1245,9 @@ begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
     Text := Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL);
-    SetMaximumDrawStageSizeToCanvas(dsGlucoseLevelDelta, Text, cnv);
+    SetMaximumDrawStageSizeToCanvas(dsGlucoseLevelDelta, Text);
     TextSize := cnv.TextExtent(Text);
-    DrawTextStrokedText(cnv, Text, (DrawPanel.Width - TextSize.cx) div 2,  0, cGlucoseLevelDeltaColor);
+    DrawTextStrokedText(Text, (DrawPanel.Width - TextSize.cx) div 2,  0, cGlucoseLevelDeltaColor);
   end;
 
   if dsGlucoseAvg in DrawStages then
@@ -1259,9 +1255,9 @@ begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
     Text := 'Avg: ' + Entries.GetAvgGlucoseStr(Settings.IsMmolL);
-    SetMaximumDrawStageSizeToCanvas(dsGlucoseAvg, Text, cnv);
+    SetMaximumDrawStageSizeToCanvas(dsGlucoseAvg, Text);
     TextSize := cnv.TextExtent(Text);
-    DrawTextStrokedText(cnv, Text, cSmallMargin, (DrawPanel.Height - TextSize.cy) - cSmallMargin, cGlucoseAvgColor);
+    DrawTextStrokedText(Text, cSmallMargin, (DrawPanel.Height - TextSize.cy) - cSmallMargin, cGlucoseAvgColor);
   end;
 
   if (dsLastGlucoseLevel in DrawStages) or (dsGlucoseSlope in DrawStages)  then
@@ -1272,9 +1268,9 @@ begin
 
     TextWithSlope := Text;
     if dsGlucoseSlope in DrawStages then
-      TextWithSlope := TextWithSlope + '.....';
+      TextWithSlope := TextWithSlope + '-----';
 
-    GlucoseSlopeScaleIndex := SetMaximumDrawStageSizeToCanvas(dsLastGlucoseLevel, TextWithSlope, cnv);
+    GlucoseSlopeScaleIndex := SetMaximumDrawStageSizeToCanvas(dsLastGlucoseLevel, TextWithSlope);
     TextSize := cnv.TextExtent(Text);
     LastGlucoseLevelPoint.X := Floor((DrawPanel.Width - TextSize.cx) / 2);
     if dsGlucoseSlope in DrawStages then
@@ -1291,7 +1287,7 @@ begin
       FontColor := cLastGlucoseLevelColor;
 
     if dsLastGlucoseLevel in DrawStages then
-      DrawTextStrokedText(cnv, Text, LastGlucoseLevelPoint.X, LastGlucoseLevelPoint.Y, FontColor);
+      DrawTextStrokedText(Text, LastGlucoseLevelPoint.X, LastGlucoseLevelPoint.Y, FontColor);
 
     if dsGlucoseSlope in DrawStages then
     begin
@@ -1306,7 +1302,9 @@ begin
 
       for i := 1 to ArrowCount do
       begin
-        DrawArrow(ArrowRect.TopLeft, ArrowRect.BottomRight, CanDrawArrow, cnv, FontColor, GlucoseSlopeScaleIndex);
+        SlopeWidth := GetDrawStageSize(dsGlucoseSlope, GlucoseSlopeScaleIndex);
+        DrawArrow(ArrowRect.TopLeft, ArrowRect.BottomRight, CanDrawArrow, Color, SlopeWidth + cSmallMargin);
+        DrawArrow(ArrowRect.TopLeft, ArrowRect.BottomRight, CanDrawArrow, FontColor, SlopeWidth);
         ArrowOffsetX := Floor((SlopeRect.Right - SlopeRect.Left) / 1.5);
         OffsetRect(ArrowRect, ArrowOffsetX, 0);
       end;
@@ -1314,7 +1312,7 @@ begin
   end;
 end;
 
-procedure TfMain.DrawTextStrokedText(cnv: TCanvas; const Text: string; const X, Y: Integer; const TextColor: TColor);
+procedure TfMain.DrawTextStrokedText(const Text: string; const X, Y: Integer; const TextColor: TColor);
 var
   OffsetPoints: array [0..7] of TPoint;
   i: Integer;

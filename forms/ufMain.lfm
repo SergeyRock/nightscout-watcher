@@ -7,7 +7,7 @@ object fMain: TfMain
   AlphaBlendValue = 230
   BorderIcons = []
   BorderStyle = bsNone
-  Caption = 'NightscoutWatcher'
+  Caption = 'Nightscout Watcher'
   ClientHeight = 157
   ClientWidth = 301
   Color = clBlack
