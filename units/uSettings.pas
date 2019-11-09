@@ -14,7 +14,7 @@ const
     (
       (14, 17, 28, 32, 40, 48, 60, 72, 88, 100, 116, 130, 160, 200, 240, 280, 340, 400), // Font size for dsLastGlucoseLevel
       ( 6,  7,  7,  8,  8,  9,  9, 10, 11,  11,  12,  13,  14,  15,  16,  17,  18,  20), // Font size for dsGlucoseLevel
-      ( 7,  8,  8,  9, 10, 11, 12, 13, 14,  15,  18,  20,  24,  30,  38,  48,  60,  70), // Font size for dsLastGlucoseLevelDate
+      ( 7,  8,  8,  9, 10, 11, 12, 13, 14,  15,  18,  22,  26,  32,  42,  52,  60,  72), // Font size for dsLastGlucoseLevelDate
       ( 1,  1,  1,  2,  2,  2,  2,  2,  2,   3,   3,   3,   4,   4,   5,   5,   6,   7), // Line thickness for dsGlucoseLines
       ( 1,  1,  3,  3,  3,  4,  5,  6,  7,   8,   9,  10,  12,  15,  20,  26,  38,  50), // Line thickness for dsGlucoseSlope
       ( 7,  8,  9, 10, 11, 12, 13, 15, 17,  19,  23,  26,  30,  36,  46,  58,  70,  86), // Font size for dsGlucoseAvg
@@ -88,7 +88,7 @@ type
     function IsStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
     function IsUrgentStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
     function Clone(): TSettings;
-    function GetLastGlucoseLevelDateText(Entry: TNightscoutEntry; out OutColor: TColor): string;
+    function GetGlucoseLevelDateText(Entry: TNightscoutEntry; out OutColor: TColor): string;
     function IsInDrawStage(DrawStage: TDrawStage): Boolean; overload;
     function IsInDrawStage(ADrawStages: TDrawStages): Boolean; overload;
     function SetScaleIndex(Index: Integer): Boolean;
@@ -266,7 +266,7 @@ begin
   Result := OldScaleIndex <> ScaleIndex;
 end;
 
-function TSettings.GetLastGlucoseLevelDateText(Entry: TNightscoutEntry; out OutColor: TColor): string;
+function TSettings.GetGlucoseLevelDateText(Entry: TNightscoutEntry; out OutColor: TColor): string;
 var
   Days, Hours, Mins: Int64;
   DaysStr, HoursStr, MinsStr: string;

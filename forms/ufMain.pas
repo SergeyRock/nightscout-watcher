@@ -161,7 +161,8 @@ type
     WallpaperJPG: TJPEGImage;
     cnv: TCanvas;
     procedure CreateDrawPanel();
-    procedure DrawTextStrokedText(const Text: string; const X, Y: Integer; const TextColor: TColor);
+    procedure DrawStrokedText(const Text: string; const X, Y: Integer; const TextColor: TColor);
+    function GetHintText(): string;
     function LoadWallpeper(const FileName: string): Boolean;
     procedure ResetWindowBoundsToDefault();
     procedure SaveOptions();
@@ -958,6 +959,7 @@ begin
     actSetNightscoutSiteExecute(actSetNightscoutSite);
 
   UpdateApplicationTitle();
+  Application.Hint := GetHintText();
   HardInvalidate();
 end;
 
@@ -1231,10 +1233,10 @@ begin
   begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
-    Text := Settings.GetLastGlucoseLevelDateText(LastEntry, LastGlucoseLevelDateColor);
+    Text := Settings.GetGlucoseLevelDateText(LastEntry, LastGlucoseLevelDateColor);
     SetMaximumDrawStageSizeToCanvas(dsLastGlucoseLevelDate, Text);
     TextSize := cnv.TextExtent(Text);
-    DrawTextStrokedText(Text,
+    DrawStrokedText(Text,
       Floor(DrawPanel.Width - TextSize.cx - cSmallMargin),
       Floor(DrawPanel.Height - TextSize.cy - cSmallMargin),
       LastGlucoseLevelDateColor);
@@ -1247,7 +1249,7 @@ begin
     Text := Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL);
     SetMaximumDrawStageSizeToCanvas(dsGlucoseLevelDelta, Text);
     TextSize := cnv.TextExtent(Text);
-    DrawTextStrokedText(Text, (DrawPanel.Width - TextSize.cx) div 2,  0, cGlucoseLevelDeltaColor);
+    DrawStrokedText(Text, (DrawPanel.Width - TextSize.cx) div 2,  0, cGlucoseLevelDeltaColor);
   end;
 
   if dsGlucoseAvg in DrawStages then
@@ -1257,7 +1259,7 @@ begin
     Text := 'Avg: ' + Entries.GetAvgGlucoseStr(Settings.IsMmolL);
     SetMaximumDrawStageSizeToCanvas(dsGlucoseAvg, Text);
     TextSize := cnv.TextExtent(Text);
-    DrawTextStrokedText(Text, cSmallMargin, (DrawPanel.Height - TextSize.cy) - cSmallMargin, cGlucoseAvgColor);
+    DrawStrokedText(Text, cSmallMargin, (DrawPanel.Height - TextSize.cy) - cSmallMargin, cGlucoseAvgColor);
   end;
 
   if (dsLastGlucoseLevel in DrawStages) or (dsGlucoseSlope in DrawStages)  then
@@ -1287,7 +1289,7 @@ begin
       FontColor := cLastGlucoseLevelColor;
 
     if dsLastGlucoseLevel in DrawStages then
-      DrawTextStrokedText(Text, LastGlucoseLevelPoint.X, LastGlucoseLevelPoint.Y, FontColor);
+      DrawStrokedText(Text, LastGlucoseLevelPoint.X, LastGlucoseLevelPoint.Y, FontColor);
 
     if dsGlucoseSlope in DrawStages then
     begin
@@ -1312,7 +1314,7 @@ begin
   end;
 end;
 
-procedure TfMain.DrawTextStrokedText(const Text: string; const X, Y: Integer; const TextColor: TColor);
+procedure TfMain.DrawStrokedText(const Text: string; const X, Y: Integer; const TextColor: TColor);
 var
   OffsetPoints: array [0..7] of TPoint;
   i: Integer;
@@ -1395,6 +1397,17 @@ begin
 
   LastEntryGlucose := Entries.Last.GetGlucoseStr(Settings.IsMmolL);
   Application.Title := Format('%s (%s) - %s', [LastEntryGlucose, Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL), Application.Title]);
+end;
+
+function TfMain.GetHintText(): string;
+var
+  DummyColor: TColor;
+begin
+  Result := Format('Count of entries with glucose data: %d', [Entries.Count]);
+  Result := Result + Format('Count of entries to recieve: %d', [Settings.CountOfEntriesToRecive]);
+  Result := Result + Format('Glucose average: %s', [Entries.GetAvgGlucoseStr(Settings.IsMmolL)]);
+  Result := Result + Format('Time has passed since last entry was received: %s', [Settings.GetGlucoseLevelDateText(Entries.Last, DummyColor)]);
+  // TODO: Difference between date of entries
 end;
 
 end.
