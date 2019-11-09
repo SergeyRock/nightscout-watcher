@@ -81,14 +81,17 @@ type
     UrgentStaleDataAlarm: Integer;
     WallpaperFileName: string;
   private
-    function GetEntryMinsWithTimeZoneCorrection(Entry: TNightscoutEntry): Integer;
+    function GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast: TDateTime
+      ): Integer;
   public
     constructor Create();
     function GetColorByGlucoseLevel(Glucose: Integer): TColor;
     function IsStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
     function IsUrgentStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
     function Clone(): TSettings;
-    function GetGlucoseLevelDateText(Entry: TNightscoutEntry; out OutColor: TColor): string;
+    function GetTimeBetweenDatesText(DateFirst, DateLast: TDateTime): string;
+    function GetGlucoseLevelDateText(DateFirst, DateLast: TDateTime; out
+      OutColor: TColor): string;
     function IsInDrawStage(DrawStage: TDrawStage): Boolean; overload;
     function IsInDrawStage(ADrawStages: TDrawStages): Boolean; overload;
     function SetScaleIndex(Index: Integer): Boolean;
@@ -229,26 +232,22 @@ begin
     Result := cGlucoseLinesColor;
 end;
 
-function TSettings.GetEntryMinsWithTimeZoneCorrection(Entry: TNightscoutEntry): Integer;
+function TSettings.GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast: TDateTime): Integer;
 var
   EntryDateWithCorrection: TDateTime;
 begin
-  Result := -1;
-  if Entry = nil then
-    Exit;
-
-  EntryDateWithCorrection := Entry.Date + TimeZoneCorrection / HoursPerDay;
-  Result := MinutesBetween(Now, EntryDateWithCorrection);
+  EntryDateWithCorrection := DateFirst + TimeZoneCorrection / HoursPerDay;
+  Result := MinutesBetween(DateLast, EntryDateWithCorrection);
 end;
 
 function TSettings.IsStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
 begin
-  Result := GetEntryMinsWithTimeZoneCorrection(Entry) >= StaleDataAlarm;
+  Result := GetEntryMinsWithTimeZoneCorrection(Entry.Date, Now()) >= StaleDataAlarm;
 end;
 
 function TSettings.IsUrgentStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
 begin
-  Result := GetEntryMinsWithTimeZoneCorrection(Entry) >= UrgentStaleDataAlarm;
+  Result := GetEntryMinsWithTimeZoneCorrection(Entry.Date, Now()) >= UrgentStaleDataAlarm;
 end;
 
 function TSettings.SetScaleIndex(Index: Integer): Boolean;
@@ -266,15 +265,14 @@ begin
   Result := OldScaleIndex <> ScaleIndex;
 end;
 
-function TSettings.GetGlucoseLevelDateText(Entry: TNightscoutEntry; out OutColor: TColor): string;
+function TSettings.GetGlucoseLevelDateText(DateFirst, DateLast: TDateTime; out OutColor: TColor): string;
 var
   Days, Hours, Mins: Int64;
   DaysStr, HoursStr, MinsStr: string;
   EntryDateWithCorrection: TDateTime;
 begin
   Result := '';
-  EntryDateWithCorrection := Entry.Date + TimeZoneCorrection / HoursPerDay;
-  Mins := GetEntryMinsWithTimeZoneCorrection(Entry);
+  Mins := GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast);
 
   if Mins >= StaleDataAlarm then
     OutColor := cWarningColor
@@ -297,18 +295,52 @@ begin
     Exit;
   end;
 
-  Hours := HoursBetween(Now, EntryDateWithCorrection);
+  EntryDateWithCorrection := DateFirst + TimeZoneCorrection / HoursPerDay;
+  Hours := HoursBetween(DateLast, EntryDateWithCorrection);
   HoursStr := IntToStr(Hours);
   case Hours of
     1: Result := HoursStr + ' hour ago';
     2..24: Result := HoursStr + ' hours ago';
   end;
 
-  Days := DaysBetween(Now, EntryDateWithCorrection);
+  Days := DaysBetween(DateLast, EntryDateWithCorrection);
   DaysStr := IntToStr(Days);
   case Days of
     1: Result := DaysStr + ' day ago';
     2..MaxInt: Result := DaysStr + ' days ago';
+  end;
+end;
+
+function TSettings.GetTimeBetweenDatesText(DateFirst, DateLast: TDateTime): string;
+var
+  Days, Hours, Mins: Int64;
+  DaysStr, HoursStr, MinsStr: string;
+begin
+  Result := '';
+  Mins := MinutesBetween(DateLast, DateFirst);
+
+  if Mins < MinsPerHour then
+  begin
+    MinsStr := IntToStr(Mins);
+    case Mins of
+      1: Result := MinsStr + ' minute';
+      2..59: Result := MinsStr + ' minutes';
+    end;
+    Exit;
+  end;
+
+  Hours := HoursBetween(DateLast, DateFirst);
+  HoursStr := IntToStr(Hours);
+  case Hours of
+    1: Result := HoursStr + ' hour';
+    2..24: Result := HoursStr + ' hours';
+  end;
+
+  Days := DaysBetween(DateLast, DateFirst);
+  DaysStr := IntToStr(Days);
+  case Days of
+    1: Result := DaysStr + ' day';
+    2..MaxInt: Result := DaysStr + ' days';
   end;
 end;
 

@@ -378,7 +378,6 @@ begin
     else
       BoundsRect := OldWindowRect;
   end;
-  HardInvalidate();
 end;
 
 procedure TfMain.ResetWindowBoundsToDefault();
@@ -1092,7 +1091,7 @@ var
   GlucoseSlopeScaleIndex: Byte;
 begin
   EntriesCount := Entries.Count;
-  if EntriesCount < 1 then
+  if EntriesCount < 2 then
     Exit;
 
   LastEntry := Entries.Last;
@@ -1235,7 +1234,7 @@ begin
   begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
-    Text := Settings.GetGlucoseLevelDateText(LastEntry, LastGlucoseLevelDateColor);
+    Text := Settings.GetGlucoseLevelDateText(LastEntry.Date, Now(), LastGlucoseLevelDateColor);
     SetMaximumDrawStageSizeToCanvas(dsLastGlucoseLevelDate, Text);
     TextSize := cnv.TextExtent(Text);
     DrawStrokedText(Text,
@@ -1417,18 +1416,16 @@ begin
     Lst.Add(Format('Count of entries to recieve: %d', [Settings.CountOfEntriesToRecive]));
     Lst.Add(Format('Glucose average: %s', [Entries.GetAvgGlucoseStr(Settings.IsMmolL)]));
     if Assigned(Entries.First) then
-      Lst.Add(Format('Time of first entry: %s', [DateTimeToStr(Entries.First.Date + Settings.TimeZoneCorrection)]));
-    if Assigned(Entries.Last) then
     begin
+      Lst.Add(Format('Time of first entry: %s', [DateTimeToStr(Entries.First.Date + Settings.TimeZoneCorrection)]));
       Lst.Add(Format('Time of last entry: %s', [DateTimeToStr(Entries.Last.Date + Settings.TimeZoneCorrection)]));
-      Lst.Add(Format('Time has passed since last entry was received: %s', [Settings.GetGlucoseLevelDateText(Entries.Last, DummyColor)]));
+      Lst.Add(Format('Time has passed since last entry was received: %s', [Settings.GetGlucoseLevelDateText(Entries.Last.Date, Now(), DummyColor)]));
+      Lst.Add(Format('Time between last and first entry: %s', [Settings.GetTimeBetweenDatesText(Entries.Last.Date, Entries.First.Date)]));
     end;
     Result := Trim(Lst.Text);
   finally
     Lst.Free;
   end;
-
-  // TODO: Difference between date of entries
 end;
 
 end.
