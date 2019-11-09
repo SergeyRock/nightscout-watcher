@@ -11,8 +11,8 @@ object fMain: TfMain
   ClientHeight = 157
   ClientWidth = 301
   Color = clBlack
-  Constraints.MinHeight = 50
-  Constraints.MinWidth = 80
+  Constraints.MinHeight = 20
+  Constraints.MinWidth = 30
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
