@@ -58,7 +58,7 @@ type
 implementation
 
 uses
-  Classes, UrlMon, strutils, Math, SysUtils, Dialogs;
+  Classes, strutils, Math, SysUtils, Dialogs;
   
 { TNightscoutEntryList }
 

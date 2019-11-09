@@ -658,12 +658,12 @@ begin
   Entries.Clear;
   if not DebugMode then
   begin
-    DeleteUrlCacheEntry(PAnsiChar(GetEntriesUrl));
-    IsFileDownloaded := URLDownloadToFile(nil, PAnsiChar(GetEntriesUrl), PAnsiChar(FileName), 0, nil) = S_OK;
+    DeleteUrlCacheEntry(PAnsiChar(GetEntriesUrl()));
+    IsFileDownloaded := URLDownloadToFile(nil, PAnsiChar(GetEntriesUrl()), PAnsiChar(FileName), 0, nil) = S_OK;
 
     if not IsFileDownloaded then
     begin
-      ShowMessage('File downloading is failed. URL: ' + GetEntriesUrl);
+      ShowMessage('File downloading is failed. URL: ' + GetEntriesUrl());
       Exit;
     end;
   end;
