@@ -103,8 +103,8 @@ It is written on [Lazarus](https://en.wikipedia.org/wiki/Lazarus_(IDE)) and can 
 
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-28698.png)
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-27016.png)
-
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-27065.png)
+
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.09-21634.png)
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-27709.png)
 ![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.09-20531.png)
