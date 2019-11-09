@@ -1317,10 +1317,10 @@ end;
 
 procedure TfMain.DrawStrokedText(const Text: string; const X, Y: Integer; const TextColor: TColor);
 var
-  OffsetPoints: array [0..7] of TPoint;
-  i: Integer;
+  OffsetPoints: array [0..15] of TPoint;
+  i, StartI: Integer;
 begin
-  // Draw glucose level value in the center of graph point
+  // Bold stroke
   OffsetPoints[0] := Point( 0, -3);
   OffsetPoints[1] := Point( 2, -2);
   OffsetPoints[2] := Point( 3,  0);
@@ -1329,12 +1329,28 @@ begin
   OffsetPoints[5] := Point(-2,  2);
   OffsetPoints[6] := Point(-3,  0);
   OffsetPoints[7] := Point(-2, -2);
+
+  // Stroke width 1 px
+  OffsetPoints[8]  := Point( 0, -1);
+  OffsetPoints[9]  := Point( 1,  0);
+  OffsetPoints[10] := Point( 0,  1);
+  OffsetPoints[11] := Point(-1,  0);
+
+  OffsetPoints[8]  := Point( 1, -1);
+  OffsetPoints[9]  := Point( 1,  1);
+  OffsetPoints[10] := Point(-1,  1);
+  OffsetPoints[11] := Point(-1, -1);
   cnv.Font.Color := Color;
 
-  for i := 0 to High(OffsetPoints) do
+  StartI := IfThen(cnv.Font.Size > 20, 0, 8);
+
+  for i := StartI to High(OffsetPoints) do
+  begin
     cnv.TextOut(
       X + OffsetPoints[i].X,
       Y + OffsetPoints[i].Y, Text);
+    cnv.MoveTo(X, Y);
+  end;
 
   // Draw main text
   cnv.Font.Color := TextColor;
