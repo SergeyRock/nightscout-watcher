@@ -1906,6 +1906,14 @@ object fSettings: TfSettings
         ParentFont = False
         OnClick = lblGitHubLinkClick
       end
+      object lblVersion: TLabel
+        Left = 123
+        Height = 19
+        Top = 72
+        Width = 59
+        Caption = 'Version:'
+        ParentColor = False
+      end
     end
     object tsHelp: TTabSheet
       Caption = 'Help'

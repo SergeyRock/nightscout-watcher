@@ -151,6 +151,9 @@ var
   i: Integer;
   Entry, PrevEntry: TNightscoutEntry;
 begin
+  // We need to clear duplicate items because of next entries with the same time
+  //2019-11-11T21:21:26.955+0400	1573492886955	96	Flat	xDrip-DexbridgeWixel
+  //2019-11-11T21:21:26.955+0400	1573492886955	97	Flat	xDrip-DexbridgeWixel
   PrevEntry := Last();
   if PrevEntry = nil then
     Exit;

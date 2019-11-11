@@ -34,6 +34,7 @@ type
     gbGlucoseLevelAlarms: TGroupBox;
     Image1: TImage;
     lblDeveloper: TLabel;
+    lblVersion: TLabel;
     lblGitHubLink: TLabel;
     lblHighGlucoseAlarm: TLabel;
     mHelp: TMemo;
@@ -111,11 +112,34 @@ type
     procedure AssignComponentsOnChangeEvent;
   end;
 
+  function GetVersion(): string;
+
 implementation
 
 uses
-  uNightscout;
+{$IFDEF UNIX}{$IFDEF UseCThreads}
+cthreads,
+{$ENDIF}{$ENDIF}
+  uNightscout
+// FPC 3.0 fileinfo reads exe resources as long as you register the appropriate units
+, fileinfo
+, winpeimagereader {need this for reading exe info}
+, elfreader {needed for reading ELF executables}
+, machoreader {needed for reading MACH-O executables}
+  ;
 
+function GetVersion(): string;
+var
+  FileVerInfo: TFileVersionInfo;
+begin
+  FileVerInfo := TFileVersionInfo.Create(nil);
+  try
+    FileVerInfo.ReadFileInfo;
+    Result := FileVerInfo.VersionStrings.Values['FileVersion'];
+  finally
+    FileVerInfo.Free;
+  end;
+end;
 {$R *.lfm}
 
 { TfSettings }
@@ -154,7 +178,8 @@ begin
   pcChange(pc);
   if Assigned(OnUpdateCallerFormWithSettings) then
     OnUpdateCallerFormWithSettings;
-  lblDeveloper.Caption := Format('Developer: Sergey Oleynikov (D1T for %d years)', [CurrentYear - 1995]);
+  lblDeveloper.Caption := Format('Developer: Sergey Oleynikov (T1D for %d years)', [CurrentYear - 1995]);
+  lblVersion.Caption := 'Version: ' + GetVersion();
 end;
 
 procedure TfSettings.AssignComponentsOnChangeEvent;

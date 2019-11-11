@@ -438,6 +438,7 @@ begin
 
   CreateDrawPanel();
   FormStyle := fsSystemStayOnTop;
+  Caption := Caption + '. Ver: ' + GetVersion();
 end;
 
 procedure TfMain.FormDestroy(Sender: TObject);
@@ -622,7 +623,7 @@ end;
 
 function TfMain.GetEntriesUrl: string;
 begin
-  Result := Settings.NightscoutUrl + '/api/v1/entries?count=' + IntToStr(Settings.CountOfEntriesToRecive);
+  Result := Settings.NightscoutUrl + '/api/v1/entries/sgv?count=' + IntToStr(Settings.CountOfEntriesToRecive);
 end;
 
 function TfMain.GetDrawStageSize(DrawStage: TDrawStage; ScaleIndex: Integer = -1): Integer;
@@ -1078,8 +1079,9 @@ const
   cMarginY = 0.7;
   cSmallMargin = 4;
 var
+  GlucoseLinesWidths: array [0..1] of Byte;
   i, x, y, EntriesCount, SlopeRectWidth, ArrowCount, ArrowOffsetX, MaxY, GlucoseLevelPointRadius,
-    SlopeWidth: integer;
+    SlopeWidth, j: integer;
   EntryWidth, EntryHeight, MarginX, MarginY: Double;
   Entry, LastEntry: TNightscoutEntry;
   Text, TextWithSlope: string;
@@ -1155,19 +1157,25 @@ begin
 
   if dsGlucoseLines in DrawStages then
   begin
-    for i := 0 to EntriesCount - 1 do
+    GlucoseLinesWidths[1] := GetDrawStageSize(dsGlucoseLines);
+    GlucoseLinesWidths[0] := GlucoseLinesWidths[1] + 4;
+    for i := Low(GlucoseLinesWidths) to High(GlucoseLinesWidths) do
     begin
-      Entry := Entries[i];
-      x := Floor(EntryWidth * i + MarginX);
-      y := Floor(EntryHeight * (MaxY - Entry.Glucose) + MarginY);
-
-      cnv.Pen.Color := Settings.GetColorByGlucoseLevel(Entry.Glucose);
-      cnv.Pen.Width := GetDrawStageSize(dsGlucoseLines);
-
-      if i = 0 then
-        cnv.MoveTo(x, y)
-      else
-        cnv.LineTo(x, y);
+      cnv.Pen.Width := GlucoseLinesWidths[i];
+      for j := 0 to EntriesCount - 1 do
+      begin
+        Entry := Entries[j];
+        if i = 0 then
+          cnv.Pen.Color := Color // Stroke color
+        else
+          cnv.Pen.Color := Settings.GetColorByGlucoseLevel(Entry.Glucose);
+        x := Floor(EntryWidth * j + MarginX);
+        y := Floor(EntryHeight * (MaxY - Entry.Glucose) + MarginY);
+        if j = 0 then
+          cnv.MoveTo(x, y)
+        else
+          cnv.LineTo(x, y);
+      end;
     end;
   end;
 
