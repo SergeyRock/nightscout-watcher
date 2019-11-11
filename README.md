@@ -1,7 +1,7 @@
 # Nightscout Watcher
 The main purpose of the application is to show glucose level on your monitor in background mode to control glucose level in more convenient way. It`s especially convinent for office workers who spend a lot of time working on computer.
 
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.09-19675.png)
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/main.png)
 
 App receives TSV-data about blood sugar level by requesting url like this: http://oldexcom.herokuapp.com/api/v1/entries?count=40
 
