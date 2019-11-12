@@ -1,7 +1,7 @@
 # Nightscout Watcher
 The main purpose of the application is to show glucose level on your monitor in background mode to control glucose level in more convenient way. It`s especially convinent for office workers who spend a lot of time working on computer.
 
-![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/main.png)
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/Main.jpg)
 
 App receives TSV-data about blood sugar level by requesting url like this: http://oldexcom.herokuapp.com/api/v1/entries?count=40
 
@@ -22,7 +22,7 @@ PS. I`m not a native english speaker. I`ll be gratefull if you paticipate in cor
 After start the application you must type in the url of your Nightscout site.
 All available settings are placed on settings window (F9) and through popup menu.
 
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.07-5343.png)
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/Settings.Main.jpg)
 
 The main settings are:
 - Nightscout site URL (required field)
@@ -33,7 +33,7 @@ The main settings are:
 
 ## Diagram options
 
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-16314.png)
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/Settings.Diagram.jpg)
 
 It allows to set up different glucose data to show on diagram such as:
 - Current glucose level value
@@ -54,12 +54,13 @@ Also available:
 - Wallpaper (jpeg only)
 
 ## Window options
+- Stay window on top (T)
 - Make window full screen (F11)
 - Show window border (B)
 - Show new data checking progress bar ( P )
 
 ## Alert options
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.07-4344.png)
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/Settings.Alerts.jpg)
 
 ## Hot keys
 
@@ -87,6 +88,7 @@ Also available:
 - W – Draw wallpaper
 - A – Draw average glucose level
 - L – Draw vertical guidelines
+- T – Stay window on top
 - B – Show window border
 - P – Show new data checking progress bar
 - F11 – Show in full screen
@@ -101,13 +103,13 @@ It is written on [Lazarus](https://en.wikipedia.org/wiki/Lazarus_(IDE)) and can 
 
 ## Gallery
 
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-15615.png) 
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/gallery/11.08-15615.jpg) 
 
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-28698.png)
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-27016.png)
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-27065.png)
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/gallery/11.08-28698.jpg)
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/gallery/11.08-27016.jpg)
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/gallery/11.08-27065.jpg)
 
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.09-21634.png)
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.08-27709.png)
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.09-20531.png)
-![N|Solid](https://www.uchitel-izd.ru/upload/files/clip2net/ol/2019/11.09-20629.png)
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/gallery/11.09-21634.jpg)
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/gallery/11.08-27709.jpg)
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/gallery/11.09-20531.jpg)
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/gallery/11.09-20629.jpg)
