@@ -13,7 +13,8 @@ uses
   LCLIntf, LCLType,
 {$ENDIF}
   uSettings, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs,
-  DateUtils, Contnrs, ExtCtrls, Menus, uNightscout, ComCtrls, ActnList;
+  DateUtils, Contnrs, ExtCtrls, Menus, uNightscout, ComCtrls, ActnList,
+  InterfaceBase;
 
 type
 
@@ -115,6 +116,7 @@ type
     miFullScreen: TMenuItem;
     actDrawGlucoseLevelPoints: TAction;
     miDrawGlucoseLevelPoints: TMenuItem;
+    TrayIcon: TTrayIcon;
     procedure actStayOnTopExecute(Sender: TObject);
     procedure DoScaleIndexClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -146,6 +148,8 @@ type
     procedure actSetCountOfEntriesToReciveExecute(Sender: TObject);
     procedure DoShowSettingsExecute(Sender: TObject);
     procedure actFullScreenExecute(Sender: TObject);
+    procedure TrayIconClick(Sender: TObject);
+    procedure DraiTrayIcon();
   private
     StaleAlarmBlinkTrigger: Boolean;
     NeedStaleDataBlink: Boolean;
@@ -166,6 +170,7 @@ type
     procedure CreateDrawPanel();
     procedure DrawStrokedText(const Text: string; const X, Y: Integer; const TextColor: TColor);
     function GetHintText(): string;
+    procedure HideIconInTaskbar();
     function LoadWallpeper(const FileName: string): Boolean;
     procedure ResetWindowBoundsToDefault();
     procedure SaveOptions();
@@ -209,7 +214,8 @@ uses
   ShellAPI,
 {$ELSE}
 {$ENDIF}
-  ufSettings, UrlMon, Wininet, Math, IniFiles, StrUtils, Types;
+  ufSettings, UrlMon, Wininet, Math, IniFiles, StrUtils, Types, graphtype,
+  intfgraphics, fpimage;
 
 {$R *.lfm}
 
@@ -283,6 +289,61 @@ begin
     WindowState := wsNormal;
   end;
   actShowWindowBorderExecute(actShowWindowBorder);
+end;
+
+procedure TfMain.TrayIconClick(Sender: TObject);
+begin
+  ShowOnTop;
+end;
+
+procedure TfMain.DraiTrayIcon();
+const
+  cIconSize = 16;
+var
+  TempIntfImg: TLazIntfImage;
+  ImgHandle, ImgMaskHandle: HBitmap;
+  px, py: Integer;
+  TempBitmap: TBitmap;
+  LastEntry: TNightscoutEntry;
+begin
+  LastEntry := Entries.Last;
+  if LastEntry = nil then
+    Exit;
+
+  TempIntfImg := TLazIntfImage.Create(cIconSize, cIconSize);
+  TempBitmap := TBitmap.Create;
+  try
+    TempBitmap.SetSize(cIconSize, cIconSize);
+
+    TempBitmap.Canvas.Brush.Color := Settings.GetColorByGlucoseLevel(LastEntry.Glucose);
+    TempBitMap.Canvas.FillRect(0, 0, cIconSize, cIconSize);
+    TempBitMap.Canvas.Font := Canvas.Font;
+
+    TempBitmap.Canvas.Font.Color := cLastGlucoseLevelColor;
+    {$ifdef windows}
+      TempBitmap.Canvas.Font.Name := 'Trebuchet MS';
+      TempBitmap.Canvas.Font.Style := [];
+      TempBitmap.Canvas.Font.Size := 8;
+    {$endif}
+
+    Text := LastEntry.GetGlucoseStr(Settings.IsMmolL);
+
+    TempBitMap.Canvas.TextOut(0, 0 , Text);//0,0,'10.2');
+
+    TempIntfImg.LoadFromBitmap(TempBitmap.Handle, TempBitmap.MaskHandle);
+
+    // Copy it to a TBitmap
+    TempIntfImg.CreateBitmaps(ImgHandle, ImgMaskHandle, False);
+    TempBitmap.Handle := ImgHandle;
+    TempBitmap.MaskHandle := ImgMaskHandle;
+
+    // And copy the TBitmap to your Icon
+    TrayIcon.Icon.Assign(TempBitmap);
+    TrayIcon.Show;
+  finally
+    TempIntfImg.Free;
+    TempBitmap.Free;
+  end;
 end;
 
 procedure TfMain.actSetCheckIntervalExecute(Sender: TObject);
@@ -438,8 +499,20 @@ begin
   cnv.Font.Quality := fqAntialiased;
 end;
 
+// Use only in FormCreate
+procedure TfMain.HideIconInTaskbar();
+var
+  EXStyle: Int64;
+  AppHandle: THandle;
+begin
+  AppHandle := WidgetSet.AppHandle;
+  EXStyle:= GetWindowLong(AppHandle, GWL_EXSTYLE);
+  SetWindowLong(AppHandle, GWL_EXSTYLE, EXStyle or WS_EX_TOOLWINDOW and not WS_EX_APPWINDOW);
+end;
+
 procedure TfMain.FormCreate(Sender: TObject);
 begin
+  HideIconInTaskbar();
   Loaded := False;
   Wallpaper := TBitmap.Create();
   WallpaperJPG := TJPEGImage.Create();
@@ -452,6 +525,7 @@ begin
 
   CreateDrawPanel();
   Caption := Caption + '. Ver: ' + GetVersion();
+  TrayIcon.BalloonTitle := Caption;
 end;
 
 procedure TfMain.FormDestroy(Sender: TObject);
@@ -637,6 +711,10 @@ begin
     actSetNightscoutSiteExecute(actSetNightscoutSite)
   else
     tmrTimer(tmr); // Load data from nightscout site and start monitoring
+
+
+  ShowInTaskBar := stNever;
+  //Application.MainFormOnTaskBar := False;
 end;
 
 function TfMain.GetEntriesUrl: string;
@@ -963,6 +1041,7 @@ procedure TfMain.tmrProgressBarTimer(Sender: TObject);
 begin
   pb.Position := pb.Position + 1;
   CheckStaleDataAlarms;
+  DraiTrayIcon;
 end;
 
 procedure TfMain.tmrTimer(Sender: TObject);
@@ -1448,6 +1527,7 @@ end;
 procedure TfMain.UpdateHint();
 begin
   DrawPanel.Hint := GetHintText();
+  TrayIcon.Hint := GetHintText();
 end;
 
 function TfMain.GetHintText(): string;

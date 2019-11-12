@@ -1,7 +1,7 @@
 object fMain: TfMain
-  Left = 3096
+  Left = 3026
   Height = 157
-  Top = 273
+  Top = 435
   Width = 301
   AlphaBlend = True
   AlphaBlendValue = 230
@@ -491,5 +491,14 @@ object fMain: TfMain
       OnExecute = actStayOnTopExecute
       ShortCut = 84
     end
+  end
+  object TrayIcon: TTrayIcon
+    BalloonFlags = bfInfo
+    BalloonTimeout = 1000
+    PopUpMenu = pm
+    Visible = True
+    OnClick = TrayIconClick
+    left = 137
+    top = 61
   end
 end

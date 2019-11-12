@@ -131,8 +131,8 @@ var
 begin
   Result := True;
   Intersection := ADrawStages * DrawStages;
-  // TODO: Do autodefine of last value of TDrawStages
-  for i := dsLastGlucoseLevel to dsWallpaper do
+
+  for i := Low(TDrawStage) to High(TDrawStage) do
     if not ((i in Intersection) and (i in ADrawStages)) then
     begin
       Result := False;
