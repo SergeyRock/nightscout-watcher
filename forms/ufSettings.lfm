@@ -2,13 +2,13 @@ object fSettings: TfSettings
   Left = 1229
   Height = 500
   Top = 217
-  Width = 603
+  Width = 600
   Caption = 'Settings'
   ClientHeight = 500
-  ClientWidth = 603
+  ClientWidth = 600
   Color = clBtnFace
   Constraints.MinHeight = 500
-  Constraints.MinWidth = 570
+  Constraints.MinWidth = 600
   Font.Color = clWindowText
   Font.Height = -16
   Font.Name = 'Tahoma'
@@ -28,7 +28,7 @@ object fSettings: TfSettings
     TabOrder = 0
   end
   object btnCancel: TButton
-    Left = 410
+    Left = 407
     Height = 36
     Top = 447
     Width = 82
@@ -41,17 +41,17 @@ object fSettings: TfSettings
     Left = 0
     Height = 432
     Top = 0
-    Width = 603
-    ActivePage = tsHelp
+    Width = 600
+    ActivePage = tsAbout
     Align = alTop
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 4
+    TabIndex = 3
     TabOrder = 2
     OnChange = pcChange
     object tsMain: TTabSheet
       Caption = 'Main'
       ClientHeight = 400
-      ClientWidth = 595
+      ClientWidth = 592
       object lblCheckInterval: TLabel
         Left = 13
         Height = 19
@@ -150,7 +150,7 @@ object fSettings: TfSettings
         Left = 13
         Height = 27
         Top = 40
-        Width = 569
+        Width = 566
         Anchors = [akTop, akLeft, akRight]
         Font.Color = clWindowText
         Font.Height = -16
@@ -176,7 +176,7 @@ object fSettings: TfSettings
     object tsVisual: TTabSheet
       Caption = 'Diagram'
       ClientHeight = 400
-      ClientWidth = 595
+      ClientWidth = 592
       object lblScale: TLabel
         Left = 13
         Height = 19
@@ -219,7 +219,7 @@ object fSettings: TfSettings
       object cbDrawVertGuideLines: TCheckBox
         Left = 277
         Height = 23
-        Top = 16
+        Top = 15
         Width = 153
         Caption = 'Vertical guide lines'
         Font.Color = clWindowText
@@ -231,7 +231,7 @@ object fSettings: TfSettings
       object cbDrawLastGlucoseLevel: TCheckBox
         Left = 13
         Height = 23
-        Top = 16
+        Top = 15
         Width = 143
         Caption = 'Last glucose level'
         Font.Color = clWindowText
@@ -243,7 +243,7 @@ object fSettings: TfSettings
       object cbDrawLastGlucoseLevelDate: TCheckBox
         Left = 13
         Height = 23
-        Top = 185
+        Top = 184
         Width = 246
         Caption = 'Last glucose level retreived time'
         Font.Color = clWindowText
@@ -303,7 +303,7 @@ object fSettings: TfSettings
       object cbShowCheckNewDataProgressBar: TCheckBox
         Left = 277
         Height = 23
-        Top = 164
+        Top = 160
         Width = 288
         Caption = 'Show new data checking progress bar'
         Font.Color = clWindowText
@@ -315,7 +315,7 @@ object fSettings: TfSettings
       object cbShowWindowBorder: TCheckBox
         Left = 277
         Height = 23
-        Top = 133
+        Top = 137
         Width = 171
         Caption = 'Show window border'
         Font.Color = clWindowText
@@ -328,7 +328,7 @@ object fSettings: TfSettings
         Left = 13
         Height = 17
         Top = 294
-        Width = 568
+        Width = 565
         Anchors = [akLeft, akRight, akBottom]
         Max = 15
         Min = 1
@@ -340,7 +340,7 @@ object fSettings: TfSettings
         Left = 13
         Height = 17
         Top = 360
-        Width = 568
+        Width = 565
         Anchors = [akLeft, akRight, akBottom]
         Max = 255
         Min = 1
@@ -375,7 +375,7 @@ object fSettings: TfSettings
       object cbDrawGlucoseLevelDelta: TCheckBox
         Left = 13
         Height = 23
-        Top = 209
+        Top = 208
         Width = 151
         Caption = 'Glucose level delta'
         Font.Color = clWindowText
@@ -399,8 +399,8 @@ object fSettings: TfSettings
       object eWallpaper: TEdit
         Left = 277
         Height = 27
-        Top = 224
-        Width = 241
+        Top = 228
+        Width = 238
         Anchors = [akTop, akLeft, akRight]
         Font.Color = clWindowText
         Font.Height = -16
@@ -409,9 +409,9 @@ object fSettings: TfSettings
         TabOrder = 16
       end
       object btnLoadWallpaper: TButton
-        Left = 528
+        Left = 525
         Height = 27
-        Top = 224
+        Top = 228
         Width = 53
         Anchors = [akTop, akRight]
         Caption = '. . .'
@@ -421,7 +421,7 @@ object fSettings: TfSettings
       object cbDrawWallpaper: TCheckBox
         Left = 277
         Height = 23
-        Top = 194
+        Top = 199
         Width = 304
         Caption = 'Draw wallpaper. Type in filename (jpg):'
         Font.Color = clWindowText
@@ -433,7 +433,7 @@ object fSettings: TfSettings
       object cbStayOnTop: TCheckBox
         Left = 277
         Height = 23
-        Top = 104
+        Top = 113
         Width = 109
         Caption = 'Stay On Top'
         Font.Color = clWindowText
@@ -446,9 +446,9 @@ object fSettings: TfSettings
     object tsAlerts: TTabSheet
       Caption = 'Alerts'
       ClientHeight = 400
-      ClientWidth = 595
+      ClientWidth = 592
       object gbGlucoseLevelAlarms: TGroupBox
-        Left = 8
+        Left = 13
         Height = 247
         Top = 36
         Width = 264
@@ -597,7 +597,7 @@ object fSettings: TfSettings
         end
       end
       object gbStaleDataAlarms: TGroupBox
-        Left = 288
+        Left = 293
         Height = 144
         Top = 36
         Width = 264
@@ -646,7 +646,7 @@ object fSettings: TfSettings
         end
       end
       object cbEnableGlucoseLevelAlarms: TCheckBox
-        Left = 8
+        Left = 13
         Height = 23
         Top = 15
         Width = 214
@@ -658,7 +658,7 @@ object fSettings: TfSettings
         TabOrder = 0
       end
       object cbEnableStaleDataAlarms: TCheckBox
-        Left = 288
+        Left = 293
         Height = 23
         Top = 15
         Width = 191
@@ -673,11 +673,11 @@ object fSettings: TfSettings
     object tsAbout: TTabSheet
       Caption = 'About'
       ClientHeight = 400
-      ClientWidth = 595
+      ClientWidth = 592
       object Image1: TImage
         Left = 8
         Height = 114
-        Top = 8
+        Top = 15
         Width = 106
         Picture.Data = {
           1754506F727461626C654E6574776F726B477261706869633D97000089504E47
@@ -1898,7 +1898,7 @@ object fSettings: TfSettings
       object lblDeveloper: TLabel
         Left = 123
         Height = 19
-        Top = 72
+        Top = 43
         Width = 347
         Caption = 'Developer: Sergey Oleynikov (D1T for %s years)'
         ParentColor = False
@@ -1907,7 +1907,7 @@ object fSettings: TfSettings
         Cursor = crHandPoint
         Left = 123
         Height = 19
-        Top = 8
+        Top = 70
         Width = 361
         Caption = 'https://github.com/SergeyRock/nightscout-watcher'
         Font.Color = clBlue
@@ -1921,7 +1921,7 @@ object fSettings: TfSettings
       object lblVersion: TLabel
         Left = 123
         Height = 19
-        Top = 40
+        Top = 15
         Width = 59
         Caption = 'Version:'
         ParentColor = False
