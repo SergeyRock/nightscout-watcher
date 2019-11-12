@@ -605,7 +605,7 @@ begin
 
   WindowRect := BoundsRect;
 
-  InflateRect(WindowRect, Direction * cMoveWindowDelta, Direction * cMoveWindowDelta);
+  InflateRect(WindowRect, Floor(Direction * cMoveWindowDelta * 1.618), Direction * cMoveWindowDelta);
   if (Direction < 0) then
   begin
     if WindowRect.Right - WindowRect.Left <= Constraints.MinWidth then
