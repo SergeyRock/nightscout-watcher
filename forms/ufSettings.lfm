@@ -42,10 +42,10 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 603
-    ActivePage = tsAbout
+    ActivePage = tsHelp
     Align = alTop
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 3
+    TabIndex = 4
     TabOrder = 2
     OnChange = pcChange
     object tsMain: TTabSheet
@@ -1930,12 +1930,12 @@ object fSettings: TfSettings
     object tsHelp: TTabSheet
       Caption = 'Help'
       ClientHeight = 400
-      ClientWidth = 562
+      ClientWidth = 595
       object mHelp: TMemo
         Left = 0
         Height = 400
         Top = 0
-        Width = 562
+        Width = 595
         Align = alClient
         BorderStyle = bsNone
         HideSelection = False
@@ -1966,6 +1966,7 @@ object fSettings: TfSettings
           'W – Draw wallpaper'
           'A – Draw average glucose level'
           'L – Draw vertical guidelines'
+          'T – Stay window on top'
           'B – Show window border'
           'P – Show new data checking progress bar'
           'F11 – Show in full screen'
