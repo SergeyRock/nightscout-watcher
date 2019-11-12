@@ -34,7 +34,21 @@ type
     actDrawGlucoseLevelDelta: TAction;
     actDrawGlucoseAvg: TAction;
     actDrawWallpaper: TAction;
+    actSnoozeAlarmsReset: TAction;
+    actSnoozeAlarms120mins: TAction;
+    actSnoozeAlarms90mins: TAction;
+    actSnoozeAlarms60mins: TAction;
+    actSnoozeAlarms30mins: TAction;
+    actSnoozeAlarms10mins: TAction;
     actStayOnTop: TAction;
+    miSnoozeAlarmsSeparator: TMenuItem;
+    miSnoozeAlarmsReset: TMenuItem;
+    miSnoozeAlarms120mins: TMenuItem;
+    miSnoozeAlarms90mins: TMenuItem;
+    miSnoozeAlarms60mins: TMenuItem;
+    miSnoozeAlarms30mins: TMenuItem;
+    miSnoozeAlarms10mins: TMenuItem;
+    miSnoozeAlarms: TMenuItem;
     miStayOnTop: TMenuItem;
     miDrawWallpaper: TMenuItem;
     miDrawGlucoseAvg: TMenuItem;
@@ -117,6 +131,7 @@ type
     actDrawGlucoseLevelPoints: TAction;
     miDrawGlucoseLevelPoints: TMenuItem;
     TrayIcon: TTrayIcon;
+    procedure DoSnoozeAlarmsExecute(Sender: TObject);
     procedure actStayOnTopExecute(Sender: TObject);
     procedure DoScaleIndexClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -130,6 +145,7 @@ type
     procedure CheckStaleDataAlarms;
     procedure DoOpacityPercentClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure pmPopup(Sender: TObject);
     procedure tmrTimer(Sender: TObject);
     procedure tmrProgressBarTimer(Sender: TObject);
     procedure DoDrawStageExecute(Sender: TObject);
@@ -149,10 +165,12 @@ type
     procedure DoShowSettingsExecute(Sender: TObject);
     procedure actFullScreenExecute(Sender: TObject);
     procedure TrayIconClick(Sender: TObject);
-    procedure DraiTrayIcon();
+    procedure DrawTrayIcon();
   private
     StaleAlarmBlinkTrigger: Boolean;
     NeedStaleDataBlink: Boolean;
+    NeedGlucoseLevelAlarmBlink: Boolean;
+    GlucoseLevelAlarmBlinkTrigger: Boolean;
     FPressed : Boolean;
     Loaded: Boolean;
     FPosX : Integer;
@@ -167,8 +185,10 @@ type
     Wallpaper: TBitmap;
     WallpaperJPG: TJPEGImage;
     cnv: TCanvas;
+    MenuIsPopped: Boolean;
+    procedure CheckGlucoseLevelAlarms;
     procedure CreateDrawPanel();
-    procedure DrawStrokedText(const Text: string; const X, Y: Integer; const TextColor: TColor);
+    procedure DrawStrokedText(const AText: string; const X, Y: Integer; const TextColor: TColor);
     function GetHintText(): string;
     procedure HideIconInTaskbar();
     function LoadWallpeper(const FileName: string): Boolean;
@@ -181,12 +201,12 @@ type
     procedure DrawArrow(P1, P2: TPoint; DrawArrowEnd: boolean;
       GlucoseSlopeColor: TColor; ArrowWidth: Integer);
     procedure DoDrawStages(DrawStages: TDrawStages);
-    procedure DrawTextInCenter(const Text: string);
+    procedure DrawTextInCenter(const AText: string);
     procedure DoDraw(Sender: TObject);
     procedure DoUpdateCallerFormWithSettings;
     function SetNightscoutUrl(Url: string): Boolean;
     function SetCheckIntervalByString(Value: string): Boolean;
-    function SetMaximumDrawStageSizeToCanvas(DrawStage: TDrawStage; const Text: string): Byte;
+    function SetMaximumDrawStageSizeToCanvas(DrawStage: TDrawStage; const AText: string): Byte;
     procedure SetAlphaBlendValue(Value: Integer);
     procedure RefreshCheckInterval;
     function GetEntriesUrl: string;
@@ -195,8 +215,10 @@ type
     procedure ApplyWindowSettings();
     procedure SetScaleIndex(ScaleIndex: Integer);
     procedure SetSystemStayOnTop(StayOnTop: Boolean);
+    procedure SnoozeAlarms(Seconds: Integer);
     procedure UpdateApplicationTitle();
     procedure UpdateHint();
+    procedure UpdateSnoozeMenuItemCaption();
   end;
 
 var
@@ -293,42 +315,89 @@ end;
 
 procedure TfMain.TrayIconClick(Sender: TObject);
 begin
+  Show;
   ShowOnTop;
 end;
 
-procedure TfMain.DraiTrayIcon();
+procedure TfMain.DrawTrayIcon();
 const
   cIconSize = 16;
 var
   TempIntfImg: TLazIntfImage;
   ImgHandle, ImgMaskHandle: HBitmap;
-  px, py: Integer;
   TempBitmap: TBitmap;
   LastEntry: TNightscoutEntry;
+  FontColor, BgColor: TColor;
+  TextSize: TSize;
+  X, Y: Integer;
+  EntryText: String;
 begin
   LastEntry := Entries.Last;
   if LastEntry = nil then
+  begin
+    TrayIcon.Icon.Assign(Application.Icon);
     Exit;
+  end;
 
   TempIntfImg := TLazIntfImage.Create(cIconSize, cIconSize);
   TempBitmap := TBitmap.Create;
   try
     TempBitmap.SetSize(cIconSize, cIconSize);
 
-    TempBitmap.Canvas.Brush.Color := Settings.GetColorByGlucoseLevel(LastEntry.Glucose);
+    FontColor := cLastGlucoseLevelColor;
+    BgColor := cTrayIconColor;
+    // Check blinking due to GlucoseLevelAlarms
+    if NeedGlucoseLevelAlarmBlink and GlucoseLevelAlarmBlinkTrigger then
+    begin
+      if Settings.IsUrgentGlucoseLevelAlarmExists(LastEntry) then
+      begin
+        BgColor := cUrgentAlarmColor
+      end
+      else if Settings.IsGlucoseLevelAlarmExists(LastEntry) then
+      begin
+        BgColor := cAlarmColor;
+        FontColor := cWarningColor;
+      end;
+    end // Check blinking due to SraleDataAlarms
+    else if NeedStaleDataBlink and StaleAlarmBlinkTrigger then
+    begin
+      if Settings.IsUrgentStaleDataAlarmExists(LastEntry) then
+      begin
+        BgColor := cUrgentAlarmColor
+      end
+      else if Settings.IsStaleDataAlarmExists(LastEntry) then
+      begin
+        BgColor := cAlarmColor;
+        FontColor := cWarningColor;
+      end;
+    end
+    else // Check blinking due to SnoozeAlarms
+    begin
+      BgColor := IfThen(Settings.IsSnoozeAlarmsEndTimePassed(), cTrayIconColor, cTrayIconSnoozedColor);
+    end;
+
+    TempBitmap.Canvas.Brush.Color := BgColor;
     TempBitMap.Canvas.FillRect(0, 0, cIconSize, cIconSize);
     TempBitMap.Canvas.Font := Canvas.Font;
-
-    TempBitmap.Canvas.Font.Color := cLastGlucoseLevelColor;
+    TempBitmap.Canvas.Font.Color := FontColor;
     {$ifdef windows}
-      TempBitmap.Canvas.Font.Name := 'Trebuchet MS';
+      TempBitmap.Canvas.Font.Name := 'Tahoma';
       TempBitmap.Canvas.Font.Style := [];
-      TempBitmap.Canvas.Font.Size := 8;
+      TempBitmap.Canvas.Font.Size := 7;
     {$endif}
 
-    Text := LastEntry.GetGlucoseStr(Settings.IsMmolL);
+    EntryText := LastEntry.GetGlucoseStr(Settings.IsMmolL);
+    TextSize := TempBitMap.Canvas.TextExtent(EntryText);
 
-    TempBitMap.Canvas.TextOut(0, 0 , Text);//0,0,'10.2');
+    if TextSize.cx > cIconSize then
+    begin
+      EntryText := Copy(EntryText, 1, High(EntryText) - 1);
+      TextSize := TempBitMap.Canvas.TextExtent(EntryText);
+    end;
+
+    X := Max(0, (cIconSize - TextSize.cx) div 2);
+    Y := (cIconSize - TextSize.cy) div 2;
+    TempBitMap.Canvas.TextOut(X, Y, EntryText);
 
     TempIntfImg.LoadFromBitmap(TempBitmap.Handle, TempBitmap.MaskHandle);
 
@@ -344,6 +413,22 @@ begin
     TempIntfImg.Free;
     TempBitmap.Free;
   end;
+end;
+
+
+procedure TfMain.SnoozeAlarms(Seconds: Integer);
+begin
+  Settings.SnoozeAlarms(Seconds);  ;
+end;
+
+procedure TfMain.UpdateSnoozeMenuItemCaption();
+begin
+  if MenuIsPopped then
+    Exit;
+  miSnoozeAlarms.Caption := 'Snooze alarms';
+  if not Settings.IsSnoozeAlarmsEndTimePassed() then
+    miSnoozeAlarms.Caption := Format('%s (%d minutes remain)',
+      [miSnoozeAlarms.Caption, MinutesBetween(Settings.SnoozeAlarmsEndTime, Now())]);
 end;
 
 procedure TfMain.actSetCheckIntervalExecute(Sender: TObject);
@@ -512,11 +597,14 @@ end;
 
 procedure TfMain.FormCreate(Sender: TObject);
 begin
+  MenuIsPopped := False;
   HideIconInTaskbar();
   Loaded := False;
   Wallpaper := TBitmap.Create();
   WallpaperJPG := TJPEGImage.Create();
   StaleAlarmBlinkTrigger := False;
+  GlucoseLevelAlarmBlinkTrigger := False;
+
   Settings := TSettings.Create();
 
   Connected := False;
@@ -524,7 +612,6 @@ begin
   Entries := TNightscoutEntryList.Create;
 
   CreateDrawPanel();
-  Caption := Caption + '. Ver: ' + GetVersion();
   TrayIcon.BalloonTitle := Caption;
 end;
 
@@ -549,6 +636,7 @@ begin
       VK_RIGHT: Left := Left + cMoveWindowDelta;
       VK_UP:    Top  := Top - cMoveWindowDelta;
       VK_DOWN:  Top  := Top + cMoveWindowDelta;
+      VK_APPS:  pm.PopUp;
     end;
   end
   else if Shift = [ssShift] then
@@ -606,21 +694,43 @@ end;
 procedure TfMain.CheckStaleDataAlarms;
 var
   Entry: TNightscoutEntry;
-  StaleAlarmReached, UrgentStaleAlarmReached: Boolean;
+  AlarmReached, UrgentAlarmReached: Boolean;
 begin
-  StaleAlarmReached := False;
-  UrgentStaleAlarmReached := False;
+  AlarmReached := False;
+  UrgentAlarmReached := False;
 
   Entry := Entries.Last();
   if Assigned(Entry) then
   begin
-    StaleAlarmReached := Settings.IsStaleDataAlarmExists(Entry);
-    UrgentStaleAlarmReached := Settings.IsUrgentStaleDataAlarmExists(Entry);
+    AlarmReached := Settings.IsStaleDataAlarmExists(Entry);
+    UrgentAlarmReached := Settings.IsUrgentStaleDataAlarmExists(Entry);
     StaleAlarmBlinkTrigger := not StaleAlarmBlinkTrigger;
   end;
-  NeedStaleDataBlink := Settings.EnableStaleDataAlarms and
-    (StaleAlarmReached or UrgentStaleAlarmReached) ;
-  Invalidate();
+  NeedStaleDataBlink :=
+    Settings.EnableStaleDataAlarms and
+    Settings.IsSnoozeAlarmsEndTimePassed() and
+    (AlarmReached or UrgentAlarmReached) ;
+end;
+
+procedure TfMain.CheckGlucoseLevelAlarms;
+var
+  Entry: TNightscoutEntry;
+  AlarmReached, UrgentAlarmReached: Boolean;
+begin
+  AlarmReached := False;
+  UrgentAlarmReached := False;
+
+  Entry := Entries.Last();
+  if Assigned(Entry) then
+  begin
+    AlarmReached := Settings.IsGlucoseLevelAlarmExists(Entry);
+    UrgentAlarmReached := Settings.IsUrgentGlucoseLevelAlarmExists(Entry);
+    GlucoseLevelAlarmBlinkTrigger := not GlucoseLevelAlarmBlinkTrigger;
+  end;
+  NeedGlucoseLevelAlarmBlink :=
+    Settings.EnableGlucoseLevelAlarms and
+    Settings.IsSnoozeAlarmsEndTimePassed() and
+    (AlarmReached or UrgentAlarmReached) ;
 end;
 
 procedure TfMain.DoOpacityPercentClick(Sender: TObject);
@@ -633,6 +743,12 @@ begin
   LoadWallpeper(Settings.WallpaperFileName);
 end;
 
+
+procedure TfMain.pmPopup(Sender: TObject);
+begin
+  UpdateSnoozeMenuItemCaption();
+end;
+
 procedure TfMain.DoScaleIndexClick(Sender: TObject);
 begin
   SetScaleIndex(TComponent(Sender).Tag);
@@ -641,6 +757,11 @@ end;
 procedure TfMain.actStayOnTopExecute(Sender: TObject);
 begin
   SetSystemStayOnTop(TAction(Sender).Checked);
+end;
+
+procedure TfMain.DoSnoozeAlarmsExecute(Sender: TObject);
+begin
+  SnoozeAlarms(TAction(Sender).Tag);
 end;
 
 procedure TfMain.FormMouseEnter(Sender: TObject);
@@ -712,9 +833,7 @@ begin
   else
     tmrTimer(tmr); // Load data from nightscout site and start monitoring
 
-
   ShowInTaskBar := stNever;
-  //Application.MainFormOnTaskBar := False;
 end;
 
 function TfMain.GetEntriesUrl: string;
@@ -985,7 +1104,7 @@ begin
   end;
 end;
 
-function TfMain.SetMaximumDrawStageSizeToCanvas(DrawStage: TDrawStage; const Text: string): Byte;
+function TfMain.SetMaximumDrawStageSizeToCanvas(DrawStage: TDrawStage; const AText: string): Byte;
 var
   TextSize: TSize;
   ScaleIndex: Integer;
@@ -993,7 +1112,7 @@ begin
   ScaleIndex := Settings.ScaleIndex;
   repeat
     cnv.Font.Size := GetDrawStageSize(DrawStage, ScaleIndex);
-    TextSize := cnv.TextExtent(Text);
+    TextSize := cnv.TextExtent(AText);
     Dec(ScaleIndex);
   until (ScaleIndex < 1) or ((TextSize.cx < ClientWidth) and (TextSize.cy < ClientHeight)) ;
   Result := ScaleIndex + 1;
@@ -1041,7 +1160,9 @@ procedure TfMain.tmrProgressBarTimer(Sender: TObject);
 begin
   pb.Position := pb.Position + 1;
   CheckStaleDataAlarms;
-  DraiTrayIcon;
+  CheckGlucoseLevelAlarms;
+  DrawTrayIcon;  ;
+  Invalidate();
 end;
 
 procedure TfMain.tmrTimer(Sender: TObject);
@@ -1056,20 +1177,23 @@ begin
     tmrProgressBar.Enabled := True;
     Connected := True;
     StaleAlarmBlinkTrigger := False;
+    GlucoseLevelAlarmBlinkTrigger := False;
   end
   else
     actSetNightscoutSiteExecute(actSetNightscoutSite);
 
   UpdateHint();
   UpdateApplicationTitle();
+  DrawTrayIcon;
+
   HardInvalidate();
 end;
 
-function ContainsText(Text: string; SubText: string): Boolean;
+function ContainsText(AText: string; SubText: string): Boolean;
 begin
-  Text := UpperCase(Text);
+  AText := UpperCase(AText);
   SubText := UpperCase(SubText);
-  Result := Pos(SubText, Text) > 0;
+  Result := Pos(SubText, AText) > 0;
 end;
 
 function TfMain.GetArrowRect(Slope: string; ArrowAreaRect: TRect; var OutPoints: TRect): Boolean;
@@ -1158,7 +1282,7 @@ begin
   end;
 end;
 
-procedure TfMain.DrawTextInCenter(const Text: string);
+procedure TfMain.DrawTextInCenter(const AText: string);
 var
   TextSize: TSize;
   TextPoint: TPoint;
@@ -1166,11 +1290,11 @@ begin
   cnv.Brush.Color := Color;
   SetBkMode(cnv.Handle, TRANSPARENT);
   cnv.Font.Size := GetDrawStageSize(dsLastGlucoseLevel);
-  TextSize := cnv.TextExtent(Text);
+  TextSize := cnv.TextExtent(AText);
   TextPoint.X := Floor((DrawPanel.Width - TextSize.cx) / 2);
   TextPoint.Y := Floor((DrawPanel.Height - TextSize.cy - (DrawPanel.Height / 10)) / 2);
   cnv.Font.Color := cLastGlucoseLevelColor;
-  cnv.TextOut(TextPoint.X, TextPoint.Y, Text);
+  cnv.TextOut(TextPoint.X, TextPoint.Y, AText);
 end;
 
 procedure TfMain.DoDrawStages(DrawStages: TDrawStages);
@@ -1184,7 +1308,7 @@ var
     SlopeWidth, j: integer;
   EntryWidth, EntryHeight, MarginX, MarginY: Double;
   Entry, LastEntry: TNightscoutEntry;
-  Text, TextWithSlope: string;
+  AText, TextWithSlope: string;
   TextSize: TSize;
   LastGlucoseLevelPoint, GlucoseMarker: TPoint;
   SlopeRect, ArrowRect, TextRect: TRect;
@@ -1302,8 +1426,8 @@ begin
       end;
 
       cnv.Font.Size := GetDrawStageSize(dsGlucoseLevel);
-      Text := Entry.GetGlucoseStr(Settings.IsMmolL);
-      TextSize := cnv.TextExtent(Text);
+      AText := Entry.GetGlucoseStr(Settings.IsMmolL);
+      TextSize := cnv.TextExtent(AText);
       NeedDrawGlucoseExtremePoints :=
         (dsGlucoseExtremePoints in DrawStages) and
         ((i = 0) or
@@ -1322,7 +1446,7 @@ begin
         cnv.Font.Color := cGlucoseLevelColor;
         // Draw glucose level value in the center of graph point
         cnv.Rectangle(TextRect);
-        cnv.TextOut(GlucoseMarker.X, GlucoseMarker.Y, Text);
+        cnv.TextOut(GlucoseMarker.X, GlucoseMarker.Y, AText);
         //cnv.MoveTo(x, y);
       end;
 
@@ -1331,7 +1455,7 @@ begin
         cnv.Brush.Color := cGlucoseExtremePointsBrushColor;
         cnv.Font.Color := cGlucoseExtremePointsColor;
         cnv.Rectangle(TextRect);
-        cnv.TextOut(GlucoseMarker.X, GlucoseMarker.Y, Text);
+        cnv.TextOut(GlucoseMarker.X, GlucoseMarker.Y, AText);
         //cnv.MoveTo(x, y);
       end;
     end;
@@ -1342,10 +1466,10 @@ begin
   begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
-    Text := Settings.GetGlucoseLevelDateText(LastEntry.Date, Now(), LastGlucoseLevelDateColor);
-    SetMaximumDrawStageSizeToCanvas(dsLastGlucoseLevelDate, Text);
-    TextSize := cnv.TextExtent(Text);
-    DrawStrokedText(Text,
+    AText := Settings.GetGlucoseLevelDateText(LastEntry.Date, Now(), LastGlucoseLevelDateColor);
+    SetMaximumDrawStageSizeToCanvas(dsLastGlucoseLevelDate, AText);
+    TextSize := cnv.TextExtent(AText);
+    DrawStrokedText(AText,
       Floor(DrawPanel.Width - TextSize.cx - cSmallMargin),
       Floor(DrawPanel.Height - TextSize.cy - cSmallMargin),
       LastGlucoseLevelDateColor);
@@ -1355,34 +1479,34 @@ begin
   begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
-    Text := Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL);
-    SetMaximumDrawStageSizeToCanvas(dsGlucoseLevelDelta, Text);
-    TextSize := cnv.TextExtent(Text);
-    DrawStrokedText(Text, (DrawPanel.Width - TextSize.cx) div 2,  0, cGlucoseLevelDeltaColor);
+    AText := Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL);
+    SetMaximumDrawStageSizeToCanvas(dsGlucoseLevelDelta, AText);
+    TextSize := cnv.TextExtent(AText);
+    DrawStrokedText(AText, (DrawPanel.Width - TextSize.cx) div 2,  0, cGlucoseLevelDeltaColor);
   end;
 
   if dsGlucoseAvg in DrawStages then
   begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
-    Text := 'Avg: ' + Entries.GetAvgGlucoseStr(Settings.IsMmolL);
-    SetMaximumDrawStageSizeToCanvas(dsGlucoseAvg, Text);
-    TextSize := cnv.TextExtent(Text);
-    DrawStrokedText(Text, cSmallMargin, (DrawPanel.Height - TextSize.cy) - cSmallMargin, cGlucoseAvgColor);
+    AText := 'Avg: ' + Entries.GetAvgGlucoseStr(Settings.IsMmolL);
+    SetMaximumDrawStageSizeToCanvas(dsGlucoseAvg, AText);
+    TextSize := cnv.TextExtent(AText);
+    DrawStrokedText(AText, cSmallMargin, (DrawPanel.Height - TextSize.cy) - cSmallMargin, cGlucoseAvgColor);
   end;
 
   if (dsLastGlucoseLevel in DrawStages) or (dsGlucoseSlope in DrawStages)  then
   begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
-    Text := LastEntry.GetGlucoseStr(Settings.IsMmolL);
+    AText := LastEntry.GetGlucoseStr(Settings.IsMmolL);
 
-    TextWithSlope := Text;
+    TextWithSlope := AText;
     if dsGlucoseSlope in DrawStages then
       TextWithSlope := TextWithSlope + '-----';
 
     GlucoseSlopeScaleIndex := SetMaximumDrawStageSizeToCanvas(dsLastGlucoseLevel, TextWithSlope);
-    TextSize := cnv.TextExtent(Text);
+    TextSize := cnv.TextExtent(AText);
     LastGlucoseLevelPoint.X := Floor((DrawPanel.Width - TextSize.cx) / 2);
     if dsGlucoseSlope in DrawStages then
       LastGlucoseLevelPoint.X := LastGlucoseLevelPoint.X - Floor((TextSize.cx / 4));
@@ -1398,7 +1522,7 @@ begin
       FontColor := cLastGlucoseLevelColor;
 
     if dsLastGlucoseLevel in DrawStages then
-      DrawStrokedText(Text, LastGlucoseLevelPoint.X, LastGlucoseLevelPoint.Y, FontColor);
+      DrawStrokedText(AText, LastGlucoseLevelPoint.X, LastGlucoseLevelPoint.Y, FontColor);
 
     if dsGlucoseSlope in DrawStages then
     begin
@@ -1423,7 +1547,7 @@ begin
   end;
 end;
 
-procedure TfMain.DrawStrokedText(const Text: string; const X, Y: Integer; const TextColor: TColor);
+procedure TfMain.DrawStrokedText(const AText: string; const X, Y: Integer; const TextColor: TColor);
 var
   OffsetPoints: array [0..15] of TPoint;
   i, StartI: Integer;
@@ -1456,13 +1580,13 @@ begin
   begin
     cnv.TextOut(
       X + OffsetPoints[i].X,
-      Y + OffsetPoints[i].Y, Text);
+      Y + OffsetPoints[i].Y, AText);
     cnv.MoveTo(X, Y);
   end;
 
   // Draw main text
   cnv.Font.Color := TextColor;
-  cnv.TextOut(X, Y, Text);
+  cnv.TextOut(X, Y, AText);
 end;
 
 procedure TfMain.DoDraw(Sender: TObject);
@@ -1517,16 +1641,16 @@ var
   LastEntryGlucose: String;
 begin
   Application.Title := 'Nightscout Watcher';
-  if Entries.Count < 1 then
-    Exit;
-
-  LastEntryGlucose := Entries.Last.GetGlucoseStr(Settings.IsMmolL);
-  Application.Title := Format('%s (%s) - %s', [LastEntryGlucose, Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL), Application.Title]);
+  if Entries.Count > 0 then
+  begin
+    LastEntryGlucose := Entries.Last.GetGlucoseStr(Settings.IsMmolL);
+    Application.Title := Format('%s (%s) - %s', [LastEntryGlucose, Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL), Application.Title]);
+  end;
+  Caption := Application.Title;
 end;
 
 procedure TfMain.UpdateHint();
 begin
-  DrawPanel.Hint := GetHintText();
   TrayIcon.Hint := GetHintText();
 end;
 

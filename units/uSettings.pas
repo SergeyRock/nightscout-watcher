@@ -37,6 +37,8 @@ const
   cGlucoseExtremePointsBrushColor = clBlue;
   cGlucoseLevelDeltaColor = clWhite;
   cGlucoseAvgColor = clWhite;
+  cTrayIconColor = clBlue;
+  cTrayIconSnoozedColor = clGray;
 
   cHighGlucoseColor = clWhite;
   cHighGlucoseBrushColor = clYellow;
@@ -81,24 +83,27 @@ type
     UrgentStaleDataAlarm: Integer;
     StayOnTop: Boolean;
     WallpaperFileName: string;
+    SnoozeAlarmsEndTime: TDateTime;
   private
-    function GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast: TDateTime
-      ): Integer;
+    function GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast: TDateTime): Integer;
   public
     constructor Create();
     function GetColorByGlucoseLevel(Glucose: Integer): TColor;
     function IsStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
     function IsUrgentStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
+    function IsGlucoseLevelAlarmExists(Entry: TNightscoutEntry): Boolean;
+    function IsUrgentGlucoseLevelAlarmExists(Entry: TNightscoutEntry): Boolean;
     function Clone(): TSettings;
     function GetTimeBetweenDatesText(DateFirst, DateLast: TDateTime): string;
-    function GetGlucoseLevelDateText(DateFirst, DateLast: TDateTime; out
-      OutColor: TColor): string;
+    function GetGlucoseLevelDateText(DateFirst, DateLast: TDateTime; out OutColor: TColor): string;
     function IsInDrawStage(DrawStage: TDrawStage): Boolean; overload;
     function IsInDrawStage(ADrawStages: TDrawStages): Boolean; overload;
     function SetScaleIndex(Index: Integer): Boolean;
+    function IsSnoozeAlarmsEndTimePassed(): Boolean;
     procedure AddDrawStage(DrawStage: TDrawStage);
     procedure Assign(Settings: TSettings);
     procedure RemoveDrawStage(DrawStage: TDrawStage);
+    procedure SnoozeAlarms(Seconds: Integer);
     procedure SwitchDrawStage(DrawStage: TDrawStage; IncludeDrawStage: Boolean);
   end;
 
@@ -117,6 +122,11 @@ end;
 procedure TSettings.RemoveDrawStage(DrawStage: TDrawStage);
 begin
   DrawStages := DrawStages - [DrawStage];
+end;
+
+procedure TSettings.SnoozeAlarms(Seconds: Integer);
+begin
+  SnoozeAlarmsEndTime := Now() + Seconds / SecsPerDay;
 end;
 
 function TSettings.IsInDrawStage(DrawStage: TDrawStage): Boolean;
@@ -202,8 +212,8 @@ end;
 constructor TSettings.Create();
 begin
   DrawStages := [dsLastGlucoseLevel, dsGlucoseLines, dsHorzGuideLines,
-    dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope, dsGlucoseExtremePoints,
-    dsGlucoseLevelDelta, dsGlucoseAvg];
+    dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope,
+    dsGlucoseExtremePoints, dsGlucoseLevelDelta, dsGlucoseAvg];
   AlphaBlendValue := 200;
   CheckInterval := 20;
   CountOfEntriesToRecive := 40;
@@ -224,6 +234,7 @@ begin
   TimeZoneCorrection := 0;
   StayOnTop := True;
   WallpaperFileName := '';
+  SnoozeAlarmsEndTime := Now();
 end;
 
 function TSettings.GetColorByGlucoseLevel(Glucose: Integer): TColor;
@@ -254,6 +265,16 @@ begin
   Result := GetEntryMinsWithTimeZoneCorrection(Entry.Date, Now()) >= UrgentStaleDataAlarm;
 end;
 
+function TSettings.IsGlucoseLevelAlarmExists(Entry: TNightscoutEntry): Boolean;
+begin
+  Result := (Entry.Glucose <= LowGlucoseAlarm) or (Entry.Glucose >= HighGlucoseAlarm);
+end;
+
+function TSettings.IsUrgentGlucoseLevelAlarmExists(Entry: TNightscoutEntry): Boolean;
+begin
+  Result := (Entry.Glucose <= UrgentLowGlucoseAlarm) or (Entry.Glucose >= UrgentHighGlucoseAlarm);
+end;
+
 function TSettings.SetScaleIndex(Index: Integer): Boolean;
 var
   OldScaleIndex: Byte;
@@ -267,6 +288,11 @@ begin
     ScaleIndex := Index;
 
   Result := OldScaleIndex <> ScaleIndex;
+end;
+
+function TSettings.IsSnoozeAlarmsEndTimePassed(): Boolean;
+begin
+  Result := SnoozeAlarmsEndTime <= Now();
 end;
 
 function TSettings.GetGlucoseLevelDateText(DateFirst, DateLast: TDateTime; out OutColor: TColor): string;

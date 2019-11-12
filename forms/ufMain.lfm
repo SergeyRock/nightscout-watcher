@@ -1,7 +1,7 @@
 object fMain: TfMain
-  Left = 3026
+  Left = 2025
   Height = 157
-  Top = 435
+  Top = 353
   Width = 301
   AlphaBlend = True
   AlphaBlendValue = 230
@@ -44,6 +44,7 @@ object fMain: TfMain
     TabOrder = 0
   end
   object pm: TPopupMenu
+    OnPopup = pmPopup
     left = 240
     top = 8
     object miSetNightscoutSite: TMenuItem
@@ -61,6 +62,30 @@ object fMain: TfMain
     end
     object miShowSettings: TMenuItem
       Action = actShowSettings
+    end
+    object miSnoozeAlarms: TMenuItem
+      Caption = 'Snooze alarms'
+      object miSnoozeAlarms10mins: TMenuItem
+        Action = actSnoozeAlarms10mins
+      end
+      object miSnoozeAlarms30mins: TMenuItem
+        Action = actSnoozeAlarms30mins
+      end
+      object miSnoozeAlarms60mins: TMenuItem
+        Action = actSnoozeAlarms60mins
+      end
+      object miSnoozeAlarms90mins: TMenuItem
+        Action = actSnoozeAlarms90mins
+      end
+      object miSnoozeAlarms120mins: TMenuItem
+        Action = actSnoozeAlarms120mins
+      end
+      object miSnoozeAlarmsSeparator: TMenuItem
+        Caption = '-'
+      end
+      object miSnoozeAlarmsReset: TMenuItem
+        Action = actSnoozeAlarmsReset
+      end
     end
     object miSeparator1: TMenuItem
       Caption = '-'
@@ -490,6 +515,41 @@ object fMain: TfMain
       Checked = True
       OnExecute = actStayOnTopExecute
       ShortCut = 84
+    end
+    object actSnoozeAlarms10mins: TAction
+      Tag = 600
+      Category = 'Other'
+      Caption = 'Snooze alarms for 10 mins'
+      OnExecute = DoSnoozeAlarmsExecute
+    end
+    object actSnoozeAlarms30mins: TAction
+      Tag = 1800
+      Category = 'Other'
+      Caption = 'Snooze alarms for 30 mins'
+      OnExecute = DoSnoozeAlarmsExecute
+    end
+    object actSnoozeAlarms60mins: TAction
+      Tag = 3600
+      Category = 'Other'
+      Caption = 'Snooze alarms for 60 mins'
+      OnExecute = DoSnoozeAlarmsExecute
+    end
+    object actSnoozeAlarms90mins: TAction
+      Tag = 5400
+      Category = 'Other'
+      Caption = 'Snooze alarms for 90 mins'
+      OnExecute = DoSnoozeAlarmsExecute
+    end
+    object actSnoozeAlarms120mins: TAction
+      Tag = 7200
+      Category = 'Other'
+      Caption = 'Snooze alarms for 2 hours'
+      OnExecute = DoSnoozeAlarmsExecute
+    end
+    object actSnoozeAlarmsReset: TAction
+      Category = 'Other'
+      Caption = 'Reset alarms'
+      OnExecute = DoSnoozeAlarmsExecute
     end
   end
   object TrayIcon: TTrayIcon
