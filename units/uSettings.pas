@@ -304,10 +304,14 @@ begin
   Result := '';
   Mins := GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast);
 
-  if Mins >= StaleDataAlarm then
-    OutColor := cWarningColor
-  else
-    OutColor := cLastGlucoseLevelDateColor;
+  OutColor := cLastGlucoseLevelDateColor;
+  if EnableStaleDataAlarms then
+  begin
+    if Mins >= UrgentStaleDataAlarm then
+      OutColor := cUrgentAlarmColor
+    else if Mins >= StaleDataAlarm then
+      OutColor := cAlarmColor;
+  end;
 
   if Mins < 1 then
   begin
