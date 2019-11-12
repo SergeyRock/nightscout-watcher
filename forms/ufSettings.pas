@@ -25,6 +25,7 @@ type
     btnLoadWallpaper: TButton;
     btnOK: TButton;
     btnCancel: TButton;
+    cbStayOnTop: TCheckBox;
     cbDrawGlucoseLevelDelta: TCheckBox;
     cbDrawGlucoseAvg: TCheckBox;
     cbEnableGlucoseLevelAlarms: TCheckBox;
@@ -96,8 +97,8 @@ type
     procedure lblGitHubLinkClick(Sender: TObject);
     procedure pcChange(Sender: TObject);
   private
+    SourceSettings: TSettings;
     OldSettings: TSettings;
-    TmpSettings: TSettings;
     NewSettings: TSettings;
     OnUpdateCallerFormWithSettings: TOnUpdateCallerFormWithSettings;
     OnTryLoadEntriesData: TOnTryLoadEntriesData;
@@ -147,9 +148,9 @@ end;
 procedure TfSettings.btnOKClick(Sender: TObject);
 begin
   AssignComponentsToSettings();
-  OldSettings.Assign(NewSettings);
+  SourceSettings.Assign(NewSettings);
   
-  if (NewSettings.NightscoutUrl <> OldSettings.NightscoutUrl) and
+  if (NewSettings.NightscoutUrl <> SourceSettings.NightscoutUrl) and
     Assigned(OnTryLoadEntriesData) and not OnTryLoadEntriesData then
   begin
     ModalResult := mrNone;
@@ -169,9 +170,9 @@ end;
 constructor TfSettings.CreateSpecial(AOwner: TComponent; Settings: TSettings; ActivePageIndex: Integer = 0);
 begin
   inherited Create(AOwner);
-  OldSettings := Settings;
+  SourceSettings := Settings;
   NewSettings := Settings.Clone;
-  TmpSettings := Settings.Clone;
+  OldSettings := Settings.Clone;
   AssignSettingsToComponents();
   AssignComponentsOnChangeEvent();
   pc.ActivePageIndex := ActivePageIndex;
@@ -208,6 +209,7 @@ begin
   cbDrawGlucoseSlope.OnClick := DoChange;
   cbDrawVertGuideLines.OnClick := DoChange;
   cbShowWindowBorder.OnClick := DoChange;
+  cbStayOnTop.OnClick := DoChange;
   cbDrawAlertLines.OnClick := DoChange;
   cbDrawGlucoseLevelPoints.OnClick := DoChange;
   cbDrawGlucoseLevelDelta.OnClick := DoChange;
@@ -218,7 +220,7 @@ end;
 procedure TfSettings.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(NewSettings);
-  FreeAndNil(TmpSettings);
+  FreeAndNil(OldSettings);
 end;
 
 procedure TfSettings.AssignGlucoseAlertInMmolL(SpinEdit: TSpinEdit);
@@ -262,7 +264,7 @@ end;
 procedure TfSettings.DoChange(Sender: TObject);
 begin
   AssignComponentsToSettings();
-  OldSettings.Assign(NewSettings);
+  SourceSettings.Assign(NewSettings);
   if Assigned(OnUpdateCallerFormWithSettings) then
     OnUpdateCallerFormWithSettings;
 end;
@@ -289,6 +291,7 @@ begin
   cbIsMmolL.Checked := NewSettings.IsMmolL;
   cbShowCheckNewDataProgressBar.Checked := NewSettings.ShowCheckNewDataProgressBar;
   cbShowWindowBorder.Checked := NewSettings.ShowWindowBorder;
+  cbStayOnTop.Checked := NewSettings.StayOnTop;
   sbAlphaBlend.Position := NewSettings.AlphaBlendValue;
   sbScale.Max := Length(cDrawStageSizes[1]);
   sbScale.Position := NewSettings.ScaleIndex;
@@ -340,6 +343,7 @@ begin
 
   NewSettings.ShowCheckNewDataProgressBar := cbShowCheckNewDataProgressBar.Checked;
   NewSettings.ShowWindowBorder := cbShowWindowBorder.Checked;
+  NewSettings.StayOnTop := cbStayOnTop.Checked;
   NewSettings.NightscoutUrl := eNightscoutSite.Text;
 
   NewSettings.ScaleIndex := sbScale.Position;
@@ -360,7 +364,7 @@ begin
     F.OnTryLoadEntriesData := OnTryLoadEntriesData;
     Result := F.ShowModal = mrOk;
     if not Result then
-      Settings.Assign(F.TmpSettings);
+      Settings.Assign(F.OldSettings);
   finally
     FreeAndNil(F);
   end;

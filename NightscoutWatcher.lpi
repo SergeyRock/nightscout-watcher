@@ -24,10 +24,9 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <MinorVersionNr Value="4"/>
-      <RevisionNr Value="1"/>
-      <BuildNr Value="96"/>
-      <Attributes pvaPreRelease="True"/>
+      <MinorVersionNr Value="5"/>
+      <BuildNr Value="100"/>
+      <StringTable LegalCopyright="Sergey Oleynikov"/>
     </VersionInfo>
     <BuildModes Count="3">
       <Item1 Name="Default" Default="True"/>

@@ -33,6 +33,8 @@ type
     actDrawGlucoseLevelDelta: TAction;
     actDrawGlucoseAvg: TAction;
     actDrawWallpaper: TAction;
+    actStayOnTop: TAction;
+    miStayOnTop: TMenuItem;
     miDrawWallpaper: TMenuItem;
     miDrawGlucoseAvg: TMenuItem;
     miSeparator4: TMenuItem;
@@ -113,6 +115,7 @@ type
     miFullScreen: TMenuItem;
     actDrawGlucoseLevelPoints: TAction;
     miDrawGlucoseLevelPoints: TMenuItem;
+    procedure actStayOnTopExecute(Sender: TObject);
     procedure DoScaleIndexClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -186,6 +189,7 @@ type
     procedure HardInvalidate();
     procedure ApplyWindowSettings();
     procedure SetScaleIndex(ScaleIndex: Integer);
+    procedure SetSystemStayOnTop(StayOnTop: Boolean);
     procedure UpdateApplicationTitle();
     procedure UpdateHint();
   end;
@@ -219,6 +223,16 @@ begin
 end;
 
 { TfMain }
+
+procedure TfMain.SetSystemStayOnTop(StayOnTop: Boolean);
+begin
+  Settings.StayOnTop := StayOnTop;
+  if StayOnTop then
+    FormStyle := fsSystemStayOnTop
+  else
+    FormStyle := fsNormal;
+  actStayOnTop.Checked := StayOnTop;
+end;
 
 procedure TfMain.SetScaleIndex(ScaleIndex: Integer);
 var
@@ -354,7 +368,7 @@ begin
     DoUpdateCallerFormWithSettings();
     tmrTimer(tmr);
   finally
-    FormStyle := fsSystemStayOnTop;
+    SetSystemStayOnTop(Settings.StayOnTop);
   end;
 end;
 
@@ -437,7 +451,6 @@ begin
   Entries := TNightscoutEntryList.Create;
 
   CreateDrawPanel();
-  FormStyle := fsSystemStayOnTop;
   Caption := Caption + '. Ver: ' + GetVersion();
 end;
 
@@ -549,6 +562,11 @@ end;
 procedure TfMain.DoScaleIndexClick(Sender: TObject);
 begin
   SetScaleIndex(TComponent(Sender).Tag);
+end;
+
+procedure TfMain.actStayOnTopExecute(Sender: TObject);
+begin
+  SetSystemStayOnTop(TAction(Sender).Checked);
 end;
 
 procedure TfMain.FormMouseEnter(Sender: TObject);
@@ -776,6 +794,7 @@ begin
     SetScaleIndex(ini.ReadInteger('Visual', 'ScaleIndex', Settings.ScaleIndex));
     Settings.ShowWindowBorder := ini.ReadBool('Visual', 'ShowWindowBorder', Settings.ShowWindowBorder);
     Settings.FullScreen := ini.ReadBool('Visual', 'FullScreen', Settings.FullScreen);
+    Settings.StayOnTop := ini.ReadBool('Visual', 'StayOnTop', Settings.StayOnTop);
 
     Settings.HighGlucoseAlarm := ini.ReadInteger('Alarms', 'HighGlucoseAlarm', Settings.HighGlucoseAlarm);
     Settings.LowGlucoseAlarm := ini.ReadInteger('Alarms', 'LowGlucoseAlarm', Settings.LowGlucoseAlarm);
@@ -793,6 +812,7 @@ begin
   BoundsRect := BoundsRectLoaded;
   ApplyWindowSettings();
   LoadWallpeper(Settings.WallpaperFileName);
+  SetSystemStayOnTop(Settings.StayOnTop);
   HardInvalidate();
 end;
 
@@ -836,6 +856,7 @@ begin
     ini.WriteInteger('Visual', 'WindowBottom', BoundsRect.Bottom);
 
     ini.WriteInteger('Visual', 'ScaleIndex', Settings.ScaleIndex);
+    ini.WriteBool('Visual', 'StayOnTop', Settings.StayOnTop);
 
     ini.WriteInteger('Alarms', 'HighGlucoseAlarm', Settings.HighGlucoseAlarm);
     ini.WriteInteger('Alarms', 'LowGlucoseAlarm', Settings.LowGlucoseAlarm);

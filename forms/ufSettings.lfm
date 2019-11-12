@@ -1,11 +1,11 @@
 object fSettings: TfSettings
-  Left = 2414
+  Left = 1229
   Height = 500
-  Top = 211
-  Width = 570
+  Top = 217
+  Width = 603
   Caption = 'Settings'
   ClientHeight = 500
-  ClientWidth = 570
+  ClientWidth = 603
   Color = clBtnFace
   Constraints.MinHeight = 500
   Constraints.MinWidth = 570
@@ -28,7 +28,7 @@ object fSettings: TfSettings
     TabOrder = 0
   end
   object btnCancel: TButton
-    Left = 377
+    Left = 410
     Height = 36
     Top = 447
     Width = 82
@@ -41,7 +41,7 @@ object fSettings: TfSettings
     Left = 0
     Height = 432
     Top = 0
-    Width = 570
+    Width = 603
     ActivePage = tsAbout
     Align = alTop
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -51,7 +51,7 @@ object fSettings: TfSettings
     object tsMain: TTabSheet
       Caption = 'Main'
       ClientHeight = 400
-      ClientWidth = 562
+      ClientWidth = 595
       object lblCheckInterval: TLabel
         Left = 13
         Height = 19
@@ -150,7 +150,7 @@ object fSettings: TfSettings
         Left = 13
         Height = 27
         Top = 40
-        Width = 536
+        Width = 569
         Anchors = [akTop, akLeft, akRight]
         Font.Color = clWindowText
         Font.Height = -16
@@ -176,7 +176,7 @@ object fSettings: TfSettings
     object tsVisual: TTabSheet
       Caption = 'Diagram'
       ClientHeight = 400
-      ClientWidth = 562
+      ClientWidth = 595
       object lblScale: TLabel
         Left = 13
         Height = 19
@@ -204,11 +204,11 @@ object fSettings: TfSettings
         ParentFont = False
       end
       object cbDrawHorzGuideLines: TCheckBox
-        Left = 253
+        Left = 277
         Height = 23
-        Top = 102
-        Width = 213
-        Caption = 'Draw horizontal guide lines'
+        Top = 39
+        Width = 173
+        Caption = 'Horizontal guide lines'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -217,11 +217,11 @@ object fSettings: TfSettings
         Visible = False
       end
       object cbDrawVertGuideLines: TCheckBox
-        Left = 253
+        Left = 277
         Height = 23
-        Top = 72
-        Width = 193
-        Caption = 'Draw vertical guide lines'
+        Top = 16
+        Width = 153
+        Caption = 'Vertical guide lines'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -232,8 +232,8 @@ object fSettings: TfSettings
         Left = 13
         Height = 23
         Top = 16
-        Width = 181
-        Caption = 'Draw last glucose level'
+        Width = 143
+        Caption = 'Last glucose level'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -243,9 +243,9 @@ object fSettings: TfSettings
       object cbDrawLastGlucoseLevelDate: TCheckBox
         Left = 13
         Height = 23
-        Top = 224
-        Width = 216
-        Caption = 'Draw last glucose level date'
+        Top = 185
+        Width = 246
+        Caption = 'Last glucose level retreived time'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -255,9 +255,9 @@ object fSettings: TfSettings
       object cbDrawGlucoseExtremePoints: TCheckBox
         Left = 13
         Height = 23
-        Top = 102
-        Width = 225
-        Caption = 'Draw glucose extreme points'
+        Top = 88
+        Width = 185
+        Caption = 'Glucose extreme points'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -267,9 +267,9 @@ object fSettings: TfSettings
       object cbDrawGlucoseLevel: TCheckBox
         Left = 13
         Height = 23
-        Top = 163
-        Width = 152
-        Caption = 'Draw glucose level'
+        Top = 137
+        Width = 112
+        Caption = 'Glucose level'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -279,9 +279,9 @@ object fSettings: TfSettings
       object cbDrawGlucoseLines: TCheckBox
         Left = 13
         Height = 23
-        Top = 72
-        Width = 152
-        Caption = 'Draw glucose lines'
+        Top = 63
+        Width = 112
+        Caption = 'Glucose lines'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -291,9 +291,9 @@ object fSettings: TfSettings
       object cbDrawGlucoseSlope: TCheckBox
         Left = 13
         Height = 23
-        Top = 44
-        Width = 157
-        Caption = 'Draw glucose slope'
+        Top = 39
+        Width = 117
+        Caption = 'Glucose slope'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -301,7 +301,7 @@ object fSettings: TfSettings
         TabOrder = 1
       end
       object cbShowCheckNewDataProgressBar: TCheckBox
-        Left = 253
+        Left = 277
         Height = 23
         Top = 164
         Width = 288
@@ -310,10 +310,10 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 13
+        TabOrder = 14
       end
       object cbShowWindowBorder: TCheckBox
-        Left = 253
+        Left = 277
         Height = 23
         Top = 133
         Width = 171
@@ -322,38 +322,38 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 12
+        TabOrder = 13
       end
       object sbScale: TScrollBar
         Left = 13
         Height = 17
         Top = 294
-        Width = 535
+        Width = 568
         Anchors = [akLeft, akRight, akBottom]
         Max = 15
         Min = 1
         PageSize = 0
         Position = 10
-        TabOrder = 17
+        TabOrder = 18
       end
       object sbAlphaBlend: TScrollBar
         Left = 13
         Height = 17
         Top = 360
-        Width = 535
+        Width = 568
         Anchors = [akLeft, akRight, akBottom]
         Max = 255
         Min = 1
         PageSize = 0
         Position = 10
-        TabOrder = 18
+        TabOrder = 19
       end
       object cbDrawAlertLines: TCheckBox
         Left = 13
         Height = 23
-        Top = 194
-        Width = 130
-        Caption = 'Draw alert lines'
+        Top = 160
+        Width = 91
+        Caption = 'Alert lines'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -363,9 +363,9 @@ object fSettings: TfSettings
       object cbDrawGlucoseLevelPoints: TCheckBox
         Left = 13
         Height = 23
-        Top = 133
-        Width = 200
-        Caption = 'Draw glucose level points'
+        Top = 113
+        Width = 160
+        Caption = 'Glucose level points'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -373,11 +373,11 @@ object fSettings: TfSettings
         TabOrder = 4
       end
       object cbDrawGlucoseLevelDelta: TCheckBox
-        Left = 253
+        Left = 13
         Height = 23
-        Top = 16
-        Width = 191
-        Caption = 'Draw glucose level delta'
+        Top = 209
+        Width = 151
+        Caption = 'Glucose level delta'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -385,11 +385,11 @@ object fSettings: TfSettings
         TabOrder = 8
       end
       object cbDrawGlucoseAvg: TCheckBox
-        Left = 253
+        Left = 13
         Height = 23
-        Top = 44
-        Width = 175
-        Caption = 'Draw glucose average'
+        Top = 232
+        Width = 172
+        Caption = 'Glucose level average'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -397,29 +397,29 @@ object fSettings: TfSettings
         TabOrder = 9
       end
       object eWallpaper: TEdit
-        Left = 253
+        Left = 277
         Height = 27
         Top = 224
-        Width = 232
+        Width = 241
         Anchors = [akTop, akLeft, akRight]
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 15
+        TabOrder = 16
       end
       object btnLoadWallpaper: TButton
-        Left = 495
+        Left = 528
         Height = 27
         Top = 224
         Width = 53
         Anchors = [akTop, akRight]
         Caption = '. . .'
         OnClick = btnLoadWallpaperClick
-        TabOrder = 16
+        TabOrder = 17
       end
       object cbDrawWallpaper: TCheckBox
-        Left = 253
+        Left = 277
         Height = 23
         Top = 194
         Width = 304
@@ -428,13 +428,25 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 14
+        TabOrder = 15
+      end
+      object cbStayOnTop: TCheckBox
+        Left = 277
+        Height = 23
+        Top = 104
+        Width = 109
+        Caption = 'Stay On Top'
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        ParentFont = False
+        TabOrder = 12
       end
     end
     object tsAlerts: TTabSheet
       Caption = 'Alerts'
       ClientHeight = 400
-      ClientWidth = 562
+      ClientWidth = 595
       object gbGlucoseLevelAlarms: TGroupBox
         Left = 8
         Height = 247
@@ -484,7 +496,7 @@ object fSettings: TfSettings
           WordWrap = True
         end
         object lblMgDl: TLabel
-          Left = 121
+          Left = 119
           Height = 19
           Top = 0
           Width = 42
@@ -661,7 +673,7 @@ object fSettings: TfSettings
     object tsAbout: TTabSheet
       Caption = 'About'
       ClientHeight = 400
-      ClientWidth = 562
+      ClientWidth = 595
       object Image1: TImage
         Left = 8
         Height = 114
@@ -1886,7 +1898,7 @@ object fSettings: TfSettings
       object lblDeveloper: TLabel
         Left = 123
         Height = 19
-        Top = 8
+        Top = 72
         Width = 347
         Caption = 'Developer: Sergey Oleynikov (D1T for %s years)'
         ParentColor = False
@@ -1895,7 +1907,7 @@ object fSettings: TfSettings
         Cursor = crHandPoint
         Left = 123
         Height = 19
-        Top = 40
+        Top = 8
         Width = 361
         Caption = 'https://github.com/SergeyRock/nightscout-watcher'
         Font.Color = clBlue
@@ -1909,7 +1921,7 @@ object fSettings: TfSettings
       object lblVersion: TLabel
         Left = 123
         Height = 19
-        Top = 72
+        Top = 40
         Width = 59
         Caption = 'Version:'
         ParentColor = False

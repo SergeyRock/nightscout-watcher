@@ -79,6 +79,7 @@ type
     UrgentHighGlucoseAlarm: Integer;
     UrgentLowGlucoseAlarm: Integer;
     UrgentStaleDataAlarm: Integer;
+    StayOnTop: Boolean;
     WallpaperFileName: string;
   private
     function GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast: TDateTime
@@ -163,6 +164,7 @@ begin
   ScaleIndex := Settings.ScaleIndex;
   ShowCheckNewDataProgressBar := Settings.ShowCheckNewDataProgressBar;
   ShowWindowBorder := Settings.ShowWindowBorder;
+  StayOnTop := Settings.StayOnTop;
   StaleDataAlarm := Settings.StaleDataAlarm;
   UrgentHighGlucoseAlarm := Settings.UrgentHighGlucoseAlarm;
   UrgentLowGlucoseAlarm := Settings.UrgentLowGlucoseAlarm;
@@ -188,6 +190,7 @@ begin
   Result.ScaleIndex := ScaleIndex;
   Result.ShowCheckNewDataProgressBar := ShowCheckNewDataProgressBar;
   Result.ShowWindowBorder := ShowWindowBorder;
+  Result.StayOnTop := StayOnTop;
   Result.StaleDataAlarm := StaleDataAlarm;
   Result.UrgentHighGlucoseAlarm := UrgentHighGlucoseAlarm;
   Result.UrgentLowGlucoseAlarm := UrgentLowGlucoseAlarm;
@@ -219,6 +222,7 @@ begin
   UrgentLowGlucoseAlarm:= Round(3.3 * cMmolDenominator);
   UrgentStaleDataAlarm:= 40;
   TimeZoneCorrection := 0;
+  StayOnTop := True;
   WallpaperFileName := '';
 end;
 

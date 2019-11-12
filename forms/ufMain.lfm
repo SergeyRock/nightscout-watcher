@@ -120,6 +120,10 @@ object fMain: TfMain
     object miSeparator4: TMenuItem
       Caption = '-'
     end
+    object miStayOnTop: TMenuItem
+      Action = actStayOnTop
+      AutoCheck = True
+    end
     object miShowWindowBorder: TMenuItem
       Action = actShowWindowBorder
       AutoCheck = True
@@ -478,6 +482,14 @@ object fMain: TfMain
       Caption = 'Draw wallpaper'
       OnExecute = DoDrawStageExecute
       ShortCut = 87
+    end
+    object actStayOnTop: TAction
+      Category = 'Show options'
+      AutoCheck = True
+      Caption = 'Stay On Top'
+      Checked = True
+      OnExecute = actStayOnTopExecute
+      ShortCut = 84
     end
   end
 end
