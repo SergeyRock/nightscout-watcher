@@ -7,14 +7,9 @@ unit ufMain;
 interface
 
 uses
-{$IFnDEF FPC}
-  Windows, Messages,
-{$ELSE}
   LCLIntf, LCLType,
-{$ENDIF}
   uSettings, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs,
-  DateUtils, Contnrs, ExtCtrls, Menus, uNightscout, ComCtrls, ActnList,
-  InterfaceBase;
+  DateUtils, Contnrs, ExtCtrls, Menus, uNightscout, ComCtrls, ActnList;
 
 type
 
@@ -34,6 +29,8 @@ type
     actDrawGlucoseLevelDelta: TAction;
     actDrawGlucoseAvg: TAction;
     actDrawWallpaper: TAction;
+    actShowIconInTray: TAction;
+    actShowIconOnTaskbar: TAction;
     actSnoozeAlarmsReset: TAction;
     actSnoozeAlarms120mins: TAction;
     actSnoozeAlarms90mins: TAction;
@@ -41,6 +38,8 @@ type
     actSnoozeAlarms30mins: TAction;
     actSnoozeAlarms10mins: TAction;
     actStayOnTop: TAction;
+    miShowIconInTray: TMenuItem;
+    miShowIconOnTaskbar: TMenuItem;
     miSnoozeAlarmsSeparator: TMenuItem;
     miSnoozeAlarmsReset: TMenuItem;
     miSnoozeAlarms120mins: TMenuItem;
@@ -131,6 +130,8 @@ type
     actDrawGlucoseLevelPoints: TAction;
     miDrawGlucoseLevelPoints: TMenuItem;
     TrayIcon: TTrayIcon;
+    procedure actShowIconInTrayExecute(Sender: TObject);
+    procedure actShowIconOnTaskbarExecute(Sender: TObject);
     procedure DoSnoozeAlarmsExecute(Sender: TObject);
     procedure actStayOnTopExecute(Sender: TObject);
     procedure DoScaleIndexClick(Sender: TObject);
@@ -181,15 +182,18 @@ type
     OptionsFileName: string;
     Connected: Boolean;
     WasAlphaBlend: Boolean;
-    BoundsRectLoaded: TRect;
     Wallpaper: TBitmap;
     WallpaperJPG: TJPEGImage;
     cnv: TCanvas;
+    procedure FullScreen(AFullScreen: Boolean);
     procedure CheckGlucoseLevelAlarms;
     procedure CreateDrawPanel();
+    procedure DrawApplicationIcon();
+    procedure DrawIcon(IconSize: Integer; TargetIcon: Ticon);
     procedure DrawStrokedText(const AText: string; const X, Y: Integer; const TextColor: TColor);
     function GetHintText(): string;
-    procedure HideIconInTaskbar();
+    procedure Restart(Params: string = '');
+    procedure ShowIconInTaskbar(AVisible: Boolean);
     function LoadWallpaper(const FileName: string): Boolean;
     procedure ResetWindowBoundsToDefault();
     procedure ResizeWallpaper();
@@ -215,6 +219,8 @@ type
     procedure ApplyWindowSettings();
     procedure SetScaleIndex(ScaleIndex: Integer);
     procedure SetSystemStayOnTop(StayOnTop: Boolean);
+    procedure ShowIconInTray(AVisible: Boolean);
+    procedure ShowWindowBorder(AVisible: Boolean);
     procedure SnoozeAlarms(Seconds: Integer);
     procedure UpdateApplicationTitle();
     procedure UpdateHint();
@@ -228,15 +234,33 @@ var
   DebugMode: Boolean = False;
   {$ENDIF}
 
+resourcestring
+  sHideTaskbarIcon = '-hide-taskbar-icon';
+
 implementation
 
 uses
-{$IFnDEF FPC}
-  ShellAPI,
-{$ELSE}
-{$ENDIF}
   ufSettings, UrlMon, Wininet, Math, IniFiles, StrUtils, Types, graphtype,
-  intfgraphics, fpimage;
+  intfgraphics, fpimage, process;
+
+procedure TfMain.Restart(Params: string = '');
+var
+  aProcess : TProcess; // TProcess is crossplatform is best way
+begin
+  aProcess := TProcess.Create(nil);
+  try
+    aProcess.Executable := Application.ExeName;
+
+    Params := Trim(Params);
+    if Params <> '' then
+      aProcess.Parameters.Text := Params;
+    aProcess.Execute;
+  finally
+    aProcess.Free;
+    SaveOptions();
+    Application.Terminate;
+  end;
+end;
 
 {$R *.lfm}
 
@@ -287,22 +311,8 @@ begin
 end;
 
 procedure TfMain.actFullScreenExecute(Sender: TObject);
-var
-  Action: TAction;
 begin
-  Action := TAction(Sender);
-  Settings.FullScreen := Action.Checked;
-  actShowWindowBorder.Checked := False;
-  if Settings.FullScreen then
-  begin
-    WindowState := wsMaximized;
-  end
-  else
-  begin
-    actShowWindowBorder.Checked := Settings.ShowWindowBorder;
-    WindowState := wsNormal;
-  end;
-  actShowWindowBorderExecute(actShowWindowBorder);
+  FullScreen(TAction(Sender).Checked);
 end;
 
 procedure TfMain.TrayIconClick(Sender: TObject);
@@ -311,9 +321,7 @@ begin
   ShowOnTop;
 end;
 
-procedure TfMain.DrawTrayIcon();
-const
-  cIconSize = 16;
+procedure TfMain.DrawIcon(IconSize: Integer; TargetIcon: TIcon);
 var
   TempIntfImg: TLazIntfImage;
   ImgHandle, ImgMaskHandle: HBitmap;
@@ -327,18 +335,18 @@ begin
   LastEntry := Entries.Last;
   if LastEntry = nil then
   begin
-    TrayIcon.Icon.Assign(Application.Icon);
+    TargetIcon.Assign(Application.Icon);
     Exit;
   end;
 
-  TempIntfImg := TLazIntfImage.Create(cIconSize, cIconSize);
+  TempIntfImg := TLazIntfImage.Create(IconSize, IconSize);
   TempBitmap := TBitmap.Create;
   try
-    TempBitmap.SetSize(cIconSize, cIconSize);
+    TempBitmap.SetSize(IconSize, IconSize);
 
     FontColor := cLastGlucoseLevelColor;
     BgColor := cTrayIconColor;
-    // Check blinking due to GlucoseLevelAlarms
+    // Check blinking according to GlucoseLevelAlarms
     if NeedGlucoseLevelAlarmBlink and GlucoseLevelAlarmBlinkTrigger then
     begin
       if Settings.IsUrgentGlucoseLevelAlarmExists(LastEntry) then
@@ -350,7 +358,7 @@ begin
         BgColor := cAlarmColor;
         FontColor := cWarningColor;
       end;
-    end // Check blinking due to SraleDataAlarms
+    end // Check blinking according to SraleDataAlarms
     else if NeedStaleDataBlink and StaleAlarmBlinkTrigger then
     begin
       if Settings.IsUrgentStaleDataAlarmExists(LastEntry) then
@@ -363,32 +371,32 @@ begin
         FontColor := cWarningColor;
       end;
     end
-    else // Check blinking due to SnoozeAlarms
+    else // Check blinking according to SnoozeAlarms
     begin
       BgColor := IfThen(Settings.IsSnoozeAlarmsEndTimePassed(), cTrayIconColor, cTrayIconSnoozedColor);
     end;
 
     TempBitmap.Canvas.Brush.Color := BgColor;
-    TempBitMap.Canvas.FillRect(0, 0, cIconSize, cIconSize);
+    TempBitMap.Canvas.FillRect(0, 0, IconSize, IconSize);
     TempBitMap.Canvas.Font := Canvas.Font;
     TempBitmap.Canvas.Font.Color := FontColor;
     {$ifdef windows}
       TempBitmap.Canvas.Font.Name := 'Tahoma';
       TempBitmap.Canvas.Font.Style := [];
-      TempBitmap.Canvas.Font.Size := 7;
+      TempBitmap.Canvas.Font.Size := Floor(7/16 * IconSize);
     {$endif}
 
     EntryText := LastEntry.GetGlucoseStr(Settings.IsMmolL);
     TextSize := TempBitMap.Canvas.TextExtent(EntryText);
 
-    if TextSize.cx > cIconSize then
+    if TextSize.cx > IconSize then
     begin
       EntryText := Copy(EntryText, 1, High(EntryText) - 1);
       TextSize := TempBitMap.Canvas.TextExtent(EntryText);
     end;
 
-    X := Max(0, (cIconSize - TextSize.cx) div 2);
-    Y := (cIconSize - TextSize.cy) div 2;
+    X := Max(0, (IconSize - TextSize.cx) div 2);
+    Y := (IconSize - TextSize.cy) div 2;
     TempBitMap.Canvas.TextOut(X, Y, EntryText);
 
     TempIntfImg.LoadFromBitmap(TempBitmap.Handle, TempBitmap.MaskHandle);
@@ -399,18 +407,31 @@ begin
     TempBitmap.MaskHandle := ImgMaskHandle;
 
     // And copy the TBitmap to your Icon
-    TrayIcon.Icon.Assign(TempBitmap);
-    TrayIcon.Show;
+    TargetIcon.Assign(TempBitmap);
   finally
     TempIntfImg.Free;
     TempBitmap.Free;
   end;
 end;
 
+procedure TfMain.DrawTrayIcon();
+begin
+  if Settings.ShowIconInTray then
+  begin
+    DrawIcon(16, TrayIcon.Icon);
+    TrayIcon.Show;
+  end;
+end;
+
+procedure TfMain.DrawApplicationIcon();
+begin
+  if Settings.ShowIconInTaskBar then
+    DrawIcon(32, Application.Icon);
+end;
 
 procedure TfMain.SnoozeAlarms(Seconds: Integer);
 begin
-  Settings.SnoozeAlarms(Seconds);  ;
+  Settings.SnoozeAlarms(Seconds);
 end;
 
 procedure TfMain.actSetCheckIntervalExecute(Sender: TObject);
@@ -489,37 +510,29 @@ begin
 end;
 
 procedure TfMain.DoShowSettingsExecute(Sender: TObject);
+var
+  OldShowIconInTaskbar: Boolean;
 begin
   FormStyle := fsNormal;
   try
+    OldShowIconInTaskbar := Settings.ShowIconInTaskBar;
     TfSettings.ShowForm(Self, Settings, DoUpdateCallerFormWithSettings, LoadEntriesData, TAction(Sender).Tag);
     DoUpdateCallerFormWithSettings();
     tmrTimer(tmr);
   finally
+    if OldShowIconInTaskbar <> Settings.ShowIconInTaskBar  then
+    begin
+      actShowIconOnTaskbar.Checked := Settings.ShowIconInTaskBar;
+      actShowIconOnTaskbarExecute(actShowIconOnTaskbar);
+    end;
+    ShowWindowBorder(Settings.ShowWindowBorder);
     SetSystemStayOnTop(Settings.StayOnTop);
   end;
 end;
 
 procedure TfMain.actShowWindowBorderExecute(Sender: TObject);
-var
-  OldWindowRect: TRect;
 begin
-  Settings.ShowWindowBorder := TAction(Sender).Checked;
-  OldWindowRect := BoundsRect;
-  if TAction(Sender).Checked then
-    BorderStyle := bsSizeable
-  else
-    BorderStyle := bsNone;
-
-  if not Settings.FullScreen then
-  begin
-    // Reset window bounds after FullScreen turning off if window bounds are so big
-    if (Abs(OldWindowRect.Right) - Abs(OldWindowRect.Left) + cMoveWindowDelta >= Screen.Width) or
-       (Abs(OldWindowRect.Bottom) - Abs(OldWindowRect.Top) + cMoveWindowDelta >= Screen.Height) then
-      ResetWindowBoundsToDefault()
-    else
-      BoundsRect := OldWindowRect;
-  end;
+  ShowWindowBorder(TAction(Sender).Checked);
 end;
 
 procedure TfMain.ResetWindowBoundsToDefault();
@@ -566,26 +579,27 @@ begin
   cnv.Font.Quality := fqAntialiased;
 end;
 
-// Use only in FormCreate
-procedure TfMain.HideIconInTaskbar();
+procedure TfMain.ShowIconInTaskbar(AVisible: Boolean);
 var
   EXStyle: Int64;
-  AppHandle: THandle;
 begin
-  AppHandle := WidgetSet.AppHandle;
-  EXStyle:= GetWindowLong(AppHandle, GWL_EXSTYLE);
-  SetWindowLong(AppHandle, GWL_EXSTYLE, EXStyle or WS_EX_TOOLWINDOW and not WS_EX_APPWINDOW);
+  Settings.ShowIconInTaskBar := AVisible;
+  actShowIconOnTaskbar.Checked := AVisible;
+
+  if not AVisible then
+  begin
+    EXStyle:= GetWindowLong(Application.Handle, GWL_EXSTYLE);
+    SetWindowLong(Application.Handle, GWL_EXSTYLE, EXStyle or WS_EX_TOOLWINDOW and not WS_EX_APPWINDOW);
+  end;
 end;
 
 procedure TfMain.FormCreate(Sender: TObject);
 begin
-  HideIconInTaskbar();
   Loaded := False;
   Wallpaper := TBitmap.Create();
   WallpaperJPG := TJPEGImage.Create();
   StaleAlarmBlinkTrigger := False;
   GlucoseLevelAlarmBlinkTrigger := False;
-
   Settings := TSettings.Create();
 
   Connected := False;
@@ -593,7 +607,15 @@ begin
   Entries := TNightscoutEntryList.Create;
 
   CreateDrawPanel();
-  TrayIcon.BalloonTitle := Caption;
+
+  LoadOptions();
+
+  ShowIconInTray(Settings.ShowIconInTray);
+  ShowWindowBorder(Settings.ShowWindowBorder);
+  FullScreen(Settings.FullScreen);
+
+  if not Settings.ShowIconInTaskBar then
+    ShowIconInTaskbar(False);
 end;
 
 procedure TfMain.FormDestroy(Sender: TObject);
@@ -763,6 +785,27 @@ begin
   SnoozeAlarms(TAction(Sender).Tag);
 end;
 
+procedure TfMain.actShowIconOnTaskbarExecute(Sender: TObject);
+var
+  Msg: String;
+begin
+  ShowIconInTaskbar(TAction(Sender).Checked);
+  Msg := 'To apply setting you should restart application.' + #13#10 + 'Restart now?';
+  if MessageDlg(Msg, mtConfirmation, mbYesNo, -1) = mrYes then
+    Restart(sHideTaskbarIcon);
+end;
+
+procedure TfMain.ShowIconInTray(AVisible: Boolean);
+begin
+  Settings.ShowIconInTray := AVisible;
+  TrayIcon.Visible := AVisible;
+end;
+
+procedure TfMain.actShowIconInTrayExecute(Sender: TObject);
+begin
+  ShowIconInTray(TAction(Sender).Checked);
+end;
+
 procedure TfMain.FormMouseEnter(Sender: TObject);
 begin
   WasAlphaBlend := AlphaBlend;
@@ -825,14 +868,19 @@ begin
 
   Loaded := True;
 
-  LoadOptions();
+  SetScaleIndex(Settings.ScaleIndex);
+  SetAlphaBlendValue(Settings.AlphaBlendValue);
+  actSetUnitOfMeasureMmolL.Checked := Settings.IsMmolL;
+  RefreshCheckInterval();
+  BoundsRect := Settings.WindowRect;
+  ApplyWindowSettings();
+  LoadWallpaper(Settings.WallpaperFileName);
+  SetSystemStayOnTop(Settings.StayOnTop);
 
   if Settings.NightscoutUrl = '' then
     actSetNightscoutSiteExecute(actSetNightscoutSite)
   else
     tmrTimer(tmr); // Load data from nightscout site and start monitoring
-
-  ShowInTaskBar := stNever;
 end;
 
 function TfMain.GetEntriesUrl: string;
@@ -927,89 +975,67 @@ end;
 procedure TfMain.LoadOptions();
 var
   ini: TIniFile;
-  DrawStageChecked: Boolean;
+
+  procedure LoadDrawStageOption(const Ident: string; DrawStage: TDrawStage; Action: TAction);
+  var
+    DrawStageChecked: Boolean;
+  begin
+    DrawStageChecked := ini.ReadBool('Visual', Ident, Settings.IsInDrawStage(DrawStage));
+    SetActionCheckProperty(Action, DrawStageChecked, DrawStage);
+  end;
+
 begin
   ini := TIniFile.Create(OptionsFileName);
   try
-    Settings.NightscoutUrl := ini.ReadString('Main', 'NightscoutUrl', '');
-    Settings.IsMmolL := ini.ReadBool('Main', 'IsMmolL', Settings.IsMmolL);
-    actSetUnitOfMeasureMmolL.Checked := Settings.IsMmolL;
-    Settings.CheckInterval := ini.ReadInteger('Main', 'CheckInterval', Settings.CheckInterval);
-    Settings.TimeZoneCorrection := ini.ReadInteger('Main', 'TimeZoneCorrection', Settings.TimeZoneCorrection);
+    // Main settings
+    Settings.IsMmolL                := ini.ReadBool('Main',    'IsMmolL',                Settings.IsMmolL);
+    Settings.NightscoutUrl          := ini.ReadString('Main',  'NightscoutUrl',          Settings.NightscoutUrl);
+    Settings.CheckInterval          := ini.ReadInteger('Main', 'CheckInterval',          Settings.CheckInterval);
+    Settings.TimeZoneCorrection     := ini.ReadInteger('Main', 'TimeZoneCorrection',     Settings.TimeZoneCorrection);
     Settings.CountOfEntriesToRecive := ini.ReadInteger('Main', 'CountOfEntriesToRecive', Settings.CountOfEntriesToRecive);
 
-    DrawStageChecked := ini.ReadBool('Visual', 'dsLastGlucoseLevel', Settings.IsInDrawStage(dsLastGlucoseLevel));
-    SetActionCheckProperty(actDrawLastGlucoseLevel, DrawStageChecked, dsLastGlucoseLevel);
+    // Visual settings
+    LoadDrawStageOption('dsLastGlucoseLevel',     dsLastGlucoseLevel,     actDrawLastGlucoseLevel);
+    LoadDrawStageOption('dsGlucoseLines',         dsGlucoseLines,         actDrawGlucoseLines);
+    LoadDrawStageOption('dsGlucoseLevel',         dsGlucoseLevel,         actDrawGlucoseLevel);
+    LoadDrawStageOption('dsHorzGuideLines',       dsHorzGuideLines,       actDrawHorzGuideLines);
+    LoadDrawStageOption('dsVertGuideLines',       dsVertGuideLines,       actDrawVertGuideLines);
+    LoadDrawStageOption('dsLastGlucoseLevelDate', dsLastGlucoseLevelDate, actDrawLastGlucoseLevelDate);
+    LoadDrawStageOption('dsGlucoseSlope',         dsGlucoseSlope,         actDrawGlucoseSlope);
+    LoadDrawStageOption('dsGlucoseExtremePoints', dsGlucoseExtremePoints, actDrawGlucoseExtremePoints);
+    LoadDrawStageOption('dsAlertLines',           dsAlertLines,           actDrawAlertLines);
+    LoadDrawStageOption('dsGlucoseLevelPoints',   dsGlucoseLevelPoints,   actDrawGlucoseLevelPoints);
+    LoadDrawStageOption('dsGlucoseLevelDelta',    dsGlucoseLevelDelta,    actDrawGlucoseLevelDelta);
+    LoadDrawStageOption('dsGlucoseAvg',           dsGlucoseAvg,           actDrawGlucoseAvg);
+    LoadDrawStageOption('dsWallpaper',            dsWallpaper,            actDrawWallpaper);
 
-    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseLines', Settings.IsInDrawStage(dsGlucoseLines));
-    SetActionCheckProperty(actDrawGlucoseLines, DrawStageChecked, dsGlucoseLines);
-
-    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseLevel', Settings.IsInDrawStage(dsGlucoseLevel));
-    SetActionCheckProperty(actDrawGlucoseLevel, DrawStageChecked, dsGlucoseLevel);
-
-    DrawStageChecked := ini.ReadBool('Visual', 'dsHorzGuideLines', Settings.IsInDrawStage(dsHorzGuideLines));
-    SetActionCheckProperty(actDrawHorzGuideLines, DrawStageChecked, dsHorzGuideLines);
-
-    DrawStageChecked := ini.ReadBool('Visual', 'dsVertGuideLines', Settings.IsInDrawStage(dsVertGuideLines));
-    SetActionCheckProperty(actDrawVertGuideLines, DrawStageChecked, dsVertGuideLines);
-
-    DrawStageChecked := ini.ReadBool('Visual', 'dsLastGlucoseLevelDate', Settings.IsInDrawStage(dsLastGlucoseLevelDate));
-    SetActionCheckProperty(actDrawLastGlucoseLevelDate, DrawStageChecked, dsLastGlucoseLevelDate);
-
-    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseSlope', Settings.IsInDrawStage(dsGlucoseSlope));
-    SetActionCheckProperty(actDrawGlucoseSlope, DrawStageChecked, dsGlucoseSlope);
-
-    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseExtremePoints', Settings.IsInDrawStage(dsGlucoseExtremePoints));
-    SetActionCheckProperty(actDrawGlucoseExtremePoints, DrawStageChecked, dsGlucoseExtremePoints);
-
-    DrawStageChecked := ini.ReadBool('Visual', 'dsAlertLines', Settings.IsInDrawStage(dsAlertLines));
-    SetActionCheckProperty(actDrawAlertLines, DrawStageChecked, dsAlertLines);
-
-    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseLevelPoints', Settings.IsInDrawStage(dsGlucoseLevelPoints));
-    SetActionCheckProperty(actDrawGlucoseLevelPoints, DrawStageChecked, dsGlucoseLevelPoints);
-
-    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseLevelDelta', Settings.IsInDrawStage(dsGlucoseLevelDelta));
-    SetActionCheckProperty(actDrawGlucoseLevelDelta, DrawStageChecked, dsGlucoseLevelDelta);
-
-    DrawStageChecked := ini.ReadBool('Visual', 'dsGlucoseAvg', Settings.IsInDrawStage(dsGlucoseAvg));
-    SetActionCheckProperty(actDrawGlucoseAvg, DrawStageChecked, dsGlucoseAvg);
-
-    DrawStageChecked := ini.ReadBool('Visual', 'dsWallpaper', Settings.IsInDrawStage(dsWallpaper));
-    SetActionCheckProperty(actDrawWallpaper, DrawStageChecked, dsWallpaper);
-    Settings.WallpaperFileName := ini.ReadString('Main', 'WallpaperFileName', '');
+    Settings.WindowRect.Left   := ini.ReadInteger('Visual', 'WindowLeft',   Settings.WindowRect.Left);
+    Settings.WindowRect.Top    := ini.ReadInteger('Visual', 'WindowTop',    Settings.WindowRect.Top);
+    Settings.WindowRect.Right  := ini.ReadInteger('Visual', 'WindowRight',  Settings.WindowRect.Right);
+    Settings.WindowRect.Bottom := ini.ReadInteger('Visual', 'WindowBottom', Settings.WindowRect.Bottom);
 
     Settings.ShowCheckNewDataProgressBar := ini.ReadBool('Visual', 'ShowCheckNewDataProgressBar', Settings.ShowCheckNewDataProgressBar);
+    Settings.ShowWindowBorder  := ini.ReadBool('Visual', 'ShowWindowBorder',  Settings.ShowWindowBorder);
+    Settings.FullScreen        := ini.ReadBool('Visual', 'FullScreen',        Settings.FullScreen);
+    Settings.StayOnTop         := ini.ReadBool('Visual', 'StayOnTop',         Settings.StayOnTop);
+    Settings.ShowIconInTaskBar := ini.ReadBool('Visual', 'ShowIconInTaskBar', Settings.ShowIconInTaskBar);
+    Settings.ShowIconInTray    := ini.ReadBool('Visual', 'ShowIconInTray',    Settings.ShowIconInTray);
+    Settings.WallpaperFileName := ini.ReadString('Visual', 'WallpaperFileName', Settings.WallpaperFileName);
+    Settings.AlphaBlendValue   := ini.ReadInteger('Visual', 'AlphaBlendValue', Settings.AlphaBlendValue);
+    Settings.ScaleIndex        := ini.ReadInteger('Visual', 'ScaleIndex',      Settings.ScaleIndex);
 
-    BoundsRectLoaded.Left := ini.ReadInteger('Visual', 'WindowLeft', Screen.Width div 2);
-    BoundsRectLoaded.Top := ini.ReadInteger('Visual', 'WindowTop', Screen.Height div 2);
-    BoundsRectLoaded.Right := ini.ReadInteger('Visual', 'WindowRight', Screen.Width);
-    BoundsRectLoaded.Bottom := ini.ReadInteger('Visual', 'WindowBottom', Screen.Height);
-
-    SetAlphaBlendValue(ini.ReadInteger('Visual', 'AlphaBlendValue', Settings.AlphaBlendValue));
-
-    SetScaleIndex(ini.ReadInteger('Visual', 'ScaleIndex', Settings.ScaleIndex));
-    Settings.ShowWindowBorder := ini.ReadBool('Visual', 'ShowWindowBorder', Settings.ShowWindowBorder);
-    Settings.FullScreen := ini.ReadBool('Visual', 'FullScreen', Settings.FullScreen);
-    Settings.StayOnTop := ini.ReadBool('Visual', 'StayOnTop', Settings.StayOnTop);
-
-    Settings.HighGlucoseAlarm := ini.ReadInteger('Alarms', 'HighGlucoseAlarm', Settings.HighGlucoseAlarm);
-    Settings.LowGlucoseAlarm := ini.ReadInteger('Alarms', 'LowGlucoseAlarm', Settings.LowGlucoseAlarm);
-    Settings.UrgentHighGlucoseAlarm := ini.ReadInteger('Alarms', 'UrgentHighGlucoseAlarm', Settings.UrgentHighGlucoseAlarm);
-    Settings.UrgentLowGlucoseAlarm := ini.ReadInteger('Alarms', 'UrgentLowGlucoseAlarm', Settings.UrgentLowGlucoseAlarm);
-    Settings.StaleDataAlarm := ini.ReadInteger('Alarms', 'StaleDataAlarm', Settings.StaleDataAlarm);
-    Settings.UrgentStaleDataAlarm := ini.ReadInteger('Alarms', 'UrgentStaleDataAlarm', Settings.UrgentStaleDataAlarm);
+    // Alarm settings
     Settings.EnableGlucoseLevelAlarms := ini.ReadBool('Alarms', 'EnableGlucoseLevelAlarms', Settings.EnableGlucoseLevelAlarms);
-    Settings.EnableStaleDataAlarms := ini.ReadBool('Alarms', 'EnableStaleDataAlarms', Settings.EnableStaleDataAlarms);
+    Settings.EnableStaleDataAlarms    := ini.ReadBool('Alarms', 'EnableStaleDataAlarms',    Settings.EnableStaleDataAlarms);
+    Settings.HighGlucoseAlarm         := ini.ReadInteger('Alarms', 'HighGlucoseAlarm',       Settings.HighGlucoseAlarm);
+    Settings.LowGlucoseAlarm          := ini.ReadInteger('Alarms', 'LowGlucoseAlarm',        Settings.LowGlucoseAlarm);
+    Settings.UrgentHighGlucoseAlarm   := ini.ReadInteger('Alarms', 'UrgentHighGlucoseAlarm', Settings.UrgentHighGlucoseAlarm);
+    Settings.UrgentLowGlucoseAlarm    := ini.ReadInteger('Alarms', 'UrgentLowGlucoseAlarm',  Settings.UrgentLowGlucoseAlarm);
+    Settings.StaleDataAlarm           := ini.ReadInteger('Alarms', 'StaleDataAlarm',         Settings.StaleDataAlarm);
+    Settings.UrgentStaleDataAlarm     := ini.ReadInteger('Alarms', 'UrgentStaleDataAlarm',   Settings.UrgentStaleDataAlarm);
   finally
     ini.Free;
   end;
-
-  RefreshCheckInterval();
-  BoundsRect := BoundsRectLoaded;
-  ApplyWindowSettings();
-  LoadWallpaper(Settings.WallpaperFileName);
-  SetSystemStayOnTop(Settings.StayOnTop);
-  HardInvalidate();
 end;
 
 procedure TfMain.SaveOptions();
@@ -1038,7 +1064,7 @@ begin
     ini.WriteBool('Visual', 'dsGlucoseAvg',           Settings.IsInDrawStage(dsGlucoseAvg));
     ini.WriteBool('Visual', 'dsWallpaper',            Settings.IsInDrawStage(dsWallpaper));
 
-    ini.WriteString('Main', 'WallpaperFileName', Settings.WallpaperFileName);
+    ini.WriteString('Visual', 'WallpaperFileName', Settings.WallpaperFileName);
 
     ini.WriteBool('Visual', 'ShowCheckNewDataProgressBar', Settings.ShowCheckNewDataProgressBar);
     ini.WriteBool('Visual', 'ShowWindowBorder', Settings.ShowWindowBorder);
@@ -1053,6 +1079,8 @@ begin
 
     ini.WriteInteger('Visual', 'ScaleIndex', Settings.ScaleIndex);
     ini.WriteBool('Visual', 'StayOnTop', Settings.StayOnTop);
+    ini.WriteBool('Visual', 'ShowIconInTaskBar', Settings.ShowIconInTaskBar);
+    ini.WriteBool('Visual', 'ShowIconInTray', Settings.ShowIconInTray);
 
     ini.WriteInteger('Alarms', 'HighGlucoseAlarm', Settings.HighGlucoseAlarm);
     ini.WriteInteger('Alarms', 'LowGlucoseAlarm', Settings.LowGlucoseAlarm);
@@ -1157,9 +1185,10 @@ end;
 procedure TfMain.tmrProgressBarTimer(Sender: TObject);
 begin
   pb.Position := pb.Position + 1;
-  CheckStaleDataAlarms;
-  CheckGlucoseLevelAlarms;
-  DrawTrayIcon;  ;
+  CheckStaleDataAlarms();
+  CheckGlucoseLevelAlarms();
+  DrawTrayIcon();
+  DrawApplicationIcon();
   Invalidate();
 end;
 
@@ -1182,8 +1211,8 @@ begin
 
   UpdateHint();
   UpdateApplicationTitle();
-  DrawTrayIcon;
-
+  DrawTrayIcon();
+  DrawApplicationIcon();
   HardInvalidate();
 end;
 
@@ -1533,7 +1562,7 @@ begin
     // Last glucose level value
 
     if (NeedGlucoseLevelAlarmBlink and GlucoseLevelAlarmBlinkTrigger) or
-    (not NeedGlucoseLevelAlarmBlink and (dsLastGlucoseLevelDate in DrawStages)) then
+    (not NeedGlucoseLevelAlarmBlink and (dsLastGlucoseLevel in DrawStages)) then
       DrawStrokedText(AText, LastGlucoseLevelPoint.X, LastGlucoseLevelPoint.Y, FontColor);
 
     // Last glucose level slope
@@ -1616,6 +1645,7 @@ begin
   SetScaleIndex(Settings.ScaleIndex);
   SetAlphaBlendValue(Settings.AlphaBlendValue);
   LoadWallpaper(Settings.WallpaperFileName);
+  ShowIconInTray(Settings.ShowIconInTray);
   HardInvalidate;
 end;
 
@@ -1660,14 +1690,50 @@ begin
   Wallpaper.Canvas.StretchDraw(TargetRect, WallpaperJPG);
 end;
 
+procedure TfMain.ShowWindowBorder(AVisible: Boolean);
+var
+  OldWindowRect: TRect;
+begin
+  Settings.ShowWindowBorder := AVisible;
+  actShowWindowBorder.Checked := AVisible;
+
+  OldWindowRect := BoundsRect;
+  if AVisible then
+    BorderStyle := bsSizeable
+  else
+    BorderStyle := bsNone;
+
+  if not Settings.FullScreen then
+  begin
+    // Reset window bounds after FullScreen turning off if window bounds are so big
+    if (Abs(OldWindowRect.Right) - Abs(OldWindowRect.Left) + cMoveWindowDelta >= Screen.Width) or
+       (Abs(OldWindowRect.Bottom) - Abs(OldWindowRect.Top) + cMoveWindowDelta >= Screen.Height) then
+      ResetWindowBoundsToDefault()
+    else
+      BoundsRect := OldWindowRect;
+  end;
+end;
+
 procedure TfMain.ApplyWindowSettings();
 begin
   actShowCheckNewDataProgressBar.Checked := Settings.ShowCheckNewDataProgressBar;
   actShowCheckNewDataProgressBarExecute(actShowCheckNewDataProgressBar);
-  actShowWindowBorder.Checked := Settings.ShowWindowBorder;
-  actShowWindowBorderExecute(actShowWindowBorder);
-  actFullScreen.Checked := Settings.FullScreen;
-  actFullScreenExecute(actFullScreen);
+end;
+
+procedure TfMain.FullScreen(AFullScreen: Boolean);
+begin
+  Settings.FullScreen := AFullScreen;
+  actShowWindowBorder.Checked := AFullScreen;
+  if Settings.FullScreen then
+  begin
+    WindowState := wsMaximized;
+  end
+  else
+  begin
+    actShowWindowBorder.Checked := Settings.ShowWindowBorder;
+    WindowState := wsNormal;
+  end;
+  ShowWindowBorder(Settings.ShowWindowBorder);
 end;
 
 procedure TfMain.UpdateApplicationTitle();

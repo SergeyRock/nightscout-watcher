@@ -7,7 +7,7 @@ unit uSettings;
 interface
 
 uses
-  Graphics, uNightscout;
+  Graphics, Types, uNightscout;
 
 const
   cDrawStageSizes : array [1..7, 1..19] of Integer =
@@ -84,6 +84,9 @@ type
     StayOnTop: Boolean;
     WallpaperFileName: string;
     SnoozeAlarmsEndTime: TDateTime;
+    ShowIconInTaskBar: Boolean;
+    ShowIconInTray: Boolean;
+    WindowRect: TRect;
   private
     function GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast: TDateTime): Integer;
   public
@@ -110,7 +113,7 @@ type
 implementation
 
 uses
-  DateUtils, SysUtils;
+  DateUtils, SysUtils, Forms;
 
 { TSettings }
 
@@ -181,6 +184,8 @@ begin
   UrgentStaleDataAlarm := Settings.UrgentStaleDataAlarm;
   TimeZoneCorrection := Settings.TimeZoneCorrection;
   WallpaperFileName := Settings.WallpaperFileName;
+  ShowIconInTaskBar := Settings.ShowIconInTaskBar;
+  ShowIconInTray := Settings.ShowIconInTray;
 end;
 
 function TSettings.Clone(): TSettings;
@@ -207,6 +212,8 @@ begin
   Result.UrgentStaleDataAlarm := UrgentStaleDataAlarm;
   Result.TimeZoneCorrection := TimeZoneCorrection;
   Result.WallpaperFileName := WallpaperFileName;
+  Result.ShowIconInTaskBar := ShowIconInTaskBar;
+  Result.ShowIconInTray := ShowIconInTray;
 end;
 
 constructor TSettings.Create();
@@ -234,7 +241,11 @@ begin
   TimeZoneCorrection := 0;
   StayOnTop := True;
   WallpaperFileName := '';
+  NightscoutUrl := '';
   SnoozeAlarmsEndTime := Now();
+  ShowIconInTaskBar := True;
+  ShowIconInTray := True;
+  WindowRect := Rect(Screen.Width div 2, Screen.Height div 2, Screen.Width, Screen.Height);
 end;
 
 function TSettings.GetColorByGlucoseLevel(Glucose: Integer): TColor;

@@ -42,10 +42,10 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 600
-    ActivePage = tsHelp
+    ActivePage = tsVisual
     Align = alTop
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 4
+    TabIndex = 1
     TabOrder = 2
     OnChange = pcChange
     object tsMain: TTabSheet
@@ -310,7 +310,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 14
+        TabOrder = 15
       end
       object cbShowWindowBorder: TCheckBox
         Left = 277
@@ -322,7 +322,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 13
+        TabOrder = 14
       end
       object sbScale: TScrollBar
         Left = 13
@@ -334,7 +334,7 @@ object fSettings: TfSettings
         Min = 1
         PageSize = 0
         Position = 10
-        TabOrder = 18
+        TabOrder = 19
       end
       object sbAlphaBlend: TScrollBar
         Left = 13
@@ -346,7 +346,7 @@ object fSettings: TfSettings
         Min = 1
         PageSize = 0
         Position = 10
-        TabOrder = 19
+        TabOrder = 20
       end
       object cbDrawAlertLines: TCheckBox
         Left = 13
@@ -406,7 +406,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 16
+        TabOrder = 17
       end
       object btnLoadWallpaper: TButton
         Left = 525
@@ -416,7 +416,7 @@ object fSettings: TfSettings
         Anchors = [akTop, akRight]
         Caption = '. . .'
         OnClick = btnLoadWallpaperClick
-        TabOrder = 17
+        TabOrder = 18
       end
       object cbDrawWallpaper: TCheckBox
         Left = 277
@@ -428,7 +428,7 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
-        TabOrder = 15
+        TabOrder = 16
       end
       object cbStayOnTop: TCheckBox
         Left = 277
@@ -440,7 +440,31 @@ object fSettings: TfSettings
         Font.Height = -16
         Font.Name = 'Tahoma'
         ParentFont = False
+        TabOrder = 13
+      end
+      object cbShowIconOnTaskbar: TCheckBox
+        Left = 277
+        Height = 23
+        Top = 88
+        Width = 278
+        Caption = 'Show icon on Taskbar (need restart)'
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        ParentFont = False
         TabOrder = 12
+      end
+      object cbShowIconInTray: TCheckBox
+        Left = 277
+        Height = 23
+        Top = 63
+        Width = 148
+        Caption = 'Show icon in Tray'
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        ParentFont = False
+        TabOrder = 21
       end
     end
     object tsAlerts: TTabSheet
@@ -554,7 +578,7 @@ object fSettings: TfSettings
           Top = 74
           Width = 60
           Increment = 2
-          MaxValue = 300
+          MaxValue = 600
           MinValue = 1
           TabOrder = 1
           Value = 1
@@ -578,7 +602,7 @@ object fSettings: TfSettings
           Top = 32
           Width = 60
           Increment = 2
-          MaxValue = 300
+          MaxValue = 900
           MinValue = 1
           TabOrder = 0
           Value = 1

@@ -26,7 +26,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="111"/>
+      <BuildNr Value="115"/>
       <StringTable LegalCopyright="Sergey Oleynikov"/>
     </VersionInfo>
     <BuildModes Count="3">

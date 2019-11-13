@@ -1,7 +1,7 @@
 object fMain: TfMain
-  Left = 3205
+  Left = 3387
   Height = 157
-  Top = 441
+  Top = 670
   Width = 301
   AlphaBlend = True
   AlphaBlendValue = 230
@@ -151,6 +151,14 @@ object fMain: TfMain
     end
     object miShowWindowBorder: TMenuItem
       Action = actShowWindowBorder
+      AutoCheck = True
+    end
+    object miShowIconOnTaskbar: TMenuItem
+      Action = actShowIconOnTaskbar
+      AutoCheck = True
+    end
+    object miShowIconInTray: TMenuItem
+      Action = actShowIconInTray
       AutoCheck = True
     end
     object miShowCheckNewDataProgressBar: TMenuItem
@@ -551,6 +559,22 @@ object fMain: TfMain
       Category = 'Other'
       Caption = 'Reset alarms'
       OnExecute = DoSnoozeAlarmsExecute
+    end
+    object actShowIconOnTaskbar: TAction
+      Category = 'Show options'
+      AutoCheck = True
+      Caption = 'Show icon on Taskbar'
+      Checked = True
+      OnExecute = actShowIconOnTaskbarExecute
+      ShortCut = 82
+    end
+    object actShowIconInTray: TAction
+      Category = 'Show options'
+      AutoCheck = True
+      Caption = 'Show icon in Tray'
+      Checked = True
+      OnExecute = actShowIconInTrayExecute
+      ShortCut = 89
     end
   end
   object TrayIcon: TTrayIcon

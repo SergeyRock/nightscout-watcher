@@ -25,12 +25,14 @@ type
     btnLoadWallpaper: TButton;
     btnOK: TButton;
     btnCancel: TButton;
+    cbShowIconInTray: TCheckBox;
     cbStayOnTop: TCheckBox;
     cbDrawGlucoseLevelDelta: TCheckBox;
     cbDrawGlucoseAvg: TCheckBox;
     cbEnableGlucoseLevelAlarms: TCheckBox;
     cbEnableStaleDataAlarms: TCheckBox;
     cbDrawWallpaper: TCheckBox;
+    cbShowIconOnTaskbar: TCheckBox;
     eWallpaper: TEdit;
     gbGlucoseLevelAlarms: TGroupBox;
     Image1: TImage;
@@ -123,10 +125,10 @@ cthreads,
 {$ENDIF}{$ENDIF}
   uNightscout
 // FPC 3.0 fileinfo reads exe resources as long as you register the appropriate units
-, fileinfo
-, winpeimagereader {need this for reading exe info}
-, elfreader {needed for reading ELF executables}
-, machoreader {needed for reading MACH-O executables}
+  ,fileinfo
+  ,winpeimagereader {need this for reading exe info}
+  ,elfreader {needed for reading ELF executables}
+  ,machoreader {needed for reading MACH-O executables}
   ;
 
 function GetVersion(): string;
@@ -215,6 +217,8 @@ begin
   cbDrawGlucoseLevelDelta.OnClick := DoChange;
   cbDrawGlucoseAvg.OnClick := DoChange;
   cbDrawWallpaper.OnClick := DoChange;
+  cbShowIconOnTaskbar.OnClick := DoChange;
+  cbShowIconInTray.OnClick := DoChange;
 end;
 
 procedure TfSettings.FormDestroy(Sender: TObject);
@@ -292,6 +296,8 @@ begin
   cbShowCheckNewDataProgressBar.Checked := NewSettings.ShowCheckNewDataProgressBar;
   cbShowWindowBorder.Checked := NewSettings.ShowWindowBorder;
   cbStayOnTop.Checked := NewSettings.StayOnTop;
+  cbShowIconOnTaskbar.Checked := NewSettings.ShowIconInTaskBar;
+  cbShowIconInTray.Checked := NewSettings.ShowIconInTray;
   sbAlphaBlend.Position := NewSettings.AlphaBlendValue;
   sbScale.Max := Length(cDrawStageSizes[1]);
   sbScale.Position := NewSettings.ScaleIndex;
@@ -344,6 +350,8 @@ begin
   NewSettings.ShowCheckNewDataProgressBar := cbShowCheckNewDataProgressBar.Checked;
   NewSettings.ShowWindowBorder := cbShowWindowBorder.Checked;
   NewSettings.StayOnTop := cbStayOnTop.Checked;
+  NewSettings.ShowIconInTaskBar := cbShowIconOnTaskbar.Checked;
+  NewSettings.ShowIconInTray := cbShowIconInTray.Checked;
   NewSettings.NightscoutUrl := eNightscoutSite.Text;
 
   NewSettings.ScaleIndex := sbScale.Position;
