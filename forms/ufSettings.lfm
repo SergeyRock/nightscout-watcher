@@ -42,10 +42,10 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 600
-    ActivePage = tsAbout
+    ActivePage = tsHelp
     Align = alTop
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 3
+    TabIndex = 4
     TabOrder = 2
     OnChange = pcChange
     object tsMain: TTabSheet
@@ -1930,12 +1930,12 @@ object fSettings: TfSettings
     object tsHelp: TTabSheet
       Caption = 'Help'
       ClientHeight = 400
-      ClientWidth = 595
+      ClientWidth = 592
       object mHelp: TMemo
         Left = 0
         Height = 400
         Top = 0
-        Width = 595
+        Width = 592
         Align = alClient
         BorderStyle = bsNone
         HideSelection = False
@@ -1971,6 +1971,7 @@ object fSettings: TfSettings
           'P – Show new data checking progress bar'
           'F11 – Show in full screen'
           ''
+          'Z - Snooze alarms for 10 minutes'
           'V/DoubleClick – Visit your Nightscout site'
           'F1 - This help'
           ''

@@ -1,7 +1,7 @@
 object fMain: TfMain
-  Left = 2025
+  Left = 3205
   Height = 157
-  Top = 353
+  Top = 441
   Width = 301
   AlphaBlend = True
   AlphaBlendValue = 230
@@ -521,6 +521,7 @@ object fMain: TfMain
       Category = 'Other'
       Caption = 'Snooze alarms for 10 mins'
       OnExecute = DoSnoozeAlarmsExecute
+      ShortCut = 90
     end
     object actSnoozeAlarms30mins: TAction
       Tag = 1800

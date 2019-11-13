@@ -185,14 +185,14 @@ type
     Wallpaper: TBitmap;
     WallpaperJPG: TJPEGImage;
     cnv: TCanvas;
-    MenuIsPopped: Boolean;
     procedure CheckGlucoseLevelAlarms;
     procedure CreateDrawPanel();
     procedure DrawStrokedText(const AText: string; const X, Y: Integer; const TextColor: TColor);
     function GetHintText(): string;
     procedure HideIconInTaskbar();
-    function LoadWallpeper(const FileName: string): Boolean;
+    function LoadWallpaper(const FileName: string): Boolean;
     procedure ResetWindowBoundsToDefault();
+    procedure ResizeWallpaper();
     procedure SaveOptions();
     procedure LoadOptions();
     function LoadEntriesData: Boolean;
@@ -218,7 +218,6 @@ type
     procedure SnoozeAlarms(Seconds: Integer);
     procedure UpdateApplicationTitle();
     procedure UpdateHint();
-    procedure UpdateSnoozeMenuItemCaption();
   end;
 
 var
@@ -263,16 +262,9 @@ begin
 end;
 
 procedure TfMain.SetScaleIndex(ScaleIndex: Integer);
-var
-  i: Integer;
 begin
   if Settings.SetScaleIndex(ScaleIndex) then
     HardInvalidate();
-
-  for i := 0 to miScale.Count - 1 do
-    miScale.Items[i].Checked := miScale.Items[i].Tag = ScaleIndex;
-
-  miScale.Caption := 'Scale (' + IntToStr(ScaleIndex * 10) + '%)'
 end;
 
 procedure TfMain.DoDrawStageExecute(Sender: TObject);
@@ -421,16 +413,6 @@ begin
   Settings.SnoozeAlarms(Seconds);  ;
 end;
 
-procedure TfMain.UpdateSnoozeMenuItemCaption();
-begin
-  if MenuIsPopped then
-    Exit;
-  miSnoozeAlarms.Caption := 'Snooze alarms';
-  if not Settings.IsSnoozeAlarmsEndTimePassed() then
-    miSnoozeAlarms.Caption := Format('%s (%d minutes remain)',
-      [miSnoozeAlarms.Caption, MinutesBetween(Settings.SnoozeAlarmsEndTime, Now())]);
-end;
-
 procedure TfMain.actSetCheckIntervalExecute(Sender: TObject);
 var
   CheckIntervalStr, Msg: string;
@@ -503,7 +485,7 @@ procedure TfMain.actShowCheckNewDataProgressBarExecute(Sender: TObject);
 begin
   Settings.ShowCheckNewDataProgressBar := TAction(Sender).Checked;
   pb.Visible := Settings.ShowCheckNewDataProgressBar;
-  LoadWallpeper(Settings.WallpaperFileName);
+  LoadWallpaper(Settings.WallpaperFileName);
 end;
 
 procedure TfMain.DoShowSettingsExecute(Sender: TObject);
@@ -597,7 +579,6 @@ end;
 
 procedure TfMain.FormCreate(Sender: TObject);
 begin
-  MenuIsPopped := False;
   HideIconInTaskbar();
   Loaded := False;
   Wallpaper := TBitmap.Create();
@@ -740,13 +721,31 @@ end;
 
 procedure TfMain.FormResize(Sender: TObject);
 begin
-  LoadWallpeper(Settings.WallpaperFileName);
+  LoadWallpaper(Settings.WallpaperFileName);
 end;
 
-
 procedure TfMain.pmPopup(Sender: TObject);
+var
+  i: Integer;
+  Opacity: Int64;
 begin
-  UpdateSnoozeMenuItemCaption();
+  // Update snooze menu items
+  miSnoozeAlarms.Caption := 'Snooze alarms';
+  if not Settings.IsSnoozeAlarmsEndTimePassed() then
+    miSnoozeAlarms.Caption := Format('%s (%d minutes remain)',
+      [miSnoozeAlarms.Caption, MinutesBetween(Settings.SnoozeAlarmsEndTime, Now())]);
+
+  // Update scale menu items
+  miScale.Caption := 'Scale (' + IntToStr(Settings.ScaleIndex * 10) + '%)';
+  for i := 0 to miScale.Count - 1 do
+    miScale.Items[i].Checked := miScale.Items[i].Tag = Settings.ScaleIndex;
+
+  // Update opacity menu items
+  Opacity := Round(Settings.AlphaBlendValue / 255 * 100);
+  miOpacity.Caption := 'Opacity (' + IntToStr(Opacity) + '%)';
+  for i := 0 to miOpacity.Count - 1 do
+    miOpacity.Items[i].Checked := miOpacity.Items[i].Tag = Opacity;
+
 end;
 
 procedure TfMain.DoScaleIndexClick(Sender: TObject);
@@ -1008,7 +1007,7 @@ begin
   RefreshCheckInterval();
   BoundsRect := BoundsRectLoaded;
   ApplyWindowSettings();
-  LoadWallpeper(Settings.WallpaperFileName);
+  LoadWallpaper(Settings.WallpaperFileName);
   SetSystemStayOnTop(Settings.StayOnTop);
   HardInvalidate();
 end;
@@ -1090,7 +1089,6 @@ begin
     AlphaBlend := True;
   end;
   AlphaBlendValue := Settings.AlphaBlendValue;
-  miOpacity.Caption := 'Opacity (' + IntToStr(Round(Settings.AlphaBlendValue / 255 * 100 )) + '%)';
 end;
 
 function TfMain.SetCheckIntervalByString(Value: string): Boolean;
@@ -1304,8 +1302,8 @@ const
   cSmallMargin = 4;
 var
   GlucoseLinesWidths: array [0..1] of Byte;
-  i, x, y, EntriesCount, SlopeRectWidth, ArrowCount, ArrowOffsetX, MaxY, GlucoseLevelPointRadius,
-    SlopeWidth, j: integer;
+  i, x, y, EntriesCount, SlopeRectWidth, ArrowCount, ArrowOffsetX, MaxY,
+    GlucoseLevelPointRadius, SlopeWidth, j: integer;
   EntryWidth, EntryHeight, MarginX, MarginY: Double;
   Entry, LastEntry: TNightscoutEntry;
   AText, TextWithSlope: string;
@@ -1324,8 +1322,14 @@ begin
 
   EntryWidth := (DrawPanel.Width * cMarginX) / (EntriesCount - 1);
 
+  // Wallpaper
   if (dsWallpaper in DrawStages) and not Wallpaper.Empty then
+  begin
+    cnv.Brush.Color := Color;
+    cnv.FillRect(cnv.ClipRect);
+    ResizeWallpaper();
     cnv.Draw(0, 0, Wallpaper);
+  end;
 
   if dsAlertLines in DrawStages then
   begin
@@ -1336,13 +1340,13 @@ begin
   else
   begin
     MaxY := Entries.GetMaxGlucose;
-    EntryHeight := (DrawPanel.Height * cMarginY) /
-      (Entries.GetMaxGlucoseDelta(-1, -1) + 1);
+    EntryHeight := (DrawPanel.Height * cMarginY) / (Entries.GetMaxGlucoseDelta(-1, -1) + 1);
   end;
 
   MarginX := DrawPanel.Width * (1 - cMarginX) / 2;
   MarginY := DrawPanel.Height * (1 - cMarginY) / 2;
 
+  // Vert lines
   if dsVertGuideLines in DrawStages then
   begin
     cnv.Pen.Color := cVertGuideLinesColor;
@@ -1356,6 +1360,7 @@ begin
     end;
   end;
 
+  // Alert lines
   if dsAlertLines in DrawStages then
   begin
     cnv.Pen.Width := 1;
@@ -1379,6 +1384,7 @@ begin
     cnv.LineTo(DrawPanel.Width, y);
   end;
 
+  // Glucose lines
   if dsGlucoseLines in DrawStages then
   begin
     GlucoseLinesWidths[1] := GetDrawStageSize(dsGlucoseLines);
@@ -1414,6 +1420,7 @@ begin
       x := Floor(EntryWidth * i + MarginX);
       y := Floor(EntryHeight * (MaxY - Entry.Glucose) + MarginY);
 
+      // Glucose level points
       if (dsGlucoseLevelPoints in DrawStages) then
       begin
         GlucoseLevelPointRadius := GetDrawStageSize(dsGlucoseLines) * 2;
@@ -1440,6 +1447,7 @@ begin
       TextRect := Rect(GlucoseMarker.X, GlucoseMarker.Y, GlucoseMarker.X + TextSize.cx, GlucoseMarker.Y + TextSize.cy);
       InflateRect(TextRect, 2, 1);
 
+      // Glucose level values
       if (dsGlucoseLevel in DrawStages) and not NeedDrawGlucoseExtremePoints then
       begin
         cnv.Brush.Color := cGlucoseLevelBrushColor;
@@ -1447,20 +1455,20 @@ begin
         // Draw glucose level value in the center of graph point
         cnv.Rectangle(TextRect);
         cnv.TextOut(GlucoseMarker.X, GlucoseMarker.Y, AText);
-        //cnv.MoveTo(x, y);
       end;
 
+      // Glucose level extreme values
       if NeedDrawGlucoseExtremePoints then
       begin
         cnv.Brush.Color := cGlucoseExtremePointsBrushColor;
         cnv.Font.Color := cGlucoseExtremePointsColor;
         cnv.Rectangle(TextRect);
         cnv.TextOut(GlucoseMarker.X, GlucoseMarker.Y, AText);
-        //cnv.MoveTo(x, y);
       end;
     end;
   end;
 
+  // Time remains from last reading
   if (NeedStaleDataBlink and StaleAlarmBlinkTrigger) or
     (not NeedStaleDataBlink and (dsLastGlucoseLevelDate in DrawStages)) then
   begin
@@ -1475,6 +1483,7 @@ begin
       LastGlucoseLevelDateColor);
   end;
 
+  // Glucose level delta
   if dsGlucoseLevelDelta in DrawStages then
   begin
     cnv.Brush.Color := Color;
@@ -1485,6 +1494,7 @@ begin
     DrawStrokedText(AText, (DrawPanel.Width - TextSize.cx) div 2,  0, cGlucoseLevelDeltaColor);
   end;
 
+  // Glucose level average
   if dsGlucoseAvg in DrawStages then
   begin
     cnv.Brush.Color := Color;
@@ -1495,6 +1505,7 @@ begin
     DrawStrokedText(AText, cSmallMargin, (DrawPanel.Height - TextSize.cy) - cSmallMargin, cGlucoseAvgColor);
   end;
 
+  // Last glucose level value and slope
   if (dsLastGlucoseLevel in DrawStages) or (dsGlucoseSlope in DrawStages)  then
   begin
     cnv.Brush.Color := Color;
@@ -1512,18 +1523,20 @@ begin
       LastGlucoseLevelPoint.X := LastGlucoseLevelPoint.X - Floor((TextSize.cx / 4));
     LastGlucoseLevelPoint.Y := Floor((DrawPanel.Height - TextSize.cy - (DrawPanel.Height / 10)) / 2);
 
-    if (LastEntry.Glucose <= Settings.UrgentLowGlucoseAlarm) or
-      (LastEntry.Glucose >= Settings.UrgentHighGlucoseAlarm) then
+    if Settings.IsUrgentGlucoseLevelAlarmExists(LastEntry) then
       FontColor := cUrgentAlarmColor
-    else if (LastEntry.Glucose <= Settings.LowGlucoseAlarm) or
-      (LastEntry.Glucose >= Settings.HighGlucoseAlarm) then
+    else if Settings.IsGlucoseLevelAlarmExists(LastEntry) then
       FontColor := cAlarmColor
     else
       FontColor := cLastGlucoseLevelColor;
 
-    if dsLastGlucoseLevel in DrawStages then
+    // Last glucose level value
+
+    if (NeedGlucoseLevelAlarmBlink and GlucoseLevelAlarmBlinkTrigger) or
+    (not NeedGlucoseLevelAlarmBlink and (dsLastGlucoseLevelDate in DrawStages)) then
       DrawStrokedText(AText, LastGlucoseLevelPoint.X, LastGlucoseLevelPoint.Y, FontColor);
 
+    // Last glucose level slope
     if dsGlucoseSlope in DrawStages then
     begin
       SlopeRectWidth := TextSize.cx div 2;
@@ -1602,11 +1615,11 @@ begin
   ApplyWindowSettings;
   SetScaleIndex(Settings.ScaleIndex);
   SetAlphaBlendValue(Settings.AlphaBlendValue);
-  LoadWallpeper(Settings.WallpaperFileName);
+  LoadWallpaper(Settings.WallpaperFileName);
   HardInvalidate;
 end;
 
-function TfMain.LoadWallpeper(const FileName: string): Boolean;
+function TfMain.LoadWallpaper(const FileName: string): Boolean;
 begin
   try
     if (FileName <> '') and FileExists(FileName) then
@@ -1614,16 +1627,37 @@ begin
     else
       WallpaperJPG.Clear;
 
-    Wallpaper.Clear;
-    Wallpaper.Width  := DrawPanel.Width;
-    Wallpaper.Height := DrawPanel.Height;
-    Wallpaper.Canvas.StretchDraw(Rect(0, 0, DrawPanel.Width, DrawPanel.Height), WallpaperJPG);
-
+    ResizeWallpaper();
     Result := True;
   except
     Wallpaper.Clear;
     Result := False;
   end;
+end;
+
+procedure TfMain.ResizeWallpaper();
+var
+  kX, kY, k, NewSizeX, NewSizeY: Double;
+  TargetRect: TRect;
+begin
+  if (WallpaperJPG.Width <= 0) or (WallpaperJPG.Height <= 0) then
+    Exit;
+
+  kX := DrawPanel.Width / WallpaperJPG.Width;
+  kY := DrawPanel.Height / WallpaperJPG.Height;
+  k := Max(kX, kY);
+
+  NewSizeX := k * WallpaperJPG.Width;
+  NewSizeY := k * WallpaperJPG.Height;
+
+  TargetRect := Rect(
+    Ceil((DrawPanel.Width  - NewSizeX) / 2),
+    Ceil((DrawPanel.Height - NewSizeY) / 2),
+    Ceil((DrawPanel.Width  + NewSizeX) / 2),
+    Ceil((DrawPanel.Height + NewSizey) / 2));
+
+  Wallpaper.SetSize(DrawPanel.Width, DrawPanel.Height);
+  Wallpaper.Canvas.StretchDraw(TargetRect, WallpaperJPG);
 end;
 
 procedure TfMain.ApplyWindowSettings();
@@ -1644,14 +1678,15 @@ begin
   if Entries.Count > 0 then
   begin
     LastEntryGlucose := Entries.Last.GetGlucoseStr(Settings.IsMmolL);
-    Application.Title := Format('%s (%s) - %s', [LastEntryGlucose, Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL), Application.Title]);
+    Application.Title := Format('%s (%s) - %s v%s', [LastEntryGlucose, Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL), Application.Title, GetVersion()]);
   end;
   Caption := Application.Title;
+  TrayIcon.Hint := Application.Title;
 end;
 
 procedure TfMain.UpdateHint();
 begin
-  TrayIcon.Hint := GetHintText();
+  Hint := GetHintText();
 end;
 
 function TfMain.GetHintText(): string;
