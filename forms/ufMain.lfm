@@ -1,7 +1,7 @@
 object fMain: TfMain
-  Left = 3387
+  Left = 3524
   Height = 157
-  Top = 670
+  Top = 776
   Width = 301
   AlphaBlend = True
   AlphaBlendValue = 230

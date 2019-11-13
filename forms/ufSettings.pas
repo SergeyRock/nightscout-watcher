@@ -107,6 +107,8 @@ type
     procedure AssignSettingsToComponents();
     procedure AssignComponentsToSettings;
     procedure AssignGlucoseAlertInMmolL(SpinEdit: TSpinEdit);
+    procedure UpdateOpacityLabel();
+    procedure UpdateScaleLabel();
   public
     class function ShowForm(AOwner: TComponent; Settings: TSettings;
       OnUpdateCallerFormWithSettings: TOnUpdateCallerFormWithSettings;
@@ -273,7 +275,7 @@ begin
     OnUpdateCallerFormWithSettings;
 end;
 
-procedure TfSettings.AssignSettingsToComponents;
+procedure TfSettings.AssignSettingsToComponents();
 begin
   cbDrawHorzGuideLines.Checked := NewSettings.IsInDrawStage(dsHorzGuideLines);
   cbDrawLastGlucoseLevel.Checked := NewSettings.IsInDrawStage(dsLastGlucoseLevel);
@@ -316,6 +318,9 @@ begin
   AssignGlucoseAlertInMmolL(seHighGlucoseAlarm);
   AssignGlucoseAlertInMmolL(seLowGlucoseAlarm);
   AssignGlucoseAlertInMmolL(seUrgentLowGlucoseAlarm);
+
+  UpdateOpacityLabel();
+  UpdateScaleLabel();
 end;
 
 procedure TfSettings.AssignComponentsToSettings;
@@ -358,6 +363,20 @@ begin
   NewSettings.AlphaBlendValue := sbAlphaBlend.Position;
   NewSettings.TimeZoneCorrection := seTimeZoneCorrection.Value;
   NewSettings.WallpaperFileName := eWallpaper.Text;
+
+  UpdateOpacityLabel();
+  UpdateScaleLabel();
+end;
+
+
+procedure TfSettings.UpdateOpacityLabel();
+begin
+  lblAlphaBlend.Caption := Format('Opacity (%d %%)', [NewSettings.GetOpacity()]);
+end;
+
+procedure TfSettings.UpdateScaleLabel();
+begin
+  lblScale.Caption := Format('Scale (%d %%)', [NewSettings.GetScale]);
 end;
 
 class function TfSettings.ShowForm(AOwner: TComponent; Settings: TSettings;

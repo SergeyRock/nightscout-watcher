@@ -103,6 +103,8 @@ type
     function IsInDrawStage(ADrawStages: TDrawStages): Boolean; overload;
     function SetScaleIndex(Index: Integer): Boolean;
     function IsSnoozeAlarmsEndTimePassed(): Boolean;
+    function GetOpacity(): Integer;
+    function GetScale(): Integer;
     procedure AddDrawStage(DrawStage: TDrawStage);
     procedure Assign(Settings: TSettings);
     procedure RemoveDrawStage(DrawStage: TDrawStage);
@@ -304,6 +306,16 @@ end;
 function TSettings.IsSnoozeAlarmsEndTimePassed(): Boolean;
 begin
   Result := SnoozeAlarmsEndTime <= Now();
+end;
+
+function TSettings.GetOpacity(): Integer;
+begin
+  Result := Round(AlphaBlendValue / 255 * 100);
+end;
+
+function TSettings.GetScale(): Integer;
+begin
+  Result := ScaleIndex * 10;
 end;
 
 function TSettings.GetGlucoseLevelDateText(DateFirst, DateLast: TDateTime; out OutColor: TColor): string;

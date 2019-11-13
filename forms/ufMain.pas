@@ -380,6 +380,7 @@ begin
     TempBitMap.Canvas.FillRect(0, 0, IconSize, IconSize);
     TempBitMap.Canvas.Font := Canvas.Font;
     TempBitmap.Canvas.Font.Color := FontColor;
+    TempBitmap.Canvas.Font.Quality := fqAntialiased;
     {$ifdef windows}
       TempBitmap.Canvas.Font.Name := 'Tahoma';
       TempBitmap.Canvas.Font.Style := [];
@@ -749,7 +750,7 @@ end;
 procedure TfMain.pmPopup(Sender: TObject);
 var
   i: Integer;
-  Opacity: Int64;
+  Opacity: Integer;
 begin
   // Update snooze menu items
   miSnoozeAlarms.Caption := 'Snooze alarms';
@@ -758,16 +759,15 @@ begin
       [miSnoozeAlarms.Caption, MinutesBetween(Settings.SnoozeAlarmsEndTime, Now())]);
 
   // Update scale menu items
-  miScale.Caption := 'Scale (' + IntToStr(Settings.ScaleIndex * 10) + '%)';
+  miScale.Caption := Format('Scale (%d %%)', [Settings.GetScale]);
   for i := 0 to miScale.Count - 1 do
     miScale.Items[i].Checked := miScale.Items[i].Tag = Settings.ScaleIndex;
 
   // Update opacity menu items
-  Opacity := Round(Settings.AlphaBlendValue / 255 * 100);
-  miOpacity.Caption := 'Opacity (' + IntToStr(Opacity) + '%)';
+  Opacity := Settings.GetOpacity();
+  miOpacity.Caption := Format('Opacity (%d %%)', [Opacity]);
   for i := 0 to miOpacity.Count - 1 do
     miOpacity.Items[i].Checked := miOpacity.Items[i].Tag = Opacity;
-
 end;
 
 procedure TfMain.DoScaleIndexClick(Sender: TObject);

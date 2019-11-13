@@ -24,9 +24,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <MinorVersionNr Value="7"/>
-      <RevisionNr Value="2"/>
-      <BuildNr Value="115"/>
+      <MinorVersionNr Value="10"/>
+      <BuildNr Value="117"/>
       <StringTable LegalCopyright="Sergey Oleynikov"/>
     </VersionInfo>
     <BuildModes Count="3">
