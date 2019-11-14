@@ -4,6 +4,8 @@ unit ufMain;
   {$MODE Delphi}
 {$ENDIF}
 
+// TODO: Dialog to type in nightscout site with timer.
+
 interface
 
 uses
@@ -882,6 +884,8 @@ begin
   else
     tmrTimer(tmr); // Load data from nightscout site and start monitoring
 end;
+
+function TfMain.ShowBaloonHint
 
 function TfMain.GetEntriesUrl: string;
 begin
