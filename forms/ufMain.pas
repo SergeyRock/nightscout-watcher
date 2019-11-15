@@ -5,6 +5,9 @@ unit ufMain;
 {$ENDIF}
 
 // TODO: Dialog to type in nightscout site with timer.
+// TODO: Trend alarms settings
+// TODO: Remove delimiter in glucose value, if text doesn`t fit on icon
+// TODO: BaloonHint while alarm
 
 interface
 
@@ -195,6 +198,7 @@ type
     procedure DrawStrokedText(const AText: string; const X, Y: Integer; const TextColor: TColor);
     function GetHintText(): string;
     procedure Restart(Params: string = '');
+    procedure ShowBaloonHint;
     procedure ShowIconInTaskbar(AVisible: Boolean);
     function LoadWallpaper(const FileName: string): Boolean;
     procedure ResetWindowBoundsToDefault();
@@ -885,7 +889,10 @@ begin
     tmrTimer(tmr); // Load data from nightscout site and start monitoring
 end;
 
-function TfMain.ShowBaloonHint
+procedure TfMain.ShowBaloonHint;
+begin
+
+end;
 
 function TfMain.GetEntriesUrl: string;
 begin
