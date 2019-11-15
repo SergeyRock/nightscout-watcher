@@ -246,8 +246,8 @@ resourcestring
 implementation
 
 uses
-  ufSettings, UrlMon, Wininet, Math, IniFiles, StrUtils, Types, graphtype,
-  intfgraphics, fpimage, process;
+  ufSettings, ufTimerDialog, UrlMon, Wininet, Math, IniFiles, StrUtils, Types, graphtype,
+  intfgraphics, fpimage, process, ButtonPanel;
 
 procedure TfMain.Restart(Params: string = '');
 var
@@ -491,7 +491,8 @@ begin
   al.State := asSuspended;
   Connected := False;
   Url := Settings.NightscoutUrl;
-  if InputQuery('Nighscout site', 'Type URL of Nightscout site', Url) then
+  if TfTimerDialog.Execute(Self, 'Nighscout site', 'Type URL of Nightscout site', Url, [pbOK, pbCancel]) = mrOK then
+  //if InputQuery('Nighscout site', 'Type URL of Nightscout site', Url) then
   begin
     if (Url <> '') and (SetNightscoutUrl(Url)) then
       tmrTimer(tmr)

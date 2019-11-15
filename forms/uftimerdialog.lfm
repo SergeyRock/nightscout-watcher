@@ -1,31 +1,56 @@
 object fTimerDialog: TfTimerDialog
-  Left = 1441
-  Height = 240
-  Top = 289
-  Width = 327
+  Left = 1936
+  Height = 150
+  Top = 528
+  Width = 525
   Caption = 'fTimerDialog'
-  ClientHeight = 240
-  ClientWidth = 327
+  ClientHeight = 150
+  ClientWidth = 525
+  Constraints.MinHeight = 150
+  Constraints.MinWidth = 400
+  OnCreate = FormCreate
+  Position = poScreenCenter
   LCLVersion = '2.0.6.0'
-  object stDescription: TStaticText
-    Left = 16
-    Height = 14
-    Top = 16
-    Width = 296
-    Anchors = [akTop, akLeft, akRight]
-    AutoSize = True
-    Caption = 'stDescription'
-    TabOrder = 0
-  end
   object eInputText: TEdit
     Left = 16
-    Height = 21
-    Top = 56
-    Width = 296
+    Height = 23
+    Top = 72
+    Width = 495
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 0
+  end
+  object pb: TButtonPanel
+    Left = 6
+    Height = 34
+    Top = 110
+    Width = 513
+    OKButton.Name = 'OKButton'
+    OKButton.DefaultCaption = True
+    OKButton.OnClick = OKButtonClick
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CloseButton.OnClick = CloseButtonClick
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
+    CancelButton.OnClick = CancelButtonClick
     TabOrder = 1
   end
+  object lblDescription: TLabel
+    Left = 16
+    Height = 51
+    Top = 13
+    Width = 495
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    Caption = 'lblDescription'
+    ParentColor = False
+    WordWrap = True
+  end
   object tmr: TTimer
-    left = 256
-    top = 48
+    OnTimer = tmrTimer
+    left = 432
+    top = 24
   end
 end

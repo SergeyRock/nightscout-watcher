@@ -5,25 +5,32 @@ unit ufTimerDialog;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, Types;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
+  ButtonPanel, Types;
 
 type
 
   { TfTimerDialog }
 
   TfTimerDialog = class(TForm)
+    lblDescription: TLabel;
+    pb: TButtonPanel;
     eInputText: TEdit;
-    stDescription: TStaticText;
     tmr: TTimer;
+    procedure CancelButtonClick(Sender: TObject);
+    procedure CloseButtonClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure OKButtonClick(Sender: TObject);
+    procedure tmrTimer(Sender: TObject);
   private
-    ADescription: string;
-    AInputText: string;
-    MsgDlgBtns: array of TMsgDlgBtn;
-    WindowSize: TSize;
-    procedure Build;
+    RemainSecs: Integer;
+    TimerInterval: Integer;
+    InputText: string;
+    NativeCaption: string;
   public
-    class function Execute(AOwner: TComponent; const ACaption, ADescription: string; var AInputText: string;
-      MsgDlgBtn: array of TMsgDlgBtn; WindowSize: TSize): TModalResult;
+    class function Execute(AOwner: TComponent; const ACaption,
+      ADescription: string; var AInputText: string; Buttons: TPanelButtons;
+  TimerInterval: Integer=-1): TModalResult;
   end;
 
 implementation
@@ -33,7 +40,7 @@ implementation
 { TfTimerDialog }
 
 class function TfTimerDialog.Execute(AOwner: TComponent; const ACaption, ADescription: string;
-  var AInputText: string; MsgDlgBtn: array of TMsgDlgBtn; WindowSize: TSize): TModalResult;
+  var AInputText: string; Buttons: TPanelButtons; TimerInterval: Integer = -1): TModalResult;
 var
   F: TfTimerDialog;
 begin
@@ -41,32 +48,55 @@ begin
   F := TfTimerDialog.Create(AOwner);
   try
     F.Caption := ACaption;
-    F.ADescription := ADescription;
-    F.AInputText := AInputText;
-    F.MsgDlgBtns := MsgDlgBtn;
-    F.WindowSize := WindowSize;
+    F.NativeCaption := ACaption;
+    F.InputText := AInputText;
+    F.eInputText.Text := AInputText;
+    F.lblDescription.Caption := ADescription;
+    F.pb.ShowButtons := Buttons;
+    if TimerInterval > 0 then
+    begin
+      F.TimerInterval := TimerInterval;
+      F.tmr.Interval := TimerInterval;
+      F.tmr.Enabled := True;
+    end;
+
     Result := F.ShowModal();
+    if Result = mrOK then
+      AInputText := F.eInputText.Text;
   finally
     F.Free;
   end;
 end;
 
-procedure TfTimerDialog.Build);
-var
-  i: TMsgDlgBtn;
+procedure TfTimerDialog.OKButtonClick(Sender: TObject);
 begin
-  BoundsRect := Rect(
-    (Screen.Width - WindowSize.cx) div 2,
-    (Screen.Height - WindowSize.cy) div 2,
-    (Screen.Width + WindowSize.cx) div 2,
-    (Screen.Height + WindowSize.cy) div 2);
+  ModalResult := mrOK;
+end;
 
-  for i := Low(MsgDlgBtns) to High(MsgDlgBtns) do
-  begin
-    BuildButton()...
-  end;
+procedure TfTimerDialog.tmrTimer(Sender: TObject);
+begin
+  tmr.Enabled := False;
+  RemainSecs := Round(tmr.Interval/1000) - 1;
+  Caption := Format('%s / Remain: % sec ', [NativeCaption, RemainSecs]);
+  if RemainSecs < 0 then
+    pb.CancelButton.Click()
+  else
+    tmr.Enabled := True;
+end;
 
+procedure TfTimerDialog.CloseButtonClick(Sender: TObject);
+begin
+  ModalResult := mrClose;
+end;
 
+procedure TfTimerDialog.FormCreate(Sender: TObject);
+begin
+  RemainSecs := -1;
+end;
+
+procedure TfTimerDialog.CancelButtonClick(Sender: TObject);
+begin
+  ModalResult := mrCancel;
 end;
 
 end.

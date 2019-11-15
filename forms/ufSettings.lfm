@@ -1,7 +1,7 @@
 object fSettings: TfSettings
-  Left = 2414
+  Left = 3222
   Height = 500
-  Top = 211
+  Top = 539
   Width = 570
   Caption = 'Settings'
   ClientHeight = 500

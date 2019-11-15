@@ -26,7 +26,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="3"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="89"/>
+      <BuildNr Value="91"/>
       <Attributes pvaPreRelease="True"/>
     </VersionInfo>
     <BuildModes Count="3">
@@ -155,6 +155,7 @@
         <Filename Value="forms\uftimerdialog.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fTimerDialog"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ufTimerDialog"/>
       </Unit5>
