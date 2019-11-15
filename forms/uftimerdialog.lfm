@@ -1,12 +1,13 @@
 object fTimerDialog: TfTimerDialog
   Left = 1936
-  Height = 150
+  Height = 130
   Top = 528
   Width = 525
+  BorderStyle = bsDialog
   Caption = 'fTimerDialog'
-  ClientHeight = 150
+  ClientHeight = 130
   ClientWidth = 525
-  Constraints.MinHeight = 150
+  Constraints.MinHeight = 130
   Constraints.MinWidth = 400
   OnCreate = FormCreate
   Position = poScreenCenter
@@ -14,7 +15,7 @@ object fTimerDialog: TfTimerDialog
   object eInputText: TEdit
     Left = 16
     Height = 23
-    Top = 72
+    Top = 44
     Width = 495
     Anchors = [akTop, akLeft, akRight]
     TabOrder = 0
@@ -22,7 +23,7 @@ object fTimerDialog: TfTimerDialog
   object pb: TButtonPanel
     Left = 6
     Height = 34
-    Top = 110
+    Top = 90
     Width = 513
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
@@ -39,7 +40,7 @@ object fTimerDialog: TfTimerDialog
   end
   object lblDescription: TLabel
     Left = 16
-    Height = 51
+    Height = 27
     Top = 13
     Width = 495
     Anchors = [akTop, akLeft, akRight]
@@ -49,6 +50,7 @@ object fTimerDialog: TfTimerDialog
     WordWrap = True
   end
   object tmr: TTimer
+    Enabled = False
     OnTimer = tmrTimer
     left = 432
     top = 24

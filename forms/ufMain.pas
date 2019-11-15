@@ -442,15 +442,17 @@ begin
 end;
 
 procedure TfMain.actSetCheckIntervalExecute(Sender: TObject);
+const
+  cMsg = 'Type in time interval to recieve data from Nightscout site (in seconds)';
 var
   CheckIntervalStr, Msg: string;
 begin
   al.State := asSuspended;
   CheckIntervalStr := IntToStr(Settings.CheckInterval);
-  if InputQuery('Check interval', 'Type in time interval to recieve data from Nightscout site (in seconds)', CheckIntervalStr) then
+  if TfTimerDialog.Execute(Self, 'Check interval', cMsg, CheckIntervalStr, [pbOK, pbCancel]) = mrOK then
     if not SetCheckIntervalByString(CheckIntervalStr) then
     begin
-      Msg := 'You must type in time interval in seconds (float value)';
+      Msg := 'You must type in time interval in seconds (int value)';
       if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
         actSetCheckIntervalExecute(Sender);
     end;
@@ -458,6 +460,9 @@ begin
 end;
 
 procedure TfMain.actSetCountOfEntriesToReciveExecute(Sender: TObject);
+const
+  cEntriesCountMin = 2;
+  cEntriesCountMax = 600;
 var
   Count, Msg: string;
   CountEntered: Integer;
@@ -465,10 +470,11 @@ var
 begin
   al.State := asSuspended;
   Count := IntToStr(Settings.CountOfEntriesToRecive);
-  if InputQuery('Count of entries', 'Type in the count of glucose entries to recieve from Nightscout site', Count) then
+  Msg := 'Type in the count of glucose entries to recieve from Nightscout site';
+  if InputQuery('Count of entries', Msg, Count) then
   begin
     CanSetCount := TryStrToInt(Count, CountEntered);
-    CanSetCount := CanSetCount and (CountEntered >= 2) and (CountEntered <= 200);
+    CanSetCount := CanSetCount and (CountEntered >= cEntriesCountMin) and (CountEntered <= cEntriesCountMax);
     if CanSetCount then
     begin
       Settings.CountOfEntriesToRecive := CountEntered;
@@ -476,7 +482,7 @@ begin
     end
     else
     begin
-      Msg := 'You must type in integer value (between 2 and 200).' + #13#10 + ' Try again?';
+      Msg := Format('You must type in integer value (between %d and %d).' + #13#10 + 'Try again?', [cEntriesCountMin, cEntriesCountMax]);
       if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
         actSetCountOfEntriesToReciveExecute(Sender);
     end;
@@ -487,19 +493,26 @@ end;
 procedure TfMain.actSetNightscoutSiteExecute(Sender: TObject);
 var
   Url, Msg: string;
+  DialogResult: TModalResult;
+  WasConnected: Boolean;
+  TimerIntervalSecs: Integer;
 begin
   al.State := asSuspended;
+  WasConnected := Connected;
   Connected := False;
   Url := Settings.NightscoutUrl;
-  if TfTimerDialog.Execute(Self, 'Nighscout site', 'Type URL of Nightscout site', Url, [pbOK, pbCancel]) = mrOK then
-  //if InputQuery('Nighscout site', 'Type URL of Nightscout site', Url) then
+  TimerIntervalSecs := -1;
+  if WasConnected then
+    TimerIntervalSecs := 20;
+  DialogResult := TfTimerDialog.Execute(Self, 'Nighscout site', 'Type URL of Nightscout site', Url, [pbOK, pbCancel], TimerIntervalSecs);
+  if DialogResult = mrOK then
   begin
     if (Url <> '') and (SetNightscoutUrl(Url)) then
       tmrTimer(tmr)
     else
       actSetNightscoutSiteExecute(Sender);
   end
-  else
+  else if (DialogResult = mrCancel) and not WasConnected then
   begin
     Msg := 'To obtain CGM data you have to type full URL of your Nightscout site.' + #13#10 +
       'Only HTTP protocol is supported.' + #13#10 +
@@ -1758,6 +1771,10 @@ begin
     LastEntryGlucose := Entries.Last.GetGlucoseStr(Settings.IsMmolL);
     Application.Title := Format('%s (%s) - %s v%s', [LastEntryGlucose, Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL), Application.Title, GetVersion()]);
   end;
+
+  if Settings.NightscoutUrl <> '' then
+    Application.Title := Application.Title + ' - ' + Settings.NightscoutUrl;
+
   Caption := Application.Title;
   TrayIcon.Hint := Application.Title;
 end;

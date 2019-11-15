@@ -55,8 +55,8 @@ begin
     F.pb.ShowButtons := Buttons;
     if TimerInterval > 0 then
     begin
+      F.RemainSecs := TimerInterval;
       F.TimerInterval := TimerInterval;
-      F.tmr.Interval := TimerInterval;
       F.tmr.Enabled := True;
     end;
 
@@ -76,10 +76,10 @@ end;
 procedure TfTimerDialog.tmrTimer(Sender: TObject);
 begin
   tmr.Enabled := False;
-  RemainSecs := Round(tmr.Interval/1000) - 1;
-  Caption := Format('%s / Remain: % sec ', [NativeCaption, RemainSecs]);
+  Dec(RemainSecs);
+  Caption := Format('%s / Remain %d sec ', [NativeCaption, RemainSecs]);
   if RemainSecs < 0 then
-    pb.CancelButton.Click()
+    pb.CloseButton.Click()
   else
     tmr.Enabled := True;
 end;
