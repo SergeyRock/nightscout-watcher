@@ -4,7 +4,6 @@ unit ufMain;
   {$MODE Delphi}
 {$ENDIF}
 
-// TODO: Dialog to type in nightscout site with timer.
 // TODO: Trend alarms settings
 // TODO: Remove delimiter in glucose value, if text doesn`t fit on icon
 // TODO: BaloonHint while alarm
