@@ -5,6 +5,7 @@ unit ufMain;
 {$ENDIF}
 
 // TODO: Trend alarms settings
+// TODO: Draw horizontal guide lines
 
 interface
 
