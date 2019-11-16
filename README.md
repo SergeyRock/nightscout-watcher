@@ -20,6 +20,7 @@ PS. I`m not a native english speaker. I`ll be gratefull if you paticipate in cor
 3. Type in url of your Nightscout site
 
 ## Main window
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/Main.2.jpg)
 A lot of hot keys are available in then main window.
 
 ## Alarms
@@ -27,6 +28,10 @@ When glucose level is going to be high or data from site is stale the alarms app
 Last glucose level and stale indicator start blinking.
 Deppending on settings it can also be blinking tray icon with ballon hint or blinking icon on Taskbar.
 You can snooze all alarms by popup menu and click snooze alarms or just hit Z key.
+
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/TrayIconAlert.jpg)
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/TaskbarIcon.jpg)
+
 
 ## Main settings
 After start the application you must type in the url of your Nightscout site.
