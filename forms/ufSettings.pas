@@ -7,11 +7,7 @@ unit ufSettings;
 interface
 
 uses
-{$IFnDEF FPC}
-  Windows,
-{$ELSE}
   LCLIntf, LCLType,
-{$ENDIF}
   uSettings, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Spin, ComCtrls, ExtCtrls;
 
@@ -20,7 +16,6 @@ type
   TOnTryLoadEntriesData = function: Boolean of object;
 
   { TfSettings }
-
   TfSettings = class(TForm)
     btnLoadWallpaper: TButton;
     btnOK: TButton;
@@ -67,9 +62,9 @@ type
     cbShowCheckNewDataProgressBar: TCheckBox;
     cbShowWindowBorder: TCheckBox;
     seCheckInterval: TSpinEdit;
-    seCountOfEntriesToReceive: TSpinEdit;
+    seHoursToReceive: TSpinEdit;
     lblCheckInterval: TLabel;
-    lblCountOfEntriesToReceive: TLabel;
+    lblHoursToReceive: TLabel;
     eNightscoutSite: TEdit;
     lblNightscoutSite: TLabel;
     sbScale: TScrollBar;
@@ -185,6 +180,9 @@ begin
     OnUpdateCallerFormWithSettings;
   lblDeveloper.Caption := Format('Developer: Sergey Oleynikov (T1D for %d years)', [CurrentYear - 1995]);
   lblVersion.Caption := 'Version: ' + GetVersion();
+
+  seHoursToReceive.MinValue := cHoursToReceiveMin;
+  seHoursToReceive.MaxValue := cHoursToReceiveMax;
 end;
 
 procedure TfSettings.AssignComponentsOnChangeEvent;
@@ -304,7 +302,7 @@ begin
   sbScale.Max := Length(cDrawStageSizes[1]);
   sbScale.Position := NewSettings.ScaleIndex;
   seCheckInterval.Value := NewSettings.CheckInterval;
-  seCountOfEntriesToReceive.Value := NewSettings.CountOfEntriesToRecive;
+  seHoursToReceive.Value := NewSettings.HoursToRecive;
   seHighGlucoseAlarm.Value := NewSettings.HighGlucoseAlarm;
   seLowGlucoseAlarm.Value := NewSettings.LowGlucoseAlarm;
   seStaleDataAlarm.Value := NewSettings.StaleDataAlarm;
@@ -326,7 +324,7 @@ end;
 procedure TfSettings.AssignComponentsToSettings;
 begin
   NewSettings.CheckInterval := seCheckInterval.Value;
-  NewSettings.CountOfEntriesToRecive := seCountOfEntriesToReceive.Value;
+  NewSettings.HoursToRecive := seHoursToReceive.Value;
 
   NewSettings.HighGlucoseAlarm := seHighGlucoseAlarm.Value;
   NewSettings.LowGlucoseAlarm := seLowGlucoseAlarm.Value;

@@ -54,8 +54,8 @@ object fMain: TfMain
       Action = actSetUnitOfMeasureMmolL
       AutoCheck = True
     end
-    object miSetCountOfEntriesToRecive: TMenuItem
-      Action = actSetCountOfEntriesToRecive
+    object miSetHoursToRecive: TMenuItem
+      Action = actSetHoursToRecive
     end
     object miSetCheckInterval: TMenuItem
       Action = actSetCheckInterval
@@ -471,10 +471,10 @@ object fMain: TfMain
       OnExecute = actSetUnitOfMeasureMmolLExecute
       ShortCut = 77
     end
-    object actSetCountOfEntriesToRecive: TAction
+    object actSetHoursToRecive: TAction
       Category = 'Settings'
-      Caption = 'Set count of entries to receive'
-      OnExecute = actSetCountOfEntriesToReciveExecute
+      Caption = 'Set hours to receive data'
+      OnExecute = actSetHoursToReciveExecute
       ShortCut = 67
     end
     object actShowSettings: TAction

@@ -5,7 +5,6 @@ unit ufMain;
 {$ENDIF}
 
 // TODO: Trend alarms settings
-// TODO: Time period enstead of entries count setting
 
 interface
 
@@ -122,8 +121,8 @@ type
     miDrawGlucoseSlope: TMenuItem;
     actDrawGlucoseExtremePoints: TAction;
     miDrawGlucoseExtremePoints: TMenuItem;
-    actSetCountOfEntriesToRecive: TAction;
-    miSetCountOfEntriesToRecive: TMenuItem;
+    actSetHoursToRecive: TAction;
+    miSetHoursToRecive: TMenuItem;
     actShowSettings: TAction;
     miShowSettings: TMenuItem;
     actDrawAlertLines: TAction;
@@ -165,7 +164,7 @@ type
     procedure actSetUnitOfMeasureMmolLExecute(Sender: TObject);
     procedure FormMouseEnter(Sender: TObject);
     procedure FormMouseLeave(Sender: TObject);
-    procedure actSetCountOfEntriesToReciveExecute(Sender: TObject);
+    procedure actSetHoursToReciveExecute(Sender: TObject);
     procedure DoShowSettingsExecute(Sender: TObject);
     procedure actFullScreenExecute(Sender: TObject);
     procedure TrayIconClick(Sender: TObject);
@@ -463,32 +462,29 @@ begin
   al.State := asNormal;
 end;
 
-procedure TfMain.actSetCountOfEntriesToReciveExecute(Sender: TObject);
-const
-  cEntriesCountMin = 2;
-  cEntriesCountMax = 600;
+procedure TfMain.actSetHoursToReciveExecute(Sender: TObject);
 var
   Count, Msg: string;
   CountEntered: Integer;
   CanSetCount: Boolean;
 begin
   al.State := asSuspended;
-  Count := IntToStr(Settings.CountOfEntriesToRecive);
-  Msg := 'Type in the count of glucose entries to recieve from Nightscout site';
-  if InputQuery('Count of entries', Msg, Count) then
+  Count := IntToStr(Settings.HoursToRecive);
+  Msg := 'Type in the hours to recieve data from Nightscout site';
+  if InputQuery('Hours to receive', Msg, Count) then
   begin
     CanSetCount := TryStrToInt(Count, CountEntered);
-    CanSetCount := CanSetCount and (CountEntered >= cEntriesCountMin) and (CountEntered <= cEntriesCountMax);
+    CanSetCount := CanSetCount and (CountEntered >= cHoursToReceiveMin) and (CountEntered <= cHoursToReceiveMax);
     if CanSetCount then
     begin
-      Settings.CountOfEntriesToRecive := CountEntered;
+      Settings.HoursToRecive := CountEntered;
       tmrTimer(tmr);
     end
     else
     begin
-      Msg := Format('You must type in integer value (between %d and %d).' + #13#10 + 'Try again?', [cEntriesCountMin, cEntriesCountMax]);
+      Msg := Format('You must type in an integer value (between %d and %d).' + #13#10 + 'Try again?', [cHoursToReceiveMin, cHoursToReceiveMax]);
       if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
-        actSetCountOfEntriesToReciveExecute(Sender);
+        actSetHoursToReciveExecute(Sender);
     end;
   end;
   al.State := asNormal;
@@ -972,12 +968,12 @@ begin
   Entries.Clear;
   if not DebugMode then
   begin
-    DeleteUrlCacheEntry(PAnsiChar(Settings.GetEntriesUrl()));
-    IsFileDownloaded := URLDownloadToFile(nil, PAnsiChar(Settings.GetEntriesUrl()), PAnsiChar(FileName), 0, nil) = S_OK;
+    DeleteUrlCacheEntry(PAnsiChar(Settings.GetEntriesUrlByHours()));
+    IsFileDownloaded := URLDownloadToFile(nil, PAnsiChar(Settings.GetEntriesUrlByHours()), PAnsiChar(FileName), 0, nil) = S_OK;
 
     if not IsFileDownloaded then
     begin
-      ShowMessage('File downloading is failed. URL: ' + Settings.GetEntriesUrl());
+      ShowMessage('File downloading is failed. URL: ' + Settings.GetEntriesUrlByHours());
       Exit;
     end;
   end;
@@ -1002,14 +998,14 @@ begin
       FreeAndNil(Entry);
   end;
   Entries.RemoveDuplicatesWithTheSameDate;
-  Entries.LimitEntries(Settings.CountOfEntriesToRecive);
+  //Entries.LimitEntries(Settings.HoursToRecive);
   CloseFile(DataFile);
 
   if not DebugMode then
     DeleteFile(FileName);
 
   if Entries.Count = 0 then
-    ShowMessage('No entries were downloaded. URL: ' + Settings.GetEntriesUrl)
+    ShowMessage('No entries were downloaded. URL: ' + Settings.GetEntriesUrlByHours)
   else
     Result := True;
 end;
@@ -1043,7 +1039,7 @@ begin
     Settings.NightscoutUrl          := ini.ReadString('Main',  'NightscoutUrl',          Settings.NightscoutUrl);
     Settings.CheckInterval          := ini.ReadInteger('Main', 'CheckInterval',          Settings.CheckInterval);
     Settings.TimeZoneCorrection     := ini.ReadInteger('Main', 'TimeZoneCorrection',     Settings.TimeZoneCorrection);
-    Settings.CountOfEntriesToRecive := ini.ReadInteger('Main', 'CountOfEntriesToRecive', Settings.CountOfEntriesToRecive);
+    Settings.HoursToRecive := ini.ReadInteger('Main', 'HoursToRecive', Settings.HoursToRecive);
 
     // Visual settings
     LoadDrawStageOption('dsLastGlucoseLevel',     dsLastGlucoseLevel,     actDrawLastGlucoseLevel);
@@ -1097,7 +1093,7 @@ begin
   try
     ini.WriteBool('Main', 'IsMmolL', Settings.IsMmolL);
     ini.WriteString('Main', 'NightscoutUrl', Settings.NightscoutUrl);
-    ini.WriteInteger('Main', 'CountOfEntriesToRecive', Settings.CountOfEntriesToRecive);
+    ini.WriteInteger('Main', 'HoursToRecive', Settings.HoursToRecive);
     ini.WriteInteger('Main', 'TimeZoneCorrection', Settings.TimeZoneCorrection);
     ini.WriteInteger('Main', 'CheckInterval', Settings.CheckInterval);
 
@@ -1819,7 +1815,7 @@ begin
   Lst := TStringList.Create();
   try
     Lst.Add(Format('Count of entries with glucose data: %d', [Entries.Count]));
-    Lst.Add(Format('Count of entries to recieve: %d', [Settings.CountOfEntriesToRecive]));
+    Lst.Add(Format('Hours to recieve data: %d', [Settings.HoursToRecive]));
     Lst.Add(Format('Glucose average: %s', [Entries.GetAvgGlucoseStr(Settings.IsMmolL)]));
     if Assigned(Entries.First) then
     begin
