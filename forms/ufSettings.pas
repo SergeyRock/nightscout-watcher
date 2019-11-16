@@ -368,7 +368,6 @@ begin
   UpdateScaleLabel();
 end;
 
-
 procedure TfSettings.UpdateOpacityLabel();
 begin
   lblAlphaBlend.Caption := Format('Opacity (%d %%)', [NewSettings.GetOpacity()]);

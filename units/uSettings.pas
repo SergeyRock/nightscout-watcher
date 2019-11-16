@@ -91,6 +91,7 @@ type
     function GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast: TDateTime): Integer;
   public
     constructor Create();
+    function GetEntriesUrl: string;
     function GetColorByGlucoseLevel(Glucose: Integer): TColor;
     function IsStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
     function IsUrgentStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
@@ -301,6 +302,11 @@ begin
     ScaleIndex := Index;
 
   Result := OldScaleIndex <> ScaleIndex;
+end;
+
+function TSettings.GetEntriesUrl: string;
+begin
+  Result := NightscoutUrl + '/api/v1/entries/sgv?count=' + IntToStr(CountOfEntriesToRecive);
 end;
 
 function TSettings.IsSnoozeAlarmsEndTimePassed(): Boolean;

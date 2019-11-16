@@ -5,8 +5,7 @@ unit ufMain;
 {$ENDIF}
 
 // TODO: Trend alarms settings
-// TODO: Remove delimiter in glucose value, if text doesn`t fit on icon
-// TODO: BaloonHint while alarm
+// TODO: Time period enstead of entries count setting
 
 interface
 
@@ -218,7 +217,6 @@ type
     function SetMaximumDrawStageSizeToCanvas(DrawStage: TDrawStage; const AText: string): Byte;
     procedure SetAlphaBlendValue(Value: Integer);
     procedure RefreshCheckInterval;
-    function GetEntriesUrl: string;
     function GetDrawStageSize(DrawStage: TDrawStage; ScaleIndex: Integer = -1): Integer;
     procedure HardInvalidate();
     procedure ApplyWindowSettings();
@@ -336,6 +334,7 @@ var
   TextSize: TSize;
   X, Y: Integer;
   EntryText: String;
+  DelimiterPos: SizeInt;
 begin
   LastEntry := Entries.Last;
   if LastEntry = nil then
@@ -395,10 +394,16 @@ begin
     EntryText := LastEntry.GetGlucoseStr(Settings.IsMmolL);
     TextSize := TempBitMap.Canvas.TextExtent(EntryText);
 
+    // Remove decimal part of number, if EntryText doesn`t fit inside icon
     if TextSize.cx > IconSize then
     begin
-      EntryText := Copy(EntryText, 1, High(EntryText) - 1);
-      TextSize := TempBitMap.Canvas.TextExtent(EntryText);
+      EntryText := ReplaceStr(EntryText, ',', '.');
+      DelimiterPos := Pos('.', EntryText);
+      if DelimiterPos > 0 then
+      begin
+        EntryText := Copy(EntryText, 1, DelimiterPos - 1);
+        TextSize := TempBitMap.Canvas.TextExtent(EntryText);
+      end;
     end;
 
     X := Max(0, (IconSize - TextSize.cx) div 2);
@@ -903,13 +908,35 @@ begin
 end;
 
 procedure TfMain.ShowBaloonHint;
+var
+  BaloonHint: string;
+  LastEntry: TNightscoutEntry;
 begin
+  if not Settings.IsSnoozeAlarmsEndTimePassed() then
+    Exit;
 
-end;
+  BaloonHint := '';
+  LastEntry := Entries.Last;
+  TrayIcon.BalloonTitle := 'Alarm!';
+  if Settings.IsUrgentGlucoseLevelAlarmExists(LastEntry) then
+  begin
+    BaloonHint := BaloonHint + 'Urgent dangerous glucose level is reached!' + #13#10;
+    TrayIcon.BalloonTitle := 'ALARM!!!';
+  end
+  else if Settings.IsGlucoseLevelAlarmExists(LastEntry) then
+    BaloonHint := BaloonHint + 'Dangerous glucose level is reached!' + #13#10;
 
-function TfMain.GetEntriesUrl: string;
-begin
-  Result := Settings.NightscoutUrl + '/api/v1/entries/sgv?count=' + IntToStr(Settings.CountOfEntriesToRecive);
+  if Settings.IsUrgentStaleDataAlarmExists(LastEntry) then
+  begin
+    BaloonHint := BaloonHint + 'Glucose data is very stale!' + #13#10;
+    TrayIcon.BalloonTitle := 'ALARM!!!';
+  end
+  else if Settings.IsStaleDataAlarmExists(LastEntry) then
+    BaloonHint := BaloonHint + 'Glucose data is stale!' + #13#10;
+
+  TrayIcon.BalloonHint := BaloonHint;
+  TrayIcon.BalloonFlags := bfWarning;
+  TrayIcon.ShowBalloonHint;
 end;
 
 function TfMain.GetDrawStageSize(DrawStage: TDrawStage; ScaleIndex: Integer = -1): Integer;
@@ -945,12 +972,12 @@ begin
   Entries.Clear;
   if not DebugMode then
   begin
-    DeleteUrlCacheEntry(PAnsiChar(GetEntriesUrl()));
-    IsFileDownloaded := URLDownloadToFile(nil, PAnsiChar(GetEntriesUrl()), PAnsiChar(FileName), 0, nil) = S_OK;
+    DeleteUrlCacheEntry(PAnsiChar(Settings.GetEntriesUrl()));
+    IsFileDownloaded := URLDownloadToFile(nil, PAnsiChar(Settings.GetEntriesUrl()), PAnsiChar(FileName), 0, nil) = S_OK;
 
     if not IsFileDownloaded then
     begin
-      ShowMessage('File downloading is failed. URL: ' + GetEntriesUrl());
+      ShowMessage('File downloading is failed. URL: ' + Settings.GetEntriesUrl());
       Exit;
     end;
   end;
@@ -982,7 +1009,7 @@ begin
     DeleteFile(FileName);
 
   if Entries.Count = 0 then
-    ShowMessage('No entries were downloaded. URL: ' + GetEntriesUrl)
+    ShowMessage('No entries were downloaded. URL: ' + Settings.GetEntriesUrl)
   else
     Result := True;
 end;
@@ -1213,6 +1240,7 @@ begin
   CheckGlucoseLevelAlarms();
   DrawTrayIcon();
   DrawApplicationIcon();
+  ShowBaloonHint();
   Invalidate();
 end;
 

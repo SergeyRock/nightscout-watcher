@@ -1,7 +1,7 @@
 object fTimerDialog: TfTimerDialog
-  Left = 1936
+  Left = 1941
   Height = 130
-  Top = 528
+  Top = 169
   Width = 525
   BorderStyle = bsDialog
   Caption = 'fTimerDialog'
