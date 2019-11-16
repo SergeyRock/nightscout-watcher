@@ -4,7 +4,7 @@ unit ufMain;
   {$MODE Delphi}
 {$ENDIF}
 
-// TODO: Dialog to type in nightscout site with timer.
+// TODO: Trend alarms settings
 
 interface
 
@@ -121,8 +121,8 @@ type
     miDrawGlucoseSlope: TMenuItem;
     actDrawGlucoseExtremePoints: TAction;
     miDrawGlucoseExtremePoints: TMenuItem;
-    actSetCountOfEntriesToRecive: TAction;
-    miSetCountOfEntriesToRecive: TMenuItem;
+    actSetHoursToRecive: TAction;
+    miSetHoursToRecive: TMenuItem;
     actShowSettings: TAction;
     miShowSettings: TMenuItem;
     actDrawAlertLines: TAction;
@@ -164,7 +164,7 @@ type
     procedure actSetUnitOfMeasureMmolLExecute(Sender: TObject);
     procedure FormMouseEnter(Sender: TObject);
     procedure FormMouseLeave(Sender: TObject);
-    procedure actSetCountOfEntriesToReciveExecute(Sender: TObject);
+    procedure actSetHoursToReciveExecute(Sender: TObject);
     procedure DoShowSettingsExecute(Sender: TObject);
     procedure actFullScreenExecute(Sender: TObject);
     procedure TrayIconClick(Sender: TObject);
@@ -195,6 +195,7 @@ type
     procedure DrawStrokedText(const AText: string; const X, Y: Integer; const TextColor: TColor);
     function GetHintText(): string;
     procedure Restart(Params: string = '');
+    procedure ShowBaloonHint;
     procedure ShowIconInTaskbar(AVisible: Boolean);
     function LoadWallpaper(const FileName: string): Boolean;
     procedure ResetWindowBoundsToDefault();
@@ -215,7 +216,6 @@ type
     function SetMaximumDrawStageSizeToCanvas(DrawStage: TDrawStage; const AText: string): Byte;
     procedure SetAlphaBlendValue(Value: Integer);
     procedure RefreshCheckInterval;
-    function GetEntriesUrl: string;
     function GetDrawStageSize(DrawStage: TDrawStage; ScaleIndex: Integer = -1): Integer;
     procedure HardInvalidate();
     procedure ApplyWindowSettings();
@@ -242,8 +242,8 @@ resourcestring
 implementation
 
 uses
-  ufSettings, UrlMon, Wininet, Math, IniFiles, StrUtils, Types, graphtype,
-  intfgraphics, fpimage, process;
+  ufSettings, ufTimerDialog, UrlMon, Wininet, Math, IniFiles, StrUtils, Types, graphtype,
+  intfgraphics, fpimage, process, ButtonPanel;
 
 procedure TfMain.Restart(Params: string = '');
 var
@@ -333,6 +333,7 @@ var
   TextSize: TSize;
   X, Y: Integer;
   EntryText: String;
+  DelimiterPos: SizeInt;
 begin
   LastEntry := Entries.Last;
   if LastEntry = nil then
@@ -392,10 +393,16 @@ begin
     EntryText := LastEntry.GetGlucoseStr(Settings.IsMmolL);
     TextSize := TempBitMap.Canvas.TextExtent(EntryText);
 
+    // Remove decimal part of number, if EntryText doesn`t fit inside icon
     if TextSize.cx > IconSize then
     begin
-      EntryText := Copy(EntryText, 1, High(EntryText) - 1);
-      TextSize := TempBitMap.Canvas.TextExtent(EntryText);
+      EntryText := ReplaceStr(EntryText, ',', '.');
+      DelimiterPos := Pos('.', EntryText);
+      if DelimiterPos > 0 then
+      begin
+        EntryText := Copy(EntryText, 1, DelimiterPos - 1);
+        TextSize := TempBitMap.Canvas.TextExtent(EntryText);
+      end;
     end;
 
     X := Max(0, (IconSize - TextSize.cx) div 2);
@@ -438,43 +445,46 @@ begin
 end;
 
 procedure TfMain.actSetCheckIntervalExecute(Sender: TObject);
+const
+  cMsg = 'Type in time interval to recieve data from Nightscout site (in seconds)';
 var
   CheckIntervalStr, Msg: string;
 begin
   al.State := asSuspended;
   CheckIntervalStr := IntToStr(Settings.CheckInterval);
-  if InputQuery('Check interval', 'Type in time interval to recieve data from Nightscout site (in seconds)', CheckIntervalStr) then
+  if TfTimerDialog.Execute(Self, 'Check interval', cMsg, CheckIntervalStr, [pbOK, pbCancel]) = mrOK then
     if not SetCheckIntervalByString(CheckIntervalStr) then
     begin
-      Msg := 'You must type in time interval in seconds (float value)';
+      Msg := 'You must type in time interval in seconds (int value)';
       if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
         actSetCheckIntervalExecute(Sender);
     end;
   al.State := asNormal;
 end;
 
-procedure TfMain.actSetCountOfEntriesToReciveExecute(Sender: TObject);
+procedure TfMain.actSetHoursToReciveExecute(Sender: TObject);
 var
   Count, Msg: string;
   CountEntered: Integer;
   CanSetCount: Boolean;
 begin
   al.State := asSuspended;
-  Count := IntToStr(Settings.CountOfEntriesToRecive);
-  if InputQuery('Count of entries', 'Type in the count of glucose entries to recieve from Nightscout site', Count) then
+  Count := IntToStr(Settings.HoursToRecive);
+  Msg := 'Type in the hours to recieve data from Nightscout site';
+  if InputQuery('Hours to receive', Msg, Count) then
   begin
     CanSetCount := TryStrToInt(Count, CountEntered);
-    CanSetCount := CanSetCount and (CountEntered >= 2) and (CountEntered <= 200);
+    CanSetCount := CanSetCount and (CountEntered >= cHoursToReceiveMin) and (CountEntered <= cHoursToReceiveMax);
     if CanSetCount then
     begin
-      Settings.CountOfEntriesToRecive := CountEntered;
+      Settings.HoursToRecive := CountEntered;
       tmrTimer(tmr);
     end
     else
     begin
-      Msg := 'You must type in integer value (between 2 and 200).' + #13#10 + ' Try again?';
+      Msg := Format('You must type in an integer value (between %d and %d).' + #13#10 + 'Try again?', [cHoursToReceiveMin, cHoursToReceiveMax]);
       if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
-        actSetCountOfEntriesToReciveExecute(Sender);
+        actSetHoursToReciveExecute(Sender);
     end;
   end;
   al.State := asNormal;
@@ -483,18 +493,26 @@ end;
 procedure TfMain.actSetNightscoutSiteExecute(Sender: TObject);
 var
   Url, Msg: string;
+  DialogResult: TModalResult;
+  WasConnected: Boolean;
+  TimerIntervalSecs: Integer;
 begin
   al.State := asSuspended;
+  WasConnected := Connected;
   Connected := False;
   Url := Settings.NightscoutUrl;
-  if InputQuery('Nighscout site', 'Type URL of Nightscout site', Url) then
+  TimerIntervalSecs := -1;
+  if WasConnected then
+    TimerIntervalSecs := 20;
+  DialogResult := TfTimerDialog.Execute(Self, 'Nighscout site', 'Type URL of Nightscout site', Url, [pbOK, pbCancel], TimerIntervalSecs);
+  if DialogResult = mrOK then
   begin
     if (Url <> '') and (SetNightscoutUrl(Url)) then
       tmrTimer(tmr)
     else
       actSetNightscoutSiteExecute(Sender);
   end
-  else
+  else if (DialogResult = mrCancel) and not WasConnected then
   begin
     Msg := 'To obtain CGM data you have to type full URL of your Nightscout site.' + #13#10 +
       'Only HTTP protocol is supported.' + #13#10 +
@@ -885,11 +903,36 @@ begin
     tmrTimer(tmr); // Load data from nightscout site and start monitoring
 end;
 
-function TfMain.ShowBaloonHint
-
-function TfMain.GetEntriesUrl: string;
+procedure TfMain.ShowBaloonHint;
+var
+  BaloonHint: string;
+  LastEntry: TNightscoutEntry;
 begin
-  Result := Settings.NightscoutUrl + '/api/v1/entries/sgv?count=' + IntToStr(Settings.CountOfEntriesToRecive);
+  if not Settings.IsSnoozeAlarmsEndTimePassed() then
+    Exit;
+
+  BaloonHint := '';
+  LastEntry := Entries.Last;
+  TrayIcon.BalloonTitle := 'Alarm!';
+  if Settings.IsUrgentGlucoseLevelAlarmExists(LastEntry) then
+  begin
+    BaloonHint := BaloonHint + 'Urgent dangerous glucose level is reached!' + #13#10;
+    TrayIcon.BalloonTitle := 'ALARM!!!';
+  end
+  else if Settings.IsGlucoseLevelAlarmExists(LastEntry) then
+    BaloonHint := BaloonHint + 'Dangerous glucose level is reached!' + #13#10;
+
+  if Settings.IsUrgentStaleDataAlarmExists(LastEntry) then
+  begin
+    BaloonHint := BaloonHint + 'Glucose data is very stale!' + #13#10;
+    TrayIcon.BalloonTitle := 'ALARM!!!';
+  end
+  else if Settings.IsStaleDataAlarmExists(LastEntry) then
+    BaloonHint := BaloonHint + 'Glucose data is stale!' + #13#10;
+
+  TrayIcon.BalloonHint := BaloonHint;
+  TrayIcon.BalloonFlags := bfWarning;
+  TrayIcon.ShowBalloonHint;
 end;
 
 function TfMain.GetDrawStageSize(DrawStage: TDrawStage; ScaleIndex: Integer = -1): Integer;
@@ -925,12 +968,12 @@ begin
   Entries.Clear;
   if not DebugMode then
   begin
-    DeleteUrlCacheEntry(PAnsiChar(GetEntriesUrl()));
-    IsFileDownloaded := URLDownloadToFile(nil, PAnsiChar(GetEntriesUrl()), PAnsiChar(FileName), 0, nil) = S_OK;
+    DeleteUrlCacheEntry(PAnsiChar(Settings.GetEntriesUrlByHours()));
+    IsFileDownloaded := URLDownloadToFile(nil, PAnsiChar(Settings.GetEntriesUrlByHours()), PAnsiChar(FileName), 0, nil) = S_OK;
 
     if not IsFileDownloaded then
     begin
-      ShowMessage('File downloading is failed. URL: ' + GetEntriesUrl());
+      ShowMessage('File downloading is failed. URL: ' + Settings.GetEntriesUrlByHours());
       Exit;
     end;
   end;
@@ -955,14 +998,14 @@ begin
       FreeAndNil(Entry);
   end;
   Entries.RemoveDuplicatesWithTheSameDate;
-  Entries.LimitEntries(Settings.CountOfEntriesToRecive);
+  //Entries.LimitEntries(Settings.HoursToRecive);
   CloseFile(DataFile);
 
   if not DebugMode then
     DeleteFile(FileName);
 
   if Entries.Count = 0 then
-    ShowMessage('No entries were downloaded. URL: ' + GetEntriesUrl)
+    ShowMessage('No entries were downloaded. URL: ' + Settings.GetEntriesUrlByHours)
   else
     Result := True;
 end;
@@ -996,7 +1039,7 @@ begin
     Settings.NightscoutUrl          := ini.ReadString('Main',  'NightscoutUrl',          Settings.NightscoutUrl);
     Settings.CheckInterval          := ini.ReadInteger('Main', 'CheckInterval',          Settings.CheckInterval);
     Settings.TimeZoneCorrection     := ini.ReadInteger('Main', 'TimeZoneCorrection',     Settings.TimeZoneCorrection);
-    Settings.CountOfEntriesToRecive := ini.ReadInteger('Main', 'CountOfEntriesToRecive', Settings.CountOfEntriesToRecive);
+    Settings.HoursToRecive := ini.ReadInteger('Main', 'HoursToRecive', Settings.HoursToRecive);
 
     // Visual settings
     LoadDrawStageOption('dsLastGlucoseLevel',     dsLastGlucoseLevel,     actDrawLastGlucoseLevel);
@@ -1050,7 +1093,7 @@ begin
   try
     ini.WriteBool('Main', 'IsMmolL', Settings.IsMmolL);
     ini.WriteString('Main', 'NightscoutUrl', Settings.NightscoutUrl);
-    ini.WriteInteger('Main', 'CountOfEntriesToRecive', Settings.CountOfEntriesToRecive);
+    ini.WriteInteger('Main', 'HoursToRecive', Settings.HoursToRecive);
     ini.WriteInteger('Main', 'TimeZoneCorrection', Settings.TimeZoneCorrection);
     ini.WriteInteger('Main', 'CheckInterval', Settings.CheckInterval);
 
@@ -1193,6 +1236,7 @@ begin
   CheckGlucoseLevelAlarms();
   DrawTrayIcon();
   DrawApplicationIcon();
+  ShowBaloonHint();
   Invalidate();
 end;
 
@@ -1750,6 +1794,10 @@ begin
     LastEntryGlucose := Entries.Last.GetGlucoseStr(Settings.IsMmolL);
     Application.Title := Format('%s (%s) - %s v%s', [LastEntryGlucose, Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL), Application.Title, GetVersion()]);
   end;
+
+  if Settings.NightscoutUrl <> '' then
+    Application.Title := Application.Title + ' - ' + Settings.NightscoutUrl;
+
   Caption := Application.Title;
   TrayIcon.Hint := Application.Title;
 end;
@@ -1767,7 +1815,7 @@ begin
   Lst := TStringList.Create();
   try
     Lst.Add(Format('Count of entries with glucose data: %d', [Entries.Count]));
-    Lst.Add(Format('Count of entries to recieve: %d', [Settings.CountOfEntriesToRecive]));
+    Lst.Add(Format('Hours to recieve data: %d', [Settings.HoursToRecive]));
     Lst.Add(Format('Glucose average: %s', [Entries.GetAvgGlucoseStr(Settings.IsMmolL)]));
     if Assigned(Entries.First) then
     begin

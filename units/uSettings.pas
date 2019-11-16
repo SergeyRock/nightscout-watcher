@@ -53,6 +53,9 @@ const
   cMoveWindowDelta = 10;
   cAlphaBlendValueDelta = 10;
 
+  cHoursToReceiveMin = 1;
+  cHoursToReceiveMax = 48;
+
 type
   TDrawStage = (dsLastGlucoseLevel, dsGlucoseLines, dsGlucoseLevel, dsHorzGuideLines,
     dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope, dsGlucoseExtremePoints,
@@ -64,7 +67,7 @@ type
   TSettings = class
     AlphaBlendValue: Integer;
     CheckInterval: Integer;
-    CountOfEntriesToRecive: Integer;
+    HoursToRecive: Integer;
     DrawStages: TDrawStages;
     EnableGlucoseLevelAlarms: Boolean;
     EnableStaleDataAlarms: Boolean;
@@ -91,6 +94,7 @@ type
     function GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast: TDateTime): Integer;
   public
     constructor Create();
+    function GetEntriesUrlByHours: string;
     function GetColorByGlucoseLevel(Glucose: Integer): TColor;
     function IsStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
     function IsUrgentStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
@@ -167,7 +171,7 @@ procedure TSettings.Assign(Settings: TSettings);
 begin
   AlphaBlendValue := Settings.AlphaBlendValue;
   CheckInterval := Settings.CheckInterval;
-  CountOfEntriesToRecive := Settings.CountOfEntriesToRecive;
+  HoursToRecive := Settings.HoursToRecive;
   DrawStages := Settings.DrawStages;
   EnableGlucoseLevelAlarms := Settings.EnableGlucoseLevelAlarms;
   EnableStaleDataAlarms := Settings.EnableStaleDataAlarms;
@@ -195,7 +199,7 @@ begin
   Result := TSettings.Create;
   Result.AlphaBlendValue := AlphaBlendValue;
   Result.CheckInterval := CheckInterval;
-  Result.CountOfEntriesToRecive := CountOfEntriesToRecive;
+  Result.HoursToRecive := HoursToRecive;
   Result.DrawStages := DrawStages;
   Result.EnableGlucoseLevelAlarms := EnableGlucoseLevelAlarms;
   Result.EnableStaleDataAlarms := EnableStaleDataAlarms;
@@ -225,7 +229,7 @@ begin
     dsGlucoseExtremePoints, dsGlucoseLevelDelta, dsGlucoseAvg];
   AlphaBlendValue := 200;
   CheckInterval := 20;
-  CountOfEntriesToRecive := 40;
+  HoursToRecive := 24;
   EnableGlucoseLevelAlarms := True;
   EnableStaleDataAlarms := True;
   FullScreen := False;
@@ -301,6 +305,18 @@ begin
     ScaleIndex := Index;
 
   Result := OldScaleIndex <> ScaleIndex;
+end;
+
+function TSettings.GetEntriesUrlByHours: string;
+var
+  DateString: string;
+  DateResult: TDateTime;
+begin
+  DateResult := Now() - HoursToRecive / HoursPerDay;
+  DateString :=
+    FormatDateTime('yyyy-mm-dd', DateResult) + 'T' +
+    FormatDateTime('hh:nn:ss', DateResult);
+  Result := Format('%s/api/v1/entries/sgv?count=3000&find[dateString][$gte]=%s', [NightscoutUrl, DateString]);
 end;
 
 function TSettings.IsSnoozeAlarmsEndTimePassed(): Boolean;
