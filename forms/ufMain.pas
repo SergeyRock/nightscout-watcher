@@ -32,6 +32,7 @@ type
     actDrawGlucoseLevelDelta: TAction;
     actDrawGlucoseAvg: TAction;
     actDrawWallpaper: TAction;
+    actSnoozeAlarmsCustom: TAction;
     actShowIconInTray: TAction;
     actShowIconOnTaskbar: TAction;
     actSnoozeAlarmsReset: TAction;
@@ -41,6 +42,7 @@ type
     actSnoozeAlarms30mins: TAction;
     actSnoozeAlarms10mins: TAction;
     actStayOnTop: TAction;
+    miSnoozeAlarmsCustom: TMenuItem;
     miShowIconInTray: TMenuItem;
     miShowIconOnTaskbar: TMenuItem;
     miSnoozeAlarmsSeparator: TMenuItem;
@@ -818,8 +820,28 @@ begin
 end;
 
 procedure TfMain.DoSnoozeAlarmsExecute(Sender: TObject);
+var
+  SnoozeAction: TAction;
+  Seconds: Integer;
+  MinutesStr, Msg: string;
 begin
-  SnoozeAlarms(TAction(Sender).Tag);
+  SnoozeAction := TAction(Sender);
+  Seconds := SnoozeAction.Tag;
+  while Seconds = -1 do
+  begin
+    if TfTimerDialog.Execute(Self, 'Snooze time length', 'Type in snooze time length in minutes', MinutesStr, [pbOK, pbCancel]) = mrCancel then
+      Exit;
+
+    if not TryStrToInt(MinutesStr, Seconds) then
+    begin
+      Msg := 'You must type in snooze time length in minutes (int value)';
+      MessageDlg(Msg, mtError, [mbOK], -1);
+    end
+    else
+      Seconds := Seconds * 60;
+  end;
+
+  SnoozeAlarms(Seconds);
 end;
 
 procedure TfMain.actShowIconOnTaskbarExecute(Sender: TObject);

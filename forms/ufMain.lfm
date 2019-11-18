@@ -80,6 +80,9 @@ object fMain: TfMain
       object miSnoozeAlarms120mins: TMenuItem
         Action = actSnoozeAlarms120mins
       end
+      object miSnoozeAlarmsCustom: TMenuItem
+        Action = actSnoozeAlarmsCustom
+      end
       object miSnoozeAlarmsSeparator: TMenuItem
         Caption = '-'
       end
@@ -575,6 +578,12 @@ object fMain: TfMain
       Checked = True
       OnExecute = actShowIconInTrayExecute
       ShortCut = 89
+    end
+    object actSnoozeAlarmsCustom: TAction
+      Tag = -1
+      Category = 'Other'
+      Caption = 'Snooze alarms for ...'
+      OnExecute = DoSnoozeAlarmsExecute
     end
   end
   object TrayIcon: TTrayIcon
