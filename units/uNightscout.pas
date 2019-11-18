@@ -50,6 +50,7 @@ type
     function GetGlucoseLevelDeltaText(IsMmolL: Boolean): string;
     function First: TNightscoutEntry;
     function Last: TNightscoutEntry;
+    function LoadFromFile(const FileName: string): Boolean;
     procedure RemoveDuplicatesWithTheSameDate();
     procedure LimitEntries(MaxItems: Integer);
     property Items[Index: Integer]: TNightscoutEntry read GetItem write SetItem; default;
@@ -139,6 +140,35 @@ end;
 function TNightscoutEntryList.Last: TNightscoutEntry;
 begin
   Result := TNightscoutEntry(inherited Last);
+end;
+
+function TNightscoutEntryList.LoadFromFile(const FileName: string): Boolean;
+var
+  Line: string;
+  DataFile: TextFile;
+  Entry: TNightscoutEntry;
+begin
+  try
+    AssignFile(DataFile, FileName);
+    FileMode := fmOpenRead;
+    Reset(DataFile);
+
+    while not Eof(DataFile) do
+    begin
+      ReadLn(DataFile, Line);
+      Entry := TNightscoutEntry.Create();
+      if Entry.ParseRow(Line) then
+        Insert(0, Entry)
+      else
+        FreeAndNil(Entry);
+    end;
+    RemoveDuplicatesWithTheSameDate;
+    //LimitEntries(Settings.HoursToRecive);
+    CloseFile(DataFile);
+    Result := True;
+  except
+    Result := False;
+  end;
 end;
 
 function TNightscoutEntryList.First: TNightscoutEntry;

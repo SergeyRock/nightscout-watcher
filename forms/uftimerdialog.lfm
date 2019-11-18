@@ -1,7 +1,7 @@
 object fTimerDialog: TfTimerDialog
-  Left = 1941
+  Left = 394
   Height = 130
-  Top = 169
+  Top = 577
   Width = 525
   BorderStyle = bsDialog
   Caption = 'fTimerDialog'
@@ -11,10 +11,11 @@ object fTimerDialog: TfTimerDialog
   Constraints.MinWidth = 400
   OnCreate = FormCreate
   Position = poScreenCenter
+  ShowHint = True
   LCLVersion = '2.0.6.0'
   object eInputText: TEdit
     Left = 16
-    Height = 23
+    Height = 21
     Top = 44
     Width = 495
     Anchors = [akTop, akLeft, akRight]
@@ -40,7 +41,7 @@ object fTimerDialog: TfTimerDialog
   end
   object lblDescription: TLabel
     Left = 16
-    Height = 27
+    Height = 67
     Top = 13
     Width = 495
     Anchors = [akTop, akLeft, akRight]

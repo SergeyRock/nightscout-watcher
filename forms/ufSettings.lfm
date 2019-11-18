@@ -1,7 +1,7 @@
 object fSettings: TfSettings
-  Left = 1229
+  Left = 1271
   Height = 500
-  Top = 217
+  Top = 431
   Width = 600
   Caption = 'Settings'
   ClientHeight = 500
@@ -42,10 +42,10 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 600
-    ActivePage = tsMain
+    ActivePage = tsHelp
     Align = alTop
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 2
     OnChange = pcChange
     object tsMain: TTabSheet

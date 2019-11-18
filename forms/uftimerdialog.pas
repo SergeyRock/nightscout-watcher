@@ -25,12 +25,10 @@ type
   private
     RemainSecs: Integer;
     TimerInterval: Integer;
-    InputText: string;
     NativeCaption: string;
   public
-    class function Execute(AOwner: TComponent; const ACaption,
-      ADescription: string; var AInputText: string; Buttons: TPanelButtons;
-  TimerInterval: Integer=-1): TModalResult;
+    class function Execute(AOwner: TComponent; const ACaption, ADescription: string; var AInputText: string;
+      Buttons: TPanelButtons; TimerInterval: Integer = - 1; HideInputField: Boolean = False): TModalResult;
   end;
 
 implementation
@@ -40,18 +38,18 @@ implementation
 { TfTimerDialog }
 
 class function TfTimerDialog.Execute(AOwner: TComponent; const ACaption, ADescription: string;
-  var AInputText: string; Buttons: TPanelButtons; TimerInterval: Integer = -1): TModalResult;
+  var AInputText: string; Buttons: TPanelButtons; TimerInterval: Integer = -1; HideInputField: Boolean = False): TModalResult;
 var
   F: TfTimerDialog;
 begin
-
   F := TfTimerDialog.Create(AOwner);
   try
     F.Caption := ACaption;
     F.NativeCaption := ACaption;
-    F.InputText := AInputText;
     F.eInputText.Text := AInputText;
+    F.eInputText.Visible := not HideInputField;
     F.lblDescription.Caption := ADescription;
+    F.lblDescription.Hint := ADescription;
     F.pb.ShowButtons := Buttons;
     if TimerInterval > 0 then
     begin

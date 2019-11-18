@@ -441,8 +441,23 @@ begin
 end;
 
 procedure TfMain.SnoozeAlarms(Seconds: Integer);
+var
+  i: Integer;
+  SnoozeAction: TAction;
 begin
   Settings.SnoozeAlarms(Seconds);
+
+  // Reassign shortcut according to chosen snooze period
+  for i := 0 to miSnoozeAlarms.Count - 1 do
+  begin
+    SnoozeAction := TAction(miSnoozeAlarms.Items[i].Action);
+    if SnoozeAction = nil then
+      Continue;
+    if SnoozeAction.Tag = Seconds then
+      SnoozeAction.ShortCut := VK_Z
+    else
+      SnoozeAction.ShortCut := VK_UNKNOWN;
+  end;
 end;
 
 procedure TfMain.actSetCheckIntervalExecute(Sender: TObject);
@@ -662,6 +677,7 @@ begin
       VK_UP:    Top  := Top - cMoveWindowDelta;
       VK_DOWN:  Top  := Top + cMoveWindowDelta;
       VK_APPS:  pm.PopUp;
+      VK_Z:
     end;
   end
   else if Shift = [ssShift] then
@@ -959,9 +975,7 @@ end;
 
 function TfMain.LoadEntriesData: Boolean;
 var
-  FileName, Line: string;
-  DataFile: TextFile;
-  Entry: TNightscoutEntry;
+  FileName, Msg, DummyText: string;
   IsFileDownloaded: Boolean;
 begin
   Result := False;
@@ -974,39 +988,29 @@ begin
 
     if not IsFileDownloaded then
     begin
-      ShowMessage('File downloading is failed. URL: ' + Settings.GetEntriesUrlByHours());
+      Msg := 'File downloading is failed. URL: ' + Settings.GetEntriesUrlByHours();
+      TfTimerDialog.Execute(Self, 'Connection fail', Msg, DummyText, [pbOK], 20, True);
       Exit;
     end;
   end;
 
   if not FileExists(FileName) then
   begin
-    ShowMessage('File with entries doesn`t exist: ' + FileName);
+    Msg := 'File with entries doesn`t exist: ' + FileName;
+    TfTimerDialog.Execute(Self, 'File error', Msg, DummyText, [pbOK], 20, True);
     Exit;
   end;
 
-  AssignFile(DataFile, FileName);
-  FileMode := fmOpenRead;
-  Reset(DataFile);
-
-  while not Eof(DataFile) do
-  begin
-    ReadLn(DataFile, Line);
-    Entry := TNightscoutEntry.Create();
-    if Entry.ParseRow(Line) then
-      Entries.Insert(0, Entry)
-    else
-      FreeAndNil(Entry);
-  end;
-  Entries.RemoveDuplicatesWithTheSameDate;
-  //Entries.LimitEntries(Settings.HoursToRecive);
-  CloseFile(DataFile);
-
-  if not DebugMode then
-    DeleteFile(FileName);
+  if Entries.LoadFromFile(FileName) then
+    if not DebugMode then
+      DeleteFile(FileName);
 
   if Entries.Count = 0 then
-    ShowMessage('No entries were downloaded. URL: ' + Settings.GetEntriesUrlByHours)
+  begin
+    Msg := 'No entries were downloaded. URL: ' + Settings.GetEntriesUrlByHours();
+    TfTimerDialog.Execute(Self, 'File error', Msg, DummyText, [pbOK], 20, True);
+    Exit;
+  end
   else
     Result := True;
 end;
