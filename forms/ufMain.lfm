@@ -329,6 +329,7 @@ object fMain: TfMain
     top = 8
   end
   object al: TActionList
+    OnUpdate = alUpdate
     left = 208
     top = 8
     object actDrawLastGlucoseLevel: TAction
@@ -478,7 +479,7 @@ object fMain: TfMain
       Category = 'Settings'
       Caption = 'Set hours to receive data'
       OnExecute = actSetHoursToReciveExecute
-      ShortCut = 67
+      ShortCut = 72
     end
     object actShowSettings: TAction
       Category = 'Other'
@@ -560,7 +561,7 @@ object fMain: TfMain
     end
     object actSnoozeAlarmsReset: TAction
       Category = 'Other'
-      Caption = 'Reset alarms'
+      Caption = 'Reset snooze alarms'
       OnExecute = DoSnoozeAlarmsExecute
     end
     object actShowIconOnTaskbar: TAction

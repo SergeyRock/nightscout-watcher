@@ -137,17 +137,16 @@ type
     TrayIcon: TTrayIcon;
     procedure actShowIconInTrayExecute(Sender: TObject);
     procedure actShowIconOnTaskbarExecute(Sender: TObject);
+    procedure alUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure DoSnoozeAlarmsExecute(Sender: TObject);
     procedure actStayOnTopExecute(Sender: TObject);
     procedure DoScaleIndexClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure FormMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure CheckStaleDataAlarms;
     procedure DoOpacityPercentClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -208,8 +207,7 @@ type
     function LoadEntriesData: Boolean;
     procedure SetActionCheckProperty(Action: TAction; Checked: Boolean; DrawStage: TDrawStage);
     function GetArrowRect(Slope: string; ArrowAreaRect: TRect; var OutPoints: TRect): Boolean;
-    procedure DrawArrow(P1, P2: TPoint; DrawArrowEnd: boolean;
-      GlucoseSlopeColor: TColor; ArrowWidth: Integer);
+    procedure DrawArrow(P1, P2: TPoint; DrawArrowEnd: boolean; GlucoseSlopeColor: TColor; ArrowWidth: Integer);
     procedure DoDrawStages(DrawStages: TDrawStages);
     procedure DrawTextInCenter(const AText: string);
     procedure DoDraw(Sender: TObject);
@@ -234,7 +232,7 @@ type
 var
   fMain: TfMain;
   {$IFDEF DEBUG}
-  DebugMode: Boolean = False; // Set to True to read data from file entries.tsv
+  DebugMode: Boolean = True; // Set to True to read data from file entries.tsv
   {$ELSE}
   DebugMode: Boolean = False;
   {$ENDIF}
@@ -710,8 +708,7 @@ begin
   end;
 end;
 
-procedure TfMain.FormMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TfMain.FormMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   FPressed := True;
   FPosX := X;
@@ -721,6 +718,10 @@ end;
 procedure TfMain.FormMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 begin
+  // Forbid window draging while FullScreen
+  if Settings.FullScreen then
+    Exit;
+
   if FPressed then
   begin
     Left := Left - FPosX + X;
@@ -834,11 +835,13 @@ begin
 
     if not TryStrToInt(MinutesStr, Seconds) then
     begin
-      Msg := 'You must type in snooze time length in minutes (int value)';
-      MessageDlg(Msg, mtError, [mbOK], -1);
+      Seconds := Seconds * 60;
     end
     else
-      Seconds := Seconds * 60;
+    begin
+      Msg := 'You must type in snooze time length in minutes (int value)';
+      MessageDlg(Msg, mtError, [mbOK], -1);
+    end;
   end;
 
   SnoozeAlarms(Seconds);
@@ -852,6 +855,12 @@ begin
   Msg := 'To apply setting you should restart application.' + #13#10 + 'Restart now?';
   if MessageDlg(Msg, mtConfirmation, mbYesNo, -1) = mrYes then
     Restart(sHideTaskbarIcon);
+end;
+
+procedure TfMain.alUpdate(AAction: TBasicAction; var Handled: Boolean);
+begin
+  actSnoozeAlarmsReset.Enabled := not Settings.IsSnoozeAlarmsEndTimePassed();
+  actShowWindowBorder.Enabled := not Settings.FullScreen;
 end;
 
 procedure TfMain.ShowIconInTray(AVisible: Boolean);
@@ -1684,14 +1693,13 @@ begin
   OffsetPoints[9]  := Point( 1,  0);
   OffsetPoints[10] := Point( 0,  1);
   OffsetPoints[11] := Point(-1,  0);
-
-  OffsetPoints[8]  := Point( 1, -1);
-  OffsetPoints[9]  := Point( 1,  1);
-  OffsetPoints[10] := Point(-1,  1);
-  OffsetPoints[11] := Point(-1, -1);
+  OffsetPoints[12] := Point( 1, -1);
+  OffsetPoints[13] := Point( 1,  1);
+  OffsetPoints[14] := Point(-1,  1);
+  OffsetPoints[15] := Point(-1, -1);
   cnv.Font.Color := Color;
 
-  StartI := IfThen(cnv.Font.Size > 20, 0, 8);
+  StartI := IfThen(cnv.Font.Size > 28, 0, 8);
 
   for i := StartI to High(OffsetPoints) do
   begin
@@ -1802,6 +1810,7 @@ begin
   if Settings.FullScreen then
   begin
     WindowState := wsMaximized;
+    Settings.ShowWindowBorder := False;
   end
   else
   begin
@@ -1846,8 +1855,8 @@ begin
     Lst.Add(Format('Glucose average: %s', [Entries.GetAvgGlucoseStr(Settings.IsMmolL)]));
     if Assigned(Entries.First) then
     begin
-      Lst.Add(Format('Time of first entry: %s', [DateTimeToStr(Entries.First.Date + Settings.TimeZoneCorrection)]));
-      Lst.Add(Format('Time of last entry: %s', [DateTimeToStr(Entries.Last.Date + Settings.TimeZoneCorrection)]));
+      Lst.Add(Format('Time of first entry: %s', [DateTimeToStr(Entries.First.Date + Settings.TimeZoneCorrection / HoursPerDay)]));
+      Lst.Add(Format('Time of last entry: %s', [DateTimeToStr(Entries.Last.Date + Settings.TimeZoneCorrection / HoursPerDay)]));
       Lst.Add(Format('Time has passed since last entry was received: %s', [Settings.GetGlucoseLevelDateText(Entries.Last.Date, Now(), DummyColor)]));
       Lst.Add(Format('Time between last and first entry: %s', [Settings.GetTimeBetweenDatesText(Entries.Last.Date, Entries.First.Date)]));
     end;
