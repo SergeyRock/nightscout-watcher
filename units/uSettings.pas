@@ -58,42 +58,46 @@ const
 
 type
   TDrawStage = (dsLastGlucoseLevel, dsGlucoseLines, dsGlucoseLevel, dsHorzGuideLines,
-    dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope, dsGlucoseExtremePoints,
-    dsAlertLines, dsGlucoseLevelPoints, dsGlucoseLevelDelta, dsGlucoseAvg, dsWallpaper);
+      dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope, dsGlucoseExtremePoints,
+      dsAlertLines, dsGlucoseLevelPoints, dsGlucoseLevelDelta, dsGlucoseAvg, dsWallpaper);
   TDrawStages = set of TDrawStage;
 
   { TSettings }
 
   TSettings = class
+  private
+    function GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast: TDateTime): Integer;
+  public
     AlphaBlendValue: Integer;
     CheckInterval: Integer;
-    HoursToRecive: Integer;
     DrawStages: TDrawStages;
     EnableGlucoseLevelAlarms: Boolean;
     EnableStaleDataAlarms: Boolean;
     FullScreen: Boolean;
     HighGlucoseAlarm: Integer;
+    HoursToRecive: Integer;
     IsMmolL: Boolean;
+    LastSnoozeTimePeriod: Integer;
     LowGlucoseAlarm: Integer;
     NightscoutUrl: string;
+    OptionsFileName: string;
     ScaleIndex: Integer;
     ShowCheckNewDataProgressBar: Boolean;
+    ShowIconInTaskBar: Boolean;
+    ShowIconInTray: Boolean;
     ShowWindowBorder: Boolean;
+    SnoozeAlarmsEndTime: TDateTime;
     StaleDataAlarm: Integer;
+    StayOnTop: Boolean;
     TimeZoneCorrection: Integer;
     UrgentHighGlucoseAlarm: Integer;
     UrgentLowGlucoseAlarm: Integer;
     UrgentStaleDataAlarm: Integer;
-    StayOnTop: Boolean;
     WallpaperFileName: string;
-    SnoozeAlarmsEndTime: TDateTime;
-    ShowIconInTaskBar: Boolean;
-    ShowIconInTray: Boolean;
     WindowRect: TRect;
-  private
-    function GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast: TDateTime): Integer;
-  public
-    constructor Create();
+    procedure SaveOptions();
+    procedure LoadOptions();
+    constructor Create(OptionsFileName: string);
     function GetEntriesUrlByHours: string;
     function GetColorByGlucoseLevel(Glucose: Integer): TColor;
     function IsStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
@@ -119,7 +123,7 @@ type
 implementation
 
 uses
-  DateUtils, SysUtils, Forms;
+  DateUtils, SysUtils, Forms, IniFiles;
 
 { TSettings }
 
@@ -136,6 +140,7 @@ end;
 procedure TSettings.SnoozeAlarms(Seconds: Integer);
 begin
   SnoozeAlarmsEndTime := Now() + Seconds / SecsPerDay;
+  LastSnoozeTimePeriod := Seconds;
 end;
 
 function TSettings.IsInDrawStage(DrawStage: TDrawStage): Boolean;
@@ -192,11 +197,12 @@ begin
   WallpaperFileName := Settings.WallpaperFileName;
   ShowIconInTaskBar := Settings.ShowIconInTaskBar;
   ShowIconInTray := Settings.ShowIconInTray;
+  LastSnoozeTimePeriod := Settings.LastSnoozeTimePeriod;
 end;
 
 function TSettings.Clone(): TSettings;
 begin
-  Result := TSettings.Create;
+  Result := TSettings.Create(OptionsFileName);
   Result.AlphaBlendValue := AlphaBlendValue;
   Result.CheckInterval := CheckInterval;
   Result.HoursToRecive := HoursToRecive;
@@ -220,37 +226,40 @@ begin
   Result.WallpaperFileName := WallpaperFileName;
   Result.ShowIconInTaskBar := ShowIconInTaskBar;
   Result.ShowIconInTray := ShowIconInTray;
+  Result.LastSnoozeTimePeriod := LastSnoozeTimePeriod;
 end;
 
-constructor TSettings.Create();
+constructor TSettings.Create(OptionsFileName: string);
 begin
+  Self.OptionsFileName := OptionsFileName;
   DrawStages := [dsLastGlucoseLevel, dsGlucoseLines, dsHorzGuideLines,
     dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope,
     dsGlucoseExtremePoints, dsGlucoseLevelDelta, dsGlucoseAvg];
   AlphaBlendValue := 200;
   CheckInterval := 20;
-  HoursToRecive := 24;
   EnableGlucoseLevelAlarms := True;
   EnableStaleDataAlarms := True;
   FullScreen := False;
   HighGlucoseAlarm:= 9 * cMmolDenominator;
+  HoursToRecive := 24;
   IsMmolL := True;
+  LastSnoozeTimePeriod := 600;
   LowGlucoseAlarm:= 4 * cMmolDenominator;
+  NightscoutUrl := '';
   NightscoutUrl := '';
   ScaleIndex := 5;
   ShowCheckNewDataProgressBar := True;
+  ShowIconInTaskBar := True;
+  ShowIconInTray := True;
   ShowWindowBorder := True;
+  SnoozeAlarmsEndTime := Now();
   StaleDataAlarm := 20;
+  StayOnTop := True;
+  TimeZoneCorrection := 0;
   UrgentHighGlucoseAlarm:= 13 * cMmolDenominator;
   UrgentLowGlucoseAlarm:= Round(3.3 * cMmolDenominator);
   UrgentStaleDataAlarm:= 40;
-  TimeZoneCorrection := 0;
-  StayOnTop := True;
   WallpaperFileName := '';
-  NightscoutUrl := '';
-  SnoozeAlarmsEndTime := Now();
-  ShowIconInTaskBar := True;
-  ShowIconInTray := True;
   WindowRect := Rect(Screen.Width div 2, Screen.Height div 2, Screen.Width, Screen.Height);
 end;
 
@@ -290,6 +299,134 @@ end;
 function TSettings.IsUrgentGlucoseLevelAlarmExists(Entry: TNightscoutEntry): Boolean;
 begin
   Result := (Entry.Glucose <= UrgentLowGlucoseAlarm) or (Entry.Glucose >= UrgentHighGlucoseAlarm);
+end;
+
+procedure TSettings.SaveOptions();
+var
+  ini: TIniFile;
+begin
+  ini := TIniFile.Create(OptionsFileName);
+  try
+    ini.WriteBool   ('Main', 'IsMmolL',            IsMmolL);
+    ini.WriteString ('Main', 'NightscoutUrl',      NightscoutUrl);
+    ini.WriteInteger('Main', 'HoursToRecive',      HoursToRecive);
+    ini.WriteInteger('Main', 'TimeZoneCorrection', TimeZoneCorrection);
+    ini.WriteInteger('Main', 'CheckInterval',      CheckInterval);
+
+    ini.WriteBool('Visual', 'dsLastGlucoseLevel',     IsInDrawStage(dsLastGlucoseLevel));
+    ini.WriteBool('Visual', 'dsGlucoseLines',         IsInDrawStage(dsGlucoseLines));
+    ini.WriteBool('Visual', 'dsGlucoseLevel',         IsInDrawStage(dsGlucoseLevel));
+    ini.WriteBool('Visual', 'dsHorzGuideLines',       IsInDrawStage(dsHorzGuideLines));
+    ini.WriteBool('Visual', 'dsVertGuideLines',       IsInDrawStage(dsVertGuideLines));
+    ini.WriteBool('Visual', 'dsLastGlucoseLevelDate', IsInDrawStage(dsLastGlucoseLevelDate));
+    ini.WriteBool('Visual', 'dsGlucoseSlope',         IsInDrawStage(dsGlucoseSlope));
+    ini.WriteBool('Visual', 'dsGlucoseExtremePoints', IsInDrawStage(dsGlucoseExtremePoints));
+    ini.WriteBool('Visual', 'dsAlertLines',           IsInDrawStage(dsAlertLines));
+    ini.WriteBool('Visual', 'dsGlucoseLevelPoints',   IsInDrawStage(dsGlucoseLevelPoints));
+    ini.WriteBool('Visual', 'dsGlucoseLevelDelta',    IsInDrawStage(dsGlucoseLevelDelta));
+    ini.WriteBool('Visual', 'dsGlucoseAvg',           IsInDrawStage(dsGlucoseAvg));
+    ini.WriteBool('Visual', 'dsWallpaper',            IsInDrawStage(dsWallpaper));
+
+    ini.WriteBool   ('Visual', 'ShowCheckNewDataProgressBar', ShowCheckNewDataProgressBar);
+    ini.WriteBool   ('Visual', 'ShowWindowBorder',            ShowWindowBorder);
+    ini.WriteBool   ('Visual', 'FullScreen',                  FullScreen);
+    ini.WriteInteger('Visual', 'AlphaBlendValue',             AlphaBlendValue);
+    ini.WriteString ('Visual', 'WallpaperFileName',           WallpaperFileName);
+
+    // Save window position and size
+    WindowRect := Application.MainForm.BoundsRect;
+    ini.WriteInteger('Visual', 'WindowLeft',   WindowRect.Left);
+    ini.WriteInteger('Visual', 'WindowTop',    WindowRect.Top);
+    ini.WriteInteger('Visual', 'WindowRight',  WindowRect.Right);
+    ini.WriteInteger('Visual', 'WindowBottom', WindowRect.Bottom);
+
+    ini.WriteInteger('Visual', 'ScaleIndex',        ScaleIndex);
+    ini.WriteBool   ('Visual', 'StayOnTop',         StayOnTop);
+    ini.WriteBool   ('Visual', 'ShowIconInTaskBar', ShowIconInTaskBar);
+    ini.WriteBool   ('Visual', 'ShowIconInTray',    ShowIconInTray);
+
+    ini.WriteInteger('Alarms', 'HighGlucoseAlarm',         HighGlucoseAlarm);
+    ini.WriteInteger('Alarms', 'LowGlucoseAlarm',          LowGlucoseAlarm);
+    ini.WriteInteger('Alarms', 'UrgentHighGlucoseAlarm',   UrgentHighGlucoseAlarm);
+    ini.WriteInteger('Alarms', 'UrgentLowGlucoseAlarm',    UrgentLowGlucoseAlarm);
+    ini.WriteInteger('Alarms', 'StaleDataAlarm',           StaleDataAlarm);
+    ini.WriteInteger('Alarms', 'UrgentStaleDataAlarm',     UrgentStaleDataAlarm);
+    ini.WriteBool   ('Alarms', 'EnableGlucoseLevelAlarms', EnableGlucoseLevelAlarms);
+    ini.WriteBool   ('Alarms', 'EnableStaleDataAlarms',    EnableStaleDataAlarms);
+    ini.WriteInteger('Alarms', 'LastSnoozeTime',           LastSnoozeTimePeriod);
+  finally
+    ini.Free;
+  end;
+end;
+
+procedure TSettings.LoadOptions();
+var
+  ini: TIniFile;
+
+  procedure LoadDrawStageOption(const Ident: string; DrawStage: TDrawStage);
+  var
+    DrawStageChecked: Boolean;
+  begin
+    DrawStageChecked := ini.ReadBool('Visual', Ident, IsInDrawStage(DrawStage));
+    if DrawStageChecked then
+      AddDrawStage(DrawStage)
+    else
+      RemoveDrawStage(DrawStage);
+  end;
+
+begin
+  ini := TIniFile.Create(OptionsFileName);
+  try
+    // Main settings
+    IsMmolL            := ini.ReadBool   ('Main', 'IsMmolL',            IsMmolL);
+    NightscoutUrl      := ini.ReadString ('Main', 'NightscoutUrl',      NightscoutUrl);
+    CheckInterval      := ini.ReadInteger('Main', 'CheckInterval',      CheckInterval);
+    TimeZoneCorrection := ini.ReadInteger('Main', 'TimeZoneCorrection', TimeZoneCorrection);
+    HoursToRecive      := ini.ReadInteger('Main', 'HoursToRecive',      HoursToRecive);
+
+    // Visual settings
+    LoadDrawStageOption('dsLastGlucoseLevel',     dsLastGlucoseLevel);
+    LoadDrawStageOption('dsGlucoseLines',         dsGlucoseLines);
+    LoadDrawStageOption('dsGlucoseLevel',         dsGlucoseLevel);
+    LoadDrawStageOption('dsHorzGuideLines',       dsHorzGuideLines);
+    LoadDrawStageOption('dsVertGuideLines',       dsVertGuideLines);
+    LoadDrawStageOption('dsLastGlucoseLevelDate', dsLastGlucoseLevelDate);
+    LoadDrawStageOption('dsGlucoseSlope',         dsGlucoseSlope);
+    LoadDrawStageOption('dsGlucoseExtremePoints', dsGlucoseExtremePoints);
+    LoadDrawStageOption('dsAlertLines',           dsAlertLines);
+    LoadDrawStageOption('dsGlucoseLevelPoints',   dsGlucoseLevelPoints);
+    LoadDrawStageOption('dsGlucoseLevelDelta',    dsGlucoseLevelDelta);
+    LoadDrawStageOption('dsGlucoseAvg',           dsGlucoseAvg);
+    LoadDrawStageOption('dsWallpaper',            dsWallpaper);
+
+    WindowRect.Left   := ini.ReadInteger('Visual', 'WindowLeft',   WindowRect.Left);
+    WindowRect.Top    := ini.ReadInteger('Visual', 'WindowTop',    WindowRect.Top);
+    WindowRect.Right  := ini.ReadInteger('Visual', 'WindowRight',  WindowRect.Right);
+    WindowRect.Bottom := ini.ReadInteger('Visual', 'WindowBottom', WindowRect.Bottom);
+
+    ShowCheckNewDataProgressBar := ini.ReadBool('Visual', 'ShowCheckNewDataProgressBar', ShowCheckNewDataProgressBar);
+    ShowWindowBorder  := ini.ReadBool   ('Visual', 'ShowWindowBorder',  ShowWindowBorder);
+    FullScreen        := ini.ReadBool   ('Visual', 'FullScreen',        FullScreen);
+    StayOnTop         := ini.ReadBool   ('Visual', 'StayOnTop',         StayOnTop);
+    ShowIconInTaskBar := ini.ReadBool   ('Visual', 'ShowIconInTaskBar', ShowIconInTaskBar);
+    ShowIconInTray    := ini.ReadBool   ('Visual', 'ShowIconInTray',    ShowIconInTray);
+    WallpaperFileName := ini.ReadString ('Visual', 'WallpaperFileName', WallpaperFileName);
+    AlphaBlendValue   := ini.ReadInteger('Visual', 'AlphaBlendValue',   AlphaBlendValue);
+    ScaleIndex        := ini.ReadInteger('Visual', 'ScaleIndex',        ScaleIndex);
+
+    // Alarm settings
+    EnableGlucoseLevelAlarms := ini.ReadBool   ('Alarms', 'EnableGlucoseLevelAlarms', EnableGlucoseLevelAlarms);
+    EnableStaleDataAlarms    := ini.ReadBool   ('Alarms', 'EnableStaleDataAlarms',    EnableStaleDataAlarms);
+    HighGlucoseAlarm         := ini.ReadInteger('Alarms', 'HighGlucoseAlarm',         HighGlucoseAlarm);
+    LowGlucoseAlarm          := ini.ReadInteger('Alarms', 'LowGlucoseAlarm',          LowGlucoseAlarm);
+    UrgentHighGlucoseAlarm   := ini.ReadInteger('Alarms', 'UrgentHighGlucoseAlarm',   UrgentHighGlucoseAlarm);
+    UrgentLowGlucoseAlarm    := ini.ReadInteger('Alarms', 'UrgentLowGlucoseAlarm',    UrgentLowGlucoseAlarm);
+    StaleDataAlarm           := ini.ReadInteger('Alarms', 'StaleDataAlarm',           StaleDataAlarm);
+    UrgentStaleDataAlarm     := ini.ReadInteger('Alarms', 'UrgentStaleDataAlarm',     UrgentStaleDataAlarm);
+    LastSnoozeTimePeriod           := ini.ReadInteger('Alarms', 'LastSnoozeTime',           LastSnoozeTimePeriod);
+  finally
+    ini.Free;
+  end;
 end;
 
 function TSettings.SetScaleIndex(Index: Integer): Boolean;

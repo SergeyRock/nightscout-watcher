@@ -40,7 +40,6 @@ object fMain: TfMain
     Width = 301
     Align = alBottom
     Position = 10
-    Smooth = True
     TabOrder = 0
   end
   object pm: TPopupMenu
