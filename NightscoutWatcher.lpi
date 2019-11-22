@@ -24,7 +24,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="2"/>
-      <MinorVersionNr Value="1"/>
+      <MinorVersionNr Value="2"/>
       <RevisionNr Value="5"/>
       <BuildNr Value="108"/>
     </VersionInfo>
