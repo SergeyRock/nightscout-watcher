@@ -25,8 +25,8 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="2"/>
       <MinorVersionNr Value="1"/>
-      <RevisionNr Value="4"/>
-      <BuildNr Value="103"/>
+      <RevisionNr Value="5"/>
+      <BuildNr Value="106"/>
     </VersionInfo>
     <BuildModes Count="3">
       <Item1 Name="Default" Default="True"/>

@@ -1022,6 +1022,12 @@ begin
       Msg := 'File downloading is failed. URL: ' + Settings.GetEntriesUrlByHours();
       TfTimerDialog.Execute(Self, 'Connection fail', Msg, DummyText, [pbOK], 20, True);
       Exit;
+    end
+    else if not FileExists(FileName) then
+    begin
+      Msg := 'No data to download';
+      TfTimerDialog.Execute(Self, 'No data', Msg, DummyText, [pbOK], 20, True);
+      Exit;
     end;
   end;
 
