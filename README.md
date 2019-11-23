@@ -1,5 +1,5 @@
 # Nightscout Watcher
-The main purpose of the application is to show glucose level on your monitor in background mode to control glucose level in more convenient way. It`s especially convinent for office workers who spend a lot of time working on computer.
+The main purpose of the application is to show glucose level on your monitor in background mode to control glucose level in more convenient way. It's especially convinent for office workers who spend a lot of time working on computer.
 
 ![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/Main.jpg)
 
@@ -7,8 +7,8 @@ App receives TSV-data about blood sugar level by requesting url like this: http:
 
 ## Collaboration
 You are allways welcome to connect to this open source project by helping of any kind (e.g. testing, programming, spelling and etc.). 
-Don`t be hesitating if you notice something that can help to improve this project. Just write me an issue.
-PS. I`m not a native english speaker. I`ll be gratefull if you paticipate in correction of [mistakes](https://github.com/SergeyRock/nightscout-watcher/issues).
+Don't be hesitating if you notice something that can help to improve this project. Just write me an issue.
+PS. I'm not a native english speaker. I'll be gratefull if you paticipate in correction of [mistakes](https://github.com/SergeyRock/nightscout-watcher/issues).
 
 ## Prerequisites
 1. The main prerequisite is availability of your own [nightscout site](https://github.com/nightscout/cgm-remote-monitor).
