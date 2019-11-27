@@ -10,9 +10,9 @@ unit ufMain;
 interface
 
 uses
-  LCLIntf, LCLType,
-  uSettings, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs,
-  DateUtils, Contnrs, ExtCtrls, Menus, uNightscout, ComCtrls, ActnList;
+  LCLIntf, LCLType, uSettings, SysUtils, Variants, Classes, Graphics, Controls,
+  Forms, Dialogs, DateUtils, Contnrs, ExtCtrls, Menus, uNightscout, ComCtrls,
+  ActnList, acs_file, acs_audio;
 
 type
 
@@ -29,6 +29,8 @@ type
   { TfMain }
 
   TfMain = class(TForm)
+    AudioOut: TAcsAudioOut;
+    AudioFileIn: TAcsFileIn;
     actDrawGlucoseLevelDelta: TAction;
     actDrawGlucoseAvg: TAction;
     actDrawWallpaper: TAction;
@@ -195,6 +197,7 @@ type
     procedure DrawIcon(IconSize: Integer; TargetIcon: Ticon);
     procedure DrawStrokedText(const AText: string; const X, Y: Integer; const TextColor: TColor);
     function GetHintText(): string;
+    procedure PlayAlarm();
     procedure Restart(Params: string = '');
     procedure ShowBaloonHint;
     procedure ShowIconInTaskbar(AVisible: Boolean);
@@ -275,6 +278,16 @@ begin
 end;
 
 { TfMain }
+
+procedure TfMain.PlayAlarm();
+begin
+  if not FileExists(Settings.AudioAlarmFile) then
+    Exit;
+
+  AudioFileIn.FileName := Settings.AudioAlarmFile;
+  AudioOut.Input := AudioFileIn;
+  AudioOut.Run();
+end;
 
 procedure TfMain.SetSystemStayOnTop(StayOnTop: Boolean);
 begin

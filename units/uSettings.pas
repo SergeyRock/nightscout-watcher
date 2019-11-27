@@ -69,6 +69,7 @@ type
     function GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast: TDateTime): Integer;
   public
     AlphaBlendValue: Integer;
+    AudioAlarmFile: string;
     CheckInterval: Integer;
     DrawStages: TDrawStages;
     EnableGlucoseLevelAlarms: Boolean;
@@ -236,6 +237,7 @@ begin
     dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope,
     dsGlucoseExtremePoints, dsGlucoseLevelDelta, dsGlucoseAvg];
   AlphaBlendValue := 200;
+  AudioAlarmFile := '';
   CheckInterval := 20;
   EnableGlucoseLevelAlarms := True;
   EnableStaleDataAlarms := True;

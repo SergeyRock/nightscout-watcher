@@ -1,15 +1,15 @@
 object fMain: TfMain
   Left = 805
-  Height = 157
+  Height = 198
   Top = 426
-  Width = 301
+  Width = 338
   AlphaBlend = True
   AlphaBlendValue = 230
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'Nightscout Watcher'
-  ClientHeight = 157
-  ClientWidth = 301
+  ClientHeight = 198
+  ClientWidth = 338
   Color = clBlack
   Constraints.MinHeight = 20
   Constraints.MinWidth = 30
@@ -36,8 +36,8 @@ object fMain: TfMain
   object pb: TProgressBar
     Left = 0
     Height = 5
-    Top = 152
-    Width = 301
+    Top = 193
+    Width = 338
     Align = alBottom
     Position = 10
     TabOrder = 0
@@ -594,5 +594,21 @@ object fMain: TfMain
     OnClick = TrayIconClick
     left = 137
     top = 61
+  end
+  object AudioFileIn: TAcsFileIn
+    StartSample = 0
+    EndSample = -1
+    Loop = False
+    left = 137
+    top = 120
+  end
+  object AudioOut: TAcsAudioOut
+    BufferSize = 16384
+    PrefetchMode = pmAuto
+    Device = 0
+    Volume = 0
+    Delay = -1
+    left = 176
+    top = 120
   end
 end
