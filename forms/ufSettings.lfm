@@ -42,10 +42,10 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 600
-    ActivePage = tsHelp
+    ActivePage = tsVisual
     Align = alTop
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 4
+    TabIndex = 1
     TabOrder = 2
     OnChange = pcChange
     object tsMain: TTabSheet
@@ -316,8 +316,8 @@ object fSettings: TfSettings
         Left = 277
         Height = 23
         Top = 137
-        Width = 171
-        Caption = 'Show window border'
+        Width = 248
+        Caption = 'Show window border (need OK)'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
@@ -2011,7 +2011,7 @@ object fSettings: TfSettings
   object odWallpaper: TOpenDialog
     Filter = '*.jp*g|*.jp*g'
     Options = [ofFileMustExist, ofEnableSizing, ofViewDetail, ofAutoPreview]
-    left = 509
-    top = 136
+    left = 528
+    top = 40
   end
 end
