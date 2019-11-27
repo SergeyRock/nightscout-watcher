@@ -1,11 +1,11 @@
 object fTimerDialog: TfTimerDialog
-  Left = 394
-  Height = 130
-  Top = 577
+  Left = 806
+  Height = 135
+  Top = 264
   Width = 525
   BorderStyle = bsDialog
   Caption = 'fTimerDialog'
-  ClientHeight = 130
+  ClientHeight = 135
   ClientWidth = 525
   Constraints.MinHeight = 130
   Constraints.MinWidth = 400
@@ -24,7 +24,7 @@ object fTimerDialog: TfTimerDialog
   object pb: TButtonPanel
     Left = 6
     Height = 34
-    Top = 90
+    Top = 95
     Width = 513
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True

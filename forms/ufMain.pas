@@ -520,18 +520,23 @@ begin
   TimerIntervalSecs := -1;
   if WasConnected then
     TimerIntervalSecs := 20;
-  DialogResult := TfTimerDialog.Execute(Self, 'Nighscout site', 'Type URL of Nightscout site', Url, [pbOK, pbCancel], TimerIntervalSecs);
+  Msg := 'Type in URL of Nightscout site.' + #13#10 +
+    'If there is an error appeare try to change protocol to HTTP instead of HTTPS in URL.';
+  DialogResult := TfTimerDialog.Execute(Self, 'Nighscout site', Msg, Url, [pbOK, pbCancel], TimerIntervalSecs);
   if DialogResult = mrOK then
   begin
     if (Url <> '') and (SetNightscoutUrl(Url)) then
       tmrTimer(tmr)
     else
+    begin
       actSetNightscoutSiteExecute(Sender);
+    end;
   end
   else if (DialogResult = mrCancel) and not WasConnected then
   begin
-    Msg := 'To obtain CGM data you have to type full URL of your Nightscout site.' + #13#10 +
-      'Only HTTP protocol is supported.' + #13#10 +
+    Msg := 'To obtain CGM data you have to type in full URL of your Nightscout site.' + #13#10 +
+      'To support HTTPS you have to download libeay32.dll and ssleay32.dll and put it to the project directory.' + #13#10 +
+      'Otherwise only HTTP protocol is supported. Try to change protocol to HTTP instead of HTTPS in URL.' + #13#10#13#10 +
       'Do you want to try again?';
     if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
       actSetNightscoutSiteExecute(Sender);
@@ -1255,17 +1260,8 @@ end;
 function TfMain.SetNightscoutUrl(Url: string): Boolean;
 begin
   Result := False;
-  Url := Trim(Url);
-  if Url = '' then
+  if Trim(Url) = '' then
     Exit;
-
-  Url := ReplaceText(Url, 'https://', 'http://');
-  Url := ReplaceText(Url, 'http://', 'http://');
-  if Url[Length(Url)] = '/' then
-    Url := Copy(Url, 1, Length(Url) - 1);
-
-  if Pos('http://', Url) < 1 then
-    Url := 'http://' + Url;
 
   Settings.NightscoutUrl := Url;
   Result := True;
