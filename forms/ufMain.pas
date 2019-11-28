@@ -12,7 +12,7 @@ interface
 uses
   LCLIntf, LCLType, uSettings, SysUtils, Variants, Classes, Graphics, Controls,
   Forms, Dialogs, DateUtils, Contnrs, ExtCtrls, Menus, uNightscout, ComCtrls,
-  ActnList, acs_file, acs_audio;
+  ActnList;
 
 type
 
@@ -29,8 +29,6 @@ type
   { TfMain }
 
   TfMain = class(TForm)
-    AudioOut: TAcsAudioOut;
-    AudioFileIn: TAcsFileIn;
     actDrawGlucoseLevelDelta: TAction;
     actDrawGlucoseAvg: TAction;
     actDrawWallpaper: TAction;
@@ -143,6 +141,7 @@ type
     procedure DoSnoozeAlarmsExecute(Sender: TObject);
     procedure actStayOnTopExecute(Sender: TObject);
     procedure DoScaleIndexClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -182,6 +181,7 @@ type
     Loaded: Boolean;
     FPosX : Integer;
     FPosY : Integer;
+    LastAudioFileName: string;
     Settings: TSettings;
     DrawPanel: TDrawPanel;
     Entries: TNightscoutEntryList;
@@ -199,7 +199,7 @@ type
     function GetHintText(): string;
     procedure PlayAlarm();
     procedure Restart(Params: string = '');
-    procedure ShowBaloonHint;
+    procedure ShowTrayIconBaloonHint;
     procedure ShowIconInTaskbar(AVisible: Boolean);
     function LoadWallpaper(const FileName: string): Boolean;
     procedure ResetWindowBoundsToDefault();
@@ -245,7 +245,7 @@ implementation
 
 uses
   ufSettings, ufTimerDialog, UrlMon, Wininet, Math, StrUtils, Types, graphtype,
-  intfgraphics, fpimage, process, ButtonPanel;
+  intfgraphics, fpimage, process, ButtonPanel, mmsystem;
 
 procedure TfMain.Restart(Params: string = '');
 var
@@ -280,13 +280,29 @@ end;
 { TfMain }
 
 procedure TfMain.PlayAlarm();
+var
+  AudioFileName: string;
 begin
-  if not FileExists(Settings.AudioAlarmFile) then
+  AudioFileName := Settings.GetAppropriateAlarmFile(Entries.Last);
+  if (AudioFileName = '')  or not FileExists(AudioFileName) then
+  begin
+    PlaySound(0, 0, SND_PURGE);
+//    sndPlaySound(nil, 0); // Stop playing
     Exit;
+  end;
 
-  AudioFileIn.FileName := Settings.AudioAlarmFile;
-  AudioOut.Input := AudioFileIn;
-  AudioOut.Run();
+  if LastAudioFileName <> AudioFileName then
+    PlaySound(0, 0, SND_PURGE);
+  PlaySound(PChar(AudioFileName), 0, SND_ASYNC or SND_LOOP or SND_PURGE or SND_NOSTOP);
+  LastAudioFileName := AudioFileName;
+//  sndPlaySound(PChar(AudioFileName), SND_ASYNC or SND_LOOP);
+//
+//  if AudioOut.Status = tosPlaying then
+//    Exit;
+//
+//  if AudioFileIn.FileName <> AudioFileName then
+//    AudioFileIn.FileName := AudioFileName;
+//  AudioOut.Run();
 end;
 
 procedure TfMain.SetSystemStayOnTop(StayOnTop: Boolean);
@@ -671,6 +687,7 @@ begin
   WallpaperJPG := TJPEGImage.Create();
   StaleAlarmBlinkTrigger := False;
   GlucoseLevelAlarmBlinkTrigger := False;
+  LastAudioFileName := '';
 
   Entries := TNightscoutEntryList.Create;
 
@@ -859,6 +876,11 @@ begin
   SetScaleIndex(TComponent(Sender).Tag);
 end;
 
+procedure TfMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  sndPlaySound(nil, 0); // Stop playing
+end;
+
 procedure TfMain.actStayOnTopExecute(Sender: TObject);
 begin
   SetSystemStayOnTop(TAction(Sender).Checked);
@@ -995,7 +1017,7 @@ begin
     tmrTimer(tmr); // Load data from nightscout site and start monitoring
 end;
 
-procedure TfMain.ShowBaloonHint;
+procedure TfMain.ShowTrayIconBaloonHint;
 var
   BaloonHint: string;
   LastEntry: TNightscoutEntry;
@@ -1190,8 +1212,9 @@ begin
   CheckStaleDataAlarms();
   CheckGlucoseLevelAlarms();
   DrawTrayIcon();
+  ShowTrayIconBaloonHint();
   DrawApplicationIcon();
-  ShowBaloonHint();
+  PlayAlarm();
   Invalidate();
 end;
 
@@ -1216,6 +1239,7 @@ begin
   UpdateApplicationTitle();
   DrawTrayIcon();
   DrawApplicationIcon();
+  PlayAlarm();
   HardInvalidate();
 end;
 
@@ -1648,6 +1672,7 @@ begin
   SetAlphaBlendValue(Settings.AlphaBlendValue);
   LoadWallpaper(Settings.WallpaperFileName);
   ShowIconInTray(Settings.ShowIconInTray);
+  PlayAlarm();
   HardInvalidate;
 end;
 

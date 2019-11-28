@@ -69,11 +69,13 @@ type
     function GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast: TDateTime): Integer;
   public
     AlphaBlendValue: Integer;
-    AudioAlarmFile: string;
+    AlarmAudioFile: string;
+    UrgentAlarmAudioFile: string;
     CheckInterval: Integer;
     DrawStages: TDrawStages;
     EnableGlucoseLevelAlarms: Boolean;
     EnableStaleDataAlarms: Boolean;
+    EnableAudioAlarms: Boolean;
     FullScreen: Boolean;
     HighGlucoseAlarm: Integer;
     HoursToRecive: Integer;
@@ -113,6 +115,7 @@ type
     function SetScaleIndex(Index: Integer): Boolean;
     function IsSnoozeAlarmsEndTimePassed(): Boolean;
     function GetOpacity(): Integer;
+    function GetAppropriateAlarmFile(Entry: TNightscoutEntry): string;
     function GetScale(): Integer;
     procedure AddDrawStage(DrawStage: TDrawStage);
     procedure Assign(Settings: TSettings);
@@ -181,6 +184,7 @@ begin
   DrawStages := Settings.DrawStages;
   EnableGlucoseLevelAlarms := Settings.EnableGlucoseLevelAlarms;
   EnableStaleDataAlarms := Settings.EnableStaleDataAlarms;
+  EnableAudioAlarms := Settings.EnableAudioAlarms;
   FullScreen := Settings.FullScreen;
   HighGlucoseAlarm := Settings.HighGlucoseAlarm;
   IsMmolL := Settings.IsMmolL;
@@ -204,12 +208,15 @@ end;
 function TSettings.Clone(): TSettings;
 begin
   Result := TSettings.Create(OptionsFileName);
+  Result.AlarmAudioFile := AlarmAudioFile;
+  Result.UrgentAlarmAudioFile := UrgentAlarmAudioFile;
   Result.AlphaBlendValue := AlphaBlendValue;
   Result.CheckInterval := CheckInterval;
   Result.HoursToRecive := HoursToRecive;
   Result.DrawStages := DrawStages;
   Result.EnableGlucoseLevelAlarms := EnableGlucoseLevelAlarms;
   Result.EnableStaleDataAlarms := EnableStaleDataAlarms;
+  Result.EnableAudioAlarms := EnableAudioAlarms;
   Result.FullScreen := FullScreen;
   Result.HighGlucoseAlarm := HighGlucoseAlarm;
   Result.IsMmolL := IsMmolL;
@@ -234,13 +241,15 @@ constructor TSettings.Create(OptionsFileName: string);
 begin
   Self.OptionsFileName := OptionsFileName;
   DrawStages := [dsLastGlucoseLevel, dsGlucoseLines, dsHorzGuideLines,
-    dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope,
+    dsLastGlucoseLevelDate, dsGlucoseSlope,
     dsGlucoseExtremePoints, dsGlucoseLevelDelta, dsGlucoseAvg];
   AlphaBlendValue := 200;
-  AudioAlarmFile := '';
+  AlarmAudioFile := 'alarm.wav';
+  UrgentAlarmAudioFile := 'alarm2.wav';
   CheckInterval := 20;
   EnableGlucoseLevelAlarms := True;
   EnableStaleDataAlarms := True;
+  EnableAudioAlarms := False;
   FullScreen := False;
   HighGlucoseAlarm:= 9 * cMmolDenominator;
   HoursToRecive := 24;
@@ -249,7 +258,7 @@ begin
   LowGlucoseAlarm:= 4 * cMmolDenominator;
   NightscoutUrl := '';
   NightscoutUrl := '';
-  ScaleIndex := 5;
+  ScaleIndex := 12;
   ShowCheckNewDataProgressBar := True;
   ShowIconInTaskBar := True;
   ShowIconInTray := True;
@@ -259,10 +268,10 @@ begin
   StayOnTop := True;
   TimeZoneCorrection := 0;
   UrgentHighGlucoseAlarm:= 13 * cMmolDenominator;
-  UrgentLowGlucoseAlarm:= Round(3.3 * cMmolDenominator);
-  UrgentStaleDataAlarm:= 40;
+  UrgentLowGlucoseAlarm := Round(3.3 * cMmolDenominator);
+  UrgentStaleDataAlarm := 40;
   WallpaperFileName := '';
-  WindowRect := Rect(Screen.Width div 2, Screen.Height div 2, Screen.Width, Screen.Height);
+  WindowRect := Rect(Screen.Width div 2, Screen.Height div 2, Screen.Width - 100, Screen.Height - 100);
 end;
 
 function TSettings.GetColorByGlucoseLevel(Glucose: Integer): TColor;
@@ -355,6 +364,7 @@ begin
     ini.WriteInteger('Alarms', 'UrgentStaleDataAlarm',     UrgentStaleDataAlarm);
     ini.WriteBool   ('Alarms', 'EnableGlucoseLevelAlarms', EnableGlucoseLevelAlarms);
     ini.WriteBool   ('Alarms', 'EnableStaleDataAlarms',    EnableStaleDataAlarms);
+    ini.WriteBool   ('Alarms', 'EnableAudioAlarms',         EnableAudioAlarms);
     ini.WriteInteger('Alarms', 'LastSnoozeTime',           LastSnoozeTimePeriod);
   finally
     ini.Free;
@@ -419,6 +429,7 @@ begin
     // Alarm settings
     EnableGlucoseLevelAlarms := ini.ReadBool   ('Alarms', 'EnableGlucoseLevelAlarms', EnableGlucoseLevelAlarms);
     EnableStaleDataAlarms    := ini.ReadBool   ('Alarms', 'EnableStaleDataAlarms',    EnableStaleDataAlarms);
+    EnableAudioAlarms         := ini.ReadBool   ('Alarms', 'EnableAudioAlarms',         EnableAudioAlarms);
     HighGlucoseAlarm         := ini.ReadInteger('Alarms', 'HighGlucoseAlarm',         HighGlucoseAlarm);
     LowGlucoseAlarm          := ini.ReadInteger('Alarms', 'LowGlucoseAlarm',          LowGlucoseAlarm);
     UrgentHighGlucoseAlarm   := ini.ReadInteger('Alarms', 'UrgentHighGlucoseAlarm',   UrgentHighGlucoseAlarm);
@@ -466,6 +477,19 @@ end;
 function TSettings.GetOpacity(): Integer;
 begin
   Result := Round(AlphaBlendValue / 255 * 100);
+end;
+
+function TSettings.GetAppropriateAlarmFile(Entry: TNightscoutEntry): string;
+begin
+  Result := '';
+
+  if not EnableAudioAlarms or (Entry = nil) or not IsSnoozeAlarmsEndTimePassed() then
+    Exit;
+
+  if IsUrgentGlucoseLevelAlarmExists(Entry) or IsUrgentStaleDataAlarmExists(Entry) then
+    Result := UrgentAlarmAudioFile
+  else if IsGlucoseLevelAlarmExists(Entry) or IsStaleDataAlarmExists(Entry) then
+    Result := AlarmAudioFile;
 end;
 
 function TSettings.GetScale(): Integer;

@@ -18,6 +18,7 @@ object fMain: TfMain
   Font.Name = 'Tahoma'
   FormStyle = fsSystemStayOnTop
   KeyPreview = True
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDblClick = actVisitNightscoutSiteExecute
   OnDestroy = FormDestroy
@@ -594,21 +595,5 @@ object fMain: TfMain
     OnClick = TrayIconClick
     left = 137
     top = 61
-  end
-  object AudioFileIn: TAcsFileIn
-    StartSample = 0
-    EndSample = -1
-    Loop = False
-    left = 137
-    top = 120
-  end
-  object AudioOut: TAcsAudioOut
-    BufferSize = 16384
-    PrefetchMode = pmAuto
-    Device = 0
-    Volume = 0
-    Delay = -1
-    left = 176
-    top = 120
   end
 end

@@ -1,7 +1,7 @@
 object fSettings: TfSettings
-  Left = 1271
+  Left = 611
   Height = 500
-  Top = 431
+  Top = 188
   Width = 600
   Caption = 'Settings'
   ClientHeight = 500
@@ -42,10 +42,10 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 600
-    ActivePage = tsVisual
+    ActivePage = tsAlerts
     Align = alTop
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 2
     OnChange = pcChange
     object tsMain: TTabSheet
@@ -692,6 +692,18 @@ object fSettings: TfSettings
         Font.Name = 'Tahoma'
         ParentFont = False
         TabOrder = 2
+      end
+      object cbEnableAudioAlarms: TCheckBox
+        Left = 293
+        Height = 23
+        Top = 200
+        Width = 163
+        Caption = 'Enable audio alarms'
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        ParentFont = False
+        TabOrder = 4
       end
     end
     object tsAbout: TTabSheet
