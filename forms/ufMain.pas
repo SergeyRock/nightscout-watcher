@@ -32,6 +32,7 @@ type
     actDrawGlucoseLevelDelta: TAction;
     actDrawGlucoseAvg: TAction;
     actDrawWallpaper: TAction;
+    actDrawHoursToReceiveData: TAction;
     actSnoozeAlarmsCustom: TAction;
     actShowIconInTray: TAction;
     actShowIconOnTaskbar: TAction;
@@ -42,6 +43,8 @@ type
     actSnoozeAlarms30mins: TAction;
     actSnoozeAlarms10mins: TAction;
     actStayOnTop: TAction;
+    miDrawHoursToReceiveData: TMenuItem;
+    miDiagram: TMenuItem;
     miSnoozeAlarmsCustom: TMenuItem;
     miShowIconInTray: TMenuItem;
     miShowIconOnTaskbar: TMenuItem;
@@ -702,10 +705,12 @@ begin
   actDrawGlucoseLines.Checked         := Settings.IsInDrawStage(dsGlucoseLines);
   actDrawGlucoseSlope.Checked         := Settings.IsInDrawStage(dsGlucoseSlope);
   actDrawHorzGuideLines.Checked       := Settings.IsInDrawStage(dsHorzGuideLines);
+  actDrawHoursToReceiveData.Checked   := Settings.IsInDrawStage(dsHoursToReceiveData);
   actDrawLastGlucoseLevel.Checked     := Settings.IsInDrawStage(dsLastGlucoseLevel);
   actDrawLastGlucoseLevelDate.Checked := Settings.IsInDrawStage(dsLastGlucoseLevelDate);
   actDrawVertGuideLines.Checked       := Settings.IsInDrawStage(dsVertGuideLines);
   actDrawWallpaper.Checked            := Settings.IsInDrawStage(dsWallpaper);
+
   UpdateSnoozeActionShortCut(Settings.LastSnoozeTimePeriod);
 
   ShowIconInTray(Settings.ShowIconInTray);
@@ -755,16 +760,17 @@ begin
   begin
     // AlphaBlend
     case Key of
-      VK_UP:    SetAlphaBlendValue(Settings.AlphaBlendValue + cAlphaBlendValueDelta);
-      VK_DOWN:  SetAlphaBlendValue(Settings.AlphaBlendValue - cAlphaBlendValueDelta);
+      VK_UP:   SetAlphaBlendValue(Settings.AlphaBlendValue + cAlphaBlendValueDelta);
+      VK_DOWN: SetAlphaBlendValue(Settings.AlphaBlendValue - cAlphaBlendValueDelta);
     end;
   end
   else if Shift = [ssCtrl] then
   begin
     // Scale
     case Key of
-      VK_UP:   SetScaleIndex(Settings.ScaleIndex + 1);
-      VK_DOWN: SetScaleIndex(Settings.ScaleIndex - 1);
+      VK_UP, VK_ADD, VK_OEM_PLUS:         SetScaleIndex(Settings.ScaleIndex + 1);
+      VK_DOWN, VK_SUBTRACT, VK_OEM_MINUS: SetScaleIndex(Settings.ScaleIndex - 1);
+      VK_0: SetScaleIndex(10);
     end;
   end;
 end;
@@ -1063,6 +1069,7 @@ begin
     dsGlucoseSlope: i := 5;
     dsGlucoseLevelDelta: i := 6;
     dsGlucoseAvg: i := 7;
+    dsHoursToReceiveData: i := 8;
   else
     Result:= Font.Size;
     Exit;
@@ -1204,7 +1211,7 @@ begin
   if Trim(Url) = '' then
     Exit;
 
-  Settings.NightscoutUrl := Url;
+  Settings.NightscoutUrl := ExcludeTrailingBackslash(Url);
   Result := True;
 end;
 
@@ -1389,6 +1396,7 @@ begin
     cnv.Draw(0, 0, Wallpaper);
   end;
 
+  // Alert lines
   if dsAlertLines in DrawStages then
   begin
     MaxY := Max(Settings.UrgentHighGlucoseAlarm, Entries.GetMaxGlucose);
@@ -1549,7 +1557,18 @@ begin
     AText := Entries.GetGlucoseLevelDeltaText(Settings.IsMmolL);
     SetMaximumDrawStageSizeToCanvas(dsGlucoseLevelDelta, AText);
     TextSize := cnv.TextExtent(AText);
-    DrawStrokedText(AText, (DrawPanel.Width - TextSize.cx) div 2,  0, cGlucoseLevelDeltaColor);
+    DrawStrokedText(AText, DrawPanel.Width - TextSize.cx - cSmallMargin,  0, cGlucoseLevelDeltaColor);
+  end;
+
+  // Hours to receive data
+  if dsHoursToReceiveData in DrawStages then
+  begin
+    cnv.Brush.Color := Color;
+    SetBkMode(cnv.Handle, TRANSPARENT);
+    AText := 'Hours: ' + IntToStr(Settings.HoursToRecive);
+    SetMaximumDrawStageSizeToCanvas(dsHoursToReceiveData, AText);
+    TextSize := cnv.TextExtent(AText);
+    DrawStrokedText(AText, cSmallMargin, 0, cHoursToReceiveDataColor);
   end;
 
   // Glucose level average

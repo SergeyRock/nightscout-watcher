@@ -93,84 +93,65 @@ object fMain: TfMain
     object miSeparator1: TMenuItem
       Caption = '-'
     end
-    object miDrawLastGlucoseLevel: TMenuItem
-      Action = actDrawLastGlucoseLevel
-      AutoCheck = True
-    end
-    object miDrawGlucoseSlope: TMenuItem
-      Action = actDrawGlucoseSlope
-      AutoCheck = True
-    end
-    object miDrawGlucoseLevelDelta: TMenuItem
-      Action = actDrawGlucoseLevelDelta
-      AutoCheck = True
-    end
-    object miDrawGlucoseLines: TMenuItem
-      Action = actDrawGlucoseLines
-      AutoCheck = True
-    end
-    object miDrawGlucoseExtremePoints: TMenuItem
-      Action = actDrawGlucoseExtremePoints
-      AutoCheck = True
-    end
-    object miDrawGlucoseLevelPoints: TMenuItem
-      Action = actDrawGlucoseLevelPoints
-      AutoCheck = True
-    end
-    object miDrawAlertLines: TMenuItem
-      Action = actDrawAlertLines
-      AutoCheck = True
-    end
-    object miDrawLastGlucoseLevelDate: TMenuItem
-      Action = actDrawLastGlucoseLevelDate
-      AutoCheck = True
-    end
-    object miDrawGlucoseLevel: TMenuItem
-      Action = actDrawGlucoseLevel
-      AutoCheck = True
-    end
-    object miDrawGlucoseAvg: TMenuItem
-      Action = actDrawGlucoseAvg
-      AutoCheck = True
-    end
-    object miDrawVertGuideLines: TMenuItem
-      Action = actDrawVertGuideLines
-      AutoCheck = True
-    end
-    object miDrawHorzGuideLines: TMenuItem
-      Action = actDrawHorzGuideLines
-      AutoCheck = True
-    end
-    object miDrawWallpaper: TMenuItem
-      Action = actDrawWallpaper
-      AutoCheck = True
-    end
-    object miSeparator4: TMenuItem
-      Caption = '-'
-    end
-    object miStayOnTop: TMenuItem
-      Action = actStayOnTop
-      AutoCheck = True
-    end
-    object miShowWindowBorder: TMenuItem
-      Action = actShowWindowBorder
-      AutoCheck = True
-    end
-    object miShowIconOnTaskbar: TMenuItem
-      Action = actShowIconOnTaskbar
-      AutoCheck = True
-    end
-    object miShowIconInTray: TMenuItem
-      Action = actShowIconInTray
-      AutoCheck = True
-    end
-    object miShowCheckNewDataProgressBar: TMenuItem
-      Action = actShowCheckNewDataProgressBar
-      AutoCheck = True
-    end
-    object miFullScreen: TMenuItem
-      Action = actFullScreen
-      AutoCheck = True
+    object miDiagram: TMenuItem
+      Caption = 'Diagram'
+      object miDrawLastGlucoseLevel: TMenuItem
+        Action = actDrawLastGlucoseLevel
+        AutoCheck = True
+      end
+      object miDrawGlucoseSlope: TMenuItem
+        Action = actDrawGlucoseSlope
+        AutoCheck = True
+      end
+      object miDrawGlucoseLevelDelta: TMenuItem
+        Action = actDrawGlucoseLevelDelta
+        AutoCheck = True
+      end
+      object miDrawGlucoseLines: TMenuItem
+        Action = actDrawGlucoseLines
+        AutoCheck = True
+      end
+      object miDrawGlucoseExtremePoints: TMenuItem
+        Action = actDrawGlucoseExtremePoints
+        AutoCheck = True
+      end
+      object miDrawGlucoseLevelPoints: TMenuItem
+        Action = actDrawGlucoseLevelPoints
+        AutoCheck = True
+      end
+      object miDrawAlertLines: TMenuItem
+        Action = actDrawAlertLines
+        AutoCheck = True
+      end
+      object miDrawLastGlucoseLevelDate: TMenuItem
+        Action = actDrawLastGlucoseLevelDate
+        AutoCheck = True
+      end
+      object miDrawGlucoseLevel: TMenuItem
+        Action = actDrawGlucoseLevel
+        AutoCheck = True
+      end
+      object miDrawGlucoseAvg: TMenuItem
+        Action = actDrawGlucoseAvg
+        AutoCheck = True
+      end
+      object miDrawVertGuideLines: TMenuItem
+        Action = actDrawVertGuideLines
+        AutoCheck = True
+      end
+      object miDrawHorzGuideLines: TMenuItem
+        Action = actDrawHorzGuideLines
+        AutoCheck = True
+      end
+      object miDrawWallpaper: TMenuItem
+        Action = actDrawWallpaper
+        AutoCheck = True
+      end
+      object miDrawHoursToReceiveData: TMenuItem
+        Action = actDrawHoursToReceiveData
+        AutoCheck = True
+        ShortCut = 69
+      end
     end
     object miScale: TMenuItem
       Caption = 'Scale'
@@ -297,6 +278,33 @@ object fMain: TfMain
         Caption = 'Opacity 15%'
         OnClick = DoOpacityPercentClick
       end
+    end
+    object miSeparator4: TMenuItem
+      Caption = '-'
+    end
+    object miFullScreen: TMenuItem
+      Action = actFullScreen
+      AutoCheck = True
+    end
+    object miStayOnTop: TMenuItem
+      Action = actStayOnTop
+      AutoCheck = True
+    end
+    object miShowWindowBorder: TMenuItem
+      Action = actShowWindowBorder
+      AutoCheck = True
+    end
+    object miShowIconOnTaskbar: TMenuItem
+      Action = actShowIconOnTaskbar
+      AutoCheck = True
+    end
+    object miShowIconInTray: TMenuItem
+      Action = actShowIconInTray
+      AutoCheck = True
+    end
+    object miShowCheckNewDataProgressBar: TMenuItem
+      Action = actShowCheckNewDataProgressBar
+      AutoCheck = True
     end
     object miSeparator2: TMenuItem
       Caption = '-'
@@ -585,6 +593,13 @@ object fMain: TfMain
       Category = 'Other'
       Caption = 'Snooze alarms for ...'
       OnExecute = DoSnoozeAlarmsExecute
+    end
+    object actDrawHoursToReceiveData: TAction
+      Tag = 13
+      Category = 'Draw options'
+      AutoCheck = True
+      Caption = 'Draw hours to receive data'
+      OnExecute = DoDrawStageExecute
     end
   end
   object TrayIcon: TTrayIcon

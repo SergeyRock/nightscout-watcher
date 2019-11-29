@@ -10,7 +10,7 @@ uses
   Graphics, Types, uNightscout;
 
 const
-  cDrawStageSizes : array [1..7, 1..19] of Integer =
+  cDrawStageSizes : array [1..8, 1..19] of Integer =
     (
       (10, 14, 17, 28, 32, 40, 48, 60, 72, 88, 100, 116, 130, 160, 200, 240, 280, 340, 400), // Font size for dsLastGlucoseLevel
       ( 6,  6,  7,  7,  8,  8,  9,  9, 10, 11,  11,  12,  13,  14,  15,  16,  17,  18,  20), // Font size for dsGlucoseLevel
@@ -18,7 +18,8 @@ const
       ( 1,  1,  1,  1,  2,  2,  2,  2,  2,  2,   3,   3,   3,   4,   4,   5,   5,   6,   7), // Line thickness for dsGlucoseLines
       ( 1,  1,  1,  3,  3,  3,  4,  5,  6,  7,   8,   9,  10,  12,  15,  20,  26,  38,  50), // Line thickness for dsGlucoseSlope
       ( 7,  7,  8,  9, 10, 11, 12, 13, 15, 17,  19,  23,  26,  30,  36,  46,  58,  70,  86), // Font size for dsGlucoseAvg
-      ( 7,  7,  8,  8,  9, 10, 11, 12, 13, 14,  15,  18,  20,  24,  30,  38,  48,  60,  70)  // Font size for dsGlucoseLevelDelta
+      ( 7,  7,  8,  8,  9, 10, 11, 12, 13, 14,  15,  18,  20,  24,  30,  38,  48,  60,  70), // Font size for dsGlucoseLevelDelta
+      ( 7,  7,  8,  9, 10, 11, 12, 13, 15, 17,  19,  23,  26,  30,  36,  46,  58,  70,  86)  // Font size for dsHoursToReceiveData
     );
 
   cProgressBarHeights: array[1..19]  of Byte =
@@ -36,6 +37,7 @@ const
   cGlucoseExtremePointsColor = clWhite ;
   cGlucoseExtremePointsBrushColor = clBlue;
   cGlucoseLevelDeltaColor = clWhite;
+  cHoursToReceiveDataColor = clWhite;
   cGlucoseAvgColor = clWhite;
   cTrayIconColor = clBlue;
   cTrayIconSnoozedColor = clGray;
@@ -58,8 +60,9 @@ const
 
 type
   TDrawStage = (dsLastGlucoseLevel, dsGlucoseLines, dsGlucoseLevel, dsHorzGuideLines,
-      dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope, dsGlucoseExtremePoints,
-      dsAlertLines, dsGlucoseLevelPoints, dsGlucoseLevelDelta, dsGlucoseAvg, dsWallpaper);
+    dsVertGuideLines, dsLastGlucoseLevelDate, dsGlucoseSlope, dsGlucoseExtremePoints,
+    dsAlertLines, dsGlucoseLevelPoints, dsGlucoseLevelDelta, dsGlucoseAvg, dsWallpaper,
+    dsHoursToReceiveData);
   TDrawStages = set of TDrawStage;
 
   { TSettings }
@@ -332,6 +335,7 @@ begin
     ini.WriteBool('Visual', 'dsGlucoseLines',         IsInDrawStage(dsGlucoseLines));
     ini.WriteBool('Visual', 'dsGlucoseLevel',         IsInDrawStage(dsGlucoseLevel));
     ini.WriteBool('Visual', 'dsHorzGuideLines',       IsInDrawStage(dsHorzGuideLines));
+    ini.WriteBool('Visual', 'dsHoursToReceiveData',   IsInDrawStage(dsHoursToReceiveData));
     ini.WriteBool('Visual', 'dsVertGuideLines',       IsInDrawStage(dsVertGuideLines));
     ini.WriteBool('Visual', 'dsLastGlucoseLevelDate', IsInDrawStage(dsLastGlucoseLevelDate));
     ini.WriteBool('Visual', 'dsGlucoseSlope',         IsInDrawStage(dsGlucoseSlope));
@@ -368,7 +372,7 @@ begin
     ini.WriteInteger('Alarms', 'UrgentStaleDataAlarm',     UrgentStaleDataAlarm);
     ini.WriteBool   ('Alarms', 'EnableGlucoseLevelAlarms', EnableGlucoseLevelAlarms);
     ini.WriteBool   ('Alarms', 'EnableStaleDataAlarms',    EnableStaleDataAlarms);
-    ini.WriteBool   ('Alarms', 'EnableAudioAlarms',         EnableAudioAlarms);
+    ini.WriteBool   ('Alarms', 'EnableAudioAlarms',        EnableAudioAlarms);
     ini.WriteInteger('Alarms', 'LastSnoozeTime',           LastSnoozeTimePeriod);
   finally
     ini.Free;
@@ -405,6 +409,7 @@ begin
     LoadDrawStageOption('dsGlucoseLines',         dsGlucoseLines);
     LoadDrawStageOption('dsGlucoseLevel',         dsGlucoseLevel);
     LoadDrawStageOption('dsHorzGuideLines',       dsHorzGuideLines);
+    LoadDrawStageOption('dsHoursToReceiveData',   dsHoursToReceiveData);
     LoadDrawStageOption('dsVertGuideLines',       dsVertGuideLines);
     LoadDrawStageOption('dsLastGlucoseLevelDate', dsLastGlucoseLevelDate);
     LoadDrawStageOption('dsGlucoseSlope',         dsGlucoseSlope);
@@ -433,14 +438,14 @@ begin
     // Alarm settings
     EnableGlucoseLevelAlarms := ini.ReadBool   ('Alarms', 'EnableGlucoseLevelAlarms', EnableGlucoseLevelAlarms);
     EnableStaleDataAlarms    := ini.ReadBool   ('Alarms', 'EnableStaleDataAlarms',    EnableStaleDataAlarms);
-    EnableAudioAlarms         := ini.ReadBool   ('Alarms', 'EnableAudioAlarms',         EnableAudioAlarms);
+    EnableAudioAlarms        := ini.ReadBool   ('Alarms', 'EnableAudioAlarms',         EnableAudioAlarms);
     HighGlucoseAlarm         := ini.ReadInteger('Alarms', 'HighGlucoseAlarm',         HighGlucoseAlarm);
     LowGlucoseAlarm          := ini.ReadInteger('Alarms', 'LowGlucoseAlarm',          LowGlucoseAlarm);
     UrgentHighGlucoseAlarm   := ini.ReadInteger('Alarms', 'UrgentHighGlucoseAlarm',   UrgentHighGlucoseAlarm);
     UrgentLowGlucoseAlarm    := ini.ReadInteger('Alarms', 'UrgentLowGlucoseAlarm',    UrgentLowGlucoseAlarm);
     StaleDataAlarm           := ini.ReadInteger('Alarms', 'StaleDataAlarm',           StaleDataAlarm);
     UrgentStaleDataAlarm     := ini.ReadInteger('Alarms', 'UrgentStaleDataAlarm',     UrgentStaleDataAlarm);
-    LastSnoozeTimePeriod           := ini.ReadInteger('Alarms', 'LastSnoozeTime',           LastSnoozeTimePeriod);
+    LastSnoozeTimePeriod     := ini.ReadInteger('Alarms', 'LastSnoozeTime',           LastSnoozeTimePeriod);
   finally
     ini.Free;
   end;

@@ -20,6 +20,7 @@ type
     btnLoadWallpaper: TButton;
     btnOK: TButton;
     btnCancel: TButton;
+    cbDrawHoursToReceiveData: TCheckBox;
     cbEnableAudioAlarms: TCheckBox;
     cbShowIconInTray: TCheckBox;
     cbStayOnTop: TCheckBox;
@@ -92,6 +93,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure DoChange(Sender: TObject);
     procedure DoGlucoseAlarmChange(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure lblGitHubLinkClick(Sender: TObject);
     procedure pcChange(Sender: TObject);
   private
@@ -221,6 +223,7 @@ begin
   cbDrawWallpaper.OnClick := DoChange;
   cbShowIconOnTaskbar.OnClick := DoChange;
   cbShowIconInTray.OnClick := DoChange;
+  cbDrawHoursToReceiveData.OnClick := DoChange;
 end;
 
 procedure TfSettings.FormDestroy(Sender: TObject);
@@ -252,6 +255,21 @@ procedure TfSettings.DoGlucoseAlarmChange(Sender: TObject);
 begin
   AssignGlucoseAlertInMmolL(TSpinEdit(Sender));
   DoChange(Sender);
+end;
+
+procedure TfSettings.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Shift = [] then
+  begin
+    if Key = VK_ESCAPE then
+      Close();
+  end
+  else if Shift = [ssCtrl] then
+  begin
+    if Key = VK_RETURN then
+      btnOK.Click();
+  end;
 end;
 
 procedure TfSettings.lblGitHubLinkClick(Sender: TObject);
@@ -289,6 +307,7 @@ begin
   cbDrawGlucoseLevelPoints.Checked   := NewSettings.IsInDrawStage(dsGlucoseLevelPoints);
   cbDrawGlucoseLevelDelta.Checked    := NewSettings.IsInDrawStage(dsGlucoseLevelDelta);
   cbDrawGlucoseAvg.Checked           := NewSettings.IsInDrawStage(dsGlucoseAvg);
+  cbDrawHoursToReceiveData.Checked   := NewSettings.IsInDrawStage(dsHoursToReceiveData);
   cbDrawWallpaper.Checked            := NewSettings.IsInDrawStage(dsWallpaper);
   eWallpaper.Text                    := NewSettings.WallpaperFileName;
 
@@ -353,6 +372,7 @@ begin
   NewSettings.SwitchDrawStage(dsGlucoseLevelDelta,    cbDrawGlucoseLevelDelta.Checked);
   NewSettings.SwitchDrawStage(dsGlucoseAvg,           cbDrawGlucoseAvg.Checked);
   NewSettings.SwitchDrawStage(dsWallpaper,            cbDrawWallpaper.Checked);
+  NewSettings.SwitchDrawStage(dsHoursToReceiveData,   cbDrawHoursToReceiveData.Checked);
 
   NewSettings.ShowCheckNewDataProgressBar := cbShowCheckNewDataProgressBar.Checked;
   NewSettings.ShowWindowBorder            := cbShowWindowBorder.Checked;

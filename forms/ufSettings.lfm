@@ -1,7 +1,7 @@
 object fSettings: TfSettings
-  Left = 611
+  Left = 2057
   Height = 500
-  Top = 188
+  Top = 212
   Width = 600
   Caption = 'Settings'
   ClientHeight = 500
@@ -12,7 +12,9 @@ object fSettings: TfSettings
   Font.Color = clWindowText
   Font.Height = -16
   Font.Name = 'Tahoma'
+  KeyPreview = True
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   Position = poScreenCenter
   LCLVersion = '2.0.6.0'
   object btnOK: TButton
@@ -42,10 +44,10 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 600
-    ActivePage = tsAlerts
+    ActivePage = tsHelp
     Align = alTop
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 4
     TabOrder = 2
     OnChange = pcChange
     object tsMain: TTabSheet
@@ -206,7 +208,7 @@ object fSettings: TfSettings
       object cbDrawHorzGuideLines: TCheckBox
         Left = 277
         Height = 23
-        Top = 39
+        Top = 262
         Width = 173
         Caption = 'Horizontal guide lines'
         Font.Color = clWindowText
@@ -219,7 +221,7 @@ object fSettings: TfSettings
       object cbDrawVertGuideLines: TCheckBox
         Left = 277
         Height = 23
-        Top = 15
+        Top = 14
         Width = 153
         Caption = 'Vertical guide lines'
         Font.Color = clWindowText
@@ -231,7 +233,7 @@ object fSettings: TfSettings
       object cbDrawLastGlucoseLevel: TCheckBox
         Left = 13
         Height = 23
-        Top = 15
+        Top = 14
         Width = 143
         Caption = 'Last glucose level'
         Font.Color = clWindowText
@@ -291,7 +293,7 @@ object fSettings: TfSettings
       object cbDrawGlucoseSlope: TCheckBox
         Left = 13
         Height = 23
-        Top = 39
+        Top = 38
         Width = 117
         Caption = 'Glucose slope'
         Font.Color = clWindowText
@@ -465,6 +467,18 @@ object fSettings: TfSettings
         Font.Name = 'Tahoma'
         ParentFont = False
         TabOrder = 21
+      end
+      object cbDrawHoursToReceiveData: TCheckBox
+        Left = 277
+        Height = 23
+        Top = 38
+        Width = 170
+        Caption = 'Hours to receive data'
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        ParentFont = False
+        TabOrder = 22
       end
     end
     object tsAlerts: TTabSheet
@@ -1981,7 +1995,8 @@ object fSettings: TfSettings
           'LEFT/RIGHT/UP/DOWN – Move window on the screen'
           'SHIFT + LEFT/RIGHT/UP/DOWN/MouseWheel – Resize window'
           'ALT + UP/DOWN/MouseWheel – Increase/Decrease window opacity'
-          'CTRL + UP/DOWN or MouseWheel – Increase/Decrease scale'
+          'CTRL + UP/DOWN or CTRL + PLUS/MINUS or MouseWheel – Increase/Decrease scale'
+          'CTRL + 0 - Set scale to 100%'
           'RightClick – Show popup menu'
           ''
           'S – Set Nightscout site URL'
@@ -2002,6 +2017,7 @@ object fSettings: TfSettings
           'W – Draw wallpaper'
           'A – Draw average glucose level'
           'L – Draw vertical guidelines'
+          'E – Draw hourse to receive data'
           'T – Stay window on top'
           'B – Show window border'
           'P – Show new data checking progress bar'

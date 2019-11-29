@@ -3,7 +3,7 @@
 #define MyInstallerName "NightscoutWatcher" 
 #define MyAppExeName "NightscoutWatcher.exe" 
 #define MyAppName "Nightscout Watcher"
-#define MyAppVersion "2.5.0"
+#define MyAppVersion "2.6.0"
 #define MyGitHubSite "https://github.com/SergeyRock/nightscout-watcher#nightscout-watcher"
 #define MyAuthor "Sergey Oleynikov"
 #define MyPortableLockFile "Portable.lock"

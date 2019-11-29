@@ -24,8 +24,9 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="2"/>
-      <MinorVersionNr Value="5"/>
-      <BuildNr Value="115"/>
+      <MinorVersionNr Value="6"/>
+      <BuildNr Value="117"/>
+      <StringTable CompanyName="Sergey Oleynikov" LegalCopyright="Sergey Oleynikov" ProductName="Nightscout Watcher"/>
     </VersionInfo>
     <BuildModes Count="3">
       <Item1 Name="Default" Default="True"/>
