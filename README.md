@@ -15,9 +15,9 @@ PS. I'm not a native english speaker. I'll be gratefull if you paticipate in cor
 2. Blood sugar level data from your CGM must be sent to Nightscout site (for instance through [xDrip+](https://github.com/NightscoutFoundation/xDrip))
 
 ## Installation
-1. Download appropriate [release](https://github.com/SergeyRock/nightscout-watcher/releases)
-2. Start executable
-3. Type in url of your Nightscout site
+1. Download [installer](https://github.com/SergeyRock/nightscout-watcher/releases) (only win32 version is available)
+2. Install and start executable
+3. Type in url of your Nightscout site and set Time Zone
 
 ## Main window
 ![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/Main.2.jpg)
@@ -27,11 +27,11 @@ A lot of hot keys are available in then main window.
 When glucose level is going to be high or data from site is stale the alarms appeare.
 Last glucose level and stale indicator start blinking.
 Deppending on settings it can also be blinking tray icon with ballon hint or blinking icon on Taskbar.
+Sound alarms are the same as in the nightscout (disabled by default).
 You can snooze all alarms by popup menu and click snooze alarms or just hit Z key.
 
 ![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/TrayIconAlert.jpg)
 ![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/TaskbarIcon.jpg)
-
 
 ## Main settings
 After start the application you must type in the url of your Nightscout site.
@@ -41,39 +41,38 @@ All available settings are placed on settings window (F9) and through popup menu
 
 The main settings are:
 - Nightscout site URL (required field)
-- Hours to receive data
-- Time interval to check new data (in seconds)
 - Unit of measure (mmol/l or mg/dl). Mg/dl is used by default.
+- Time interval to check new data (in seconds)
+- Hours to receive data
 - Time-zone correction in hours
 
-## Diagram options
+## Diagram settings
 ![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/Settings.Diagram.jpg)
 
 It allows to set up different glucose data to show on diagram such as:
-- Current glucose level value
-- Alert lines
-- Glucose average
+- Last glucose level
+- Glucose slope
+- Glucose lines
 - Glucose extreme points
-- Glucose level delta
 - Glucose level points
 - Glucose level
-- Glucose lines
-- Glucose slope
-- Last glucose level date
-- Last glucose level
-
-Also available:
+- Alert lines
+- Last glucose level retreived time
+- Glucose level delta
+- Glucose average
 - Vertical guide lines
-- Scale
 - Wallpaper (jpeg only)
 
-## Window options
+You can change *Scale* of diagram elements by Mouse Wheel.
+
+## Window settings
+- Show icon in Tray (Y)
+- Show icon on Taskbar (R)
 - Stay window on top (T)
 - Show window border (B)
-- Show icon on Taskbar (R)
-- Show icon in Tray (Y)
 - Make window full screen (F11)
 - Show new data checking progress bar ( P )
+- Windows opacity
 
 ## Alert options
 ![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/Settings.Alerts.jpg)
