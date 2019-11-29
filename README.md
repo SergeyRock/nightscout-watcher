@@ -81,12 +81,13 @@ You can change *Scale* of diagram elements by Mouse Wheel.
 - LEFT/RIGHT/UP/DOWN – Move window on the screen
 - SHIFT + LEFT/RIGHT/UP/DOWN/MouseWheel – Resize window
 - ALT + UP/DOWN/MouseWheel – Increase/Decrease window opacity
-- CTRL + UP/DOWN or MouseWheel – Increase/Decrease scale
+- CTRL + UP/DOWN or CTRL + PLUS/MINUS or MouseWheel – Increase/Decrease scale
+- CTRL + 0 - Set scale to 100%
 - RightClick – Show popup menu
 
 - S – Set Nightscout site URL
 - M – Set unit of measure to mmol/l
-- C – Set hours to receive data from site
+- H – Set hours to recieve data from site
 - I – Set time interval of new data checking
 - F9 - Show settings window
 
@@ -102,12 +103,13 @@ You can change *Scale* of diagram elements by Mouse Wheel.
 - W – Draw wallpaper
 - A – Draw average glucose level
 - L – Draw vertical guidelines
+- E – Draw hourse to receive data
 - T – Stay window on top
 - B – Show window border
 - P – Show new data checking progress bar
 - F11 – Show in full screen
-- Z - Snooze alarms for 10 minutes
 
+- Z - Snooze alarms for 10 (or last chosen snooze period) minutes
 - V/DoubleClick – Visit your Nightscout site
 - F1 - This help
 
