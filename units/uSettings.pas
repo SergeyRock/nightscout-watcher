@@ -98,28 +98,30 @@ type
     UrgentStaleDataAlarm: Integer;
     WallpaperFileName: string;
     WindowRect: TRect;
-    procedure SaveOptions();
-    procedure LoadOptions();
-    constructor Create(OptionsFileName: string);
-    function GetEntriesUrlByHours: string;
-    function GetColorByGlucoseLevel(Glucose: Integer): TColor;
-    function IsStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
-    function IsUrgentStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
-    function IsGlucoseLevelAlarmExists(Entry: TNightscoutEntry): Boolean;
-    function IsUrgentGlucoseLevelAlarmExists(Entry: TNightscoutEntry): Boolean;
+    class function GetOptionFileName(): string;
+    class function IsPortable(): Boolean;
+    constructor Create();
     function Clone(): TSettings;
-    function GetTimeBetweenDatesText(DateFirst, DateLast: TDateTime): string;
-    function GetGlucoseLevelDateText(DateFirst, DateLast: TDateTime; out OutColor: TColor): string;
-    function IsInDrawStage(DrawStage: TDrawStage): Boolean; overload;
-    function IsInDrawStage(ADrawStages: TDrawStages): Boolean; overload;
-    function SetScaleIndex(Index: Integer): Boolean;
-    function IsSnoozeAlarmsEndTimePassed(): Boolean;
-    function GetOpacity(): Integer;
     function GetAppropriateAlarmFile(Entry: TNightscoutEntry): string;
+    function GetColorByGlucoseLevel(Glucose: Integer): TColor;
+    function GetEntriesUrlByHours: string;
+    function GetGlucoseLevelDateText(DateFirst, DateLast: TDateTime; out OutColor: TColor): string;
+    function GetOpacity(): Integer;
     function GetScale(): Integer;
+    function GetTimeBetweenDatesText(DateFirst, DateLast: TDateTime): string;
+    function IsGlucoseLevelAlarmExists(Entry: TNightscoutEntry): Boolean;
+    function IsInDrawStage(ADrawStages: TDrawStages): Boolean; overload;
+    function IsInDrawStage(DrawStage: TDrawStage): Boolean; overload;
+    function IsSnoozeAlarmsEndTimePassed(): Boolean;
+    function IsStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
+    function IsUrgentGlucoseLevelAlarmExists(Entry: TNightscoutEntry): Boolean;
+    function IsUrgentStaleDataAlarmExists(Entry: TNightscoutEntry): Boolean;
+    function SetScaleIndex(Index: Integer): Boolean;
     procedure AddDrawStage(DrawStage: TDrawStage);
     procedure Assign(Settings: TSettings);
+    procedure LoadOptions();
     procedure RemoveDrawStage(DrawStage: TDrawStage);
+    procedure SaveOptions();
     procedure SnoozeAlarms(Seconds: Integer);
     procedure SwitchDrawStage(DrawStage: TDrawStage; IncludeDrawStage: Boolean);
   end;
@@ -190,6 +192,7 @@ begin
   IsMmolL := Settings.IsMmolL;
   LowGlucoseAlarm := Settings.LowGlucoseAlarm;
   NightscoutUrl := Settings.NightscoutUrl;
+  OptionsFileName := Settings.OptionsFileName;
   ScaleIndex := Settings.ScaleIndex;
   ShowCheckNewDataProgressBar := Settings.ShowCheckNewDataProgressBar;
   ShowWindowBorder := Settings.ShowWindowBorder;
@@ -207,7 +210,8 @@ end;
 
 function TSettings.Clone(): TSettings;
 begin
-  Result := TSettings.Create(OptionsFileName);
+  Result := TSettings.Create();
+  Result.OptionsFileName := OptionsFileName;
   Result.AlarmAudioFile := AlarmAudioFile;
   Result.UrgentAlarmAudioFile := UrgentAlarmAudioFile;
   Result.AlphaBlendValue := AlphaBlendValue;
@@ -237,9 +241,9 @@ begin
   Result.LastSnoozeTimePeriod := LastSnoozeTimePeriod;
 end;
 
-constructor TSettings.Create(OptionsFileName: string);
+constructor TSettings.Create();
 begin
-  Self.OptionsFileName := OptionsFileName;
+  Self.OptionsFileName := TSettings.GetOptionFileName();
   DrawStages := [dsLastGlucoseLevel, dsGlucoseLines, dsHorzGuideLines,
     dsLastGlucoseLevelDate, dsGlucoseSlope,
     dsGlucoseExtremePoints, dsGlucoseLevelDelta, dsGlucoseAvg];
@@ -495,6 +499,40 @@ end;
 function TSettings.GetScale(): Integer;
 begin
   Result := ScaleIndex * 10;
+end;
+
+class function TSettings.IsPortable(): Boolean;
+begin
+  Result := FileExists('Portable.lock');
+end;
+
+// Search Option.ini in the next order:
+// 1) \Users\<user>\AppData\Local\Nightscout Watcher\
+// 2) \ProgramData\Nightscout Watcher\
+// 3) \<current app dir>\
+// The first one is default
+
+class function TSettings.GetOptionFileName(): string;
+const
+  cOptionFileName = 'Options.ini';
+var
+  UserLocalAppDataFile, ProgramDataFile, AppDirFile: String;
+begin
+  UserLocalAppDataFile := GetAppConfigDir(False) + cOptionFileName;
+  ProgramDataFile := GetAppConfigDir(True) + cOptionFileName;
+  AppDirFile := ExtractFilePath(ParamStr(0)) + cOptionFileName;
+
+  if IsPortable() then
+  begin
+    Result := AppDirFile;
+    Exit;
+  end;
+
+  Result := UserLocalAppDataFile;
+  if FileExists(ProgramDataFile) then
+    Result := ProgramDataFile
+  else if FileExists(AppDirFile) then
+    Result := AppDirFile;
 end;
 
 function TSettings.GetGlucoseLevelDateText(DateFirst, DateLast: TDateTime; out OutColor: TColor): string;

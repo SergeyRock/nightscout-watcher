@@ -245,7 +245,11 @@ implementation
 
 uses
   ufSettings, ufTimerDialog, UrlMon, Wininet, Math, StrUtils, Types, graphtype,
-  intfgraphics, fpimage, process, ButtonPanel, mmsystem;
+  intfgraphics, fpimage, process, ButtonPanel
+  {$IFDEF WINDOWS}
+  , mmsystem
+  {$ENDIF}
+  ;
 
 procedure TfMain.Restart(Params: string = '');
 var
@@ -286,23 +290,19 @@ begin
   AudioFileName := Settings.GetAppropriateAlarmFile(Entries.Last);
   if (AudioFileName = '')  or not FileExists(AudioFileName) then
   begin
-    PlaySound(0, 0, SND_PURGE);
-//    sndPlaySound(nil, 0); // Stop playing
+    {$IFDEF WINDOWS}
+      PlaySound(nil, 0, SND_PURGE);
+    {$ENDIF}
     Exit;
   end;
 
+  {$IFDEF WINDOWS}
   if LastAudioFileName <> AudioFileName then
-    PlaySound(0, 0, SND_PURGE);
+    PlaySound(nil, 0, SND_PURGE);
   PlaySound(PChar(AudioFileName), 0, SND_ASYNC or SND_LOOP or SND_PURGE or SND_NOSTOP);
+  {$ENDIF}
+
   LastAudioFileName := AudioFileName;
-//  sndPlaySound(PChar(AudioFileName), SND_ASYNC or SND_LOOP);
-//
-//  if AudioOut.Status = tosPlaying then
-//    Exit;
-//
-//  if AudioFileIn.FileName <> AudioFileName then
-//    AudioFileIn.FileName := AudioFileName;
-//  AudioOut.Run();
 end;
 
 procedure TfMain.SetSystemStayOnTop(StayOnTop: Boolean);
@@ -682,7 +682,7 @@ procedure TfMain.FormCreate(Sender: TObject);
 begin
   Loaded := False;
   Connected := False;
-  Settings := TSettings.Create(ExtractFilePath(ParamStr(0)) +  'Options.ini');
+  Settings := TSettings.Create();
   Wallpaper := TBitmap.Create();
   WallpaperJPG := TJPEGImage.Create();
   StaleAlarmBlinkTrigger := False;
@@ -878,7 +878,9 @@ end;
 
 procedure TfMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  {$ifdef windows}
   sndPlaySound(nil, 0); // Stop playing
+  {$endif}
 end;
 
 procedure TfMain.actStayOnTopExecute(Sender: TObject);
