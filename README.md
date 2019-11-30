@@ -6,9 +6,9 @@ The main purpose of the application is to show glucose level on your monitor in 
 App receives TSV-data about blood sugar level by requesting url like this: http://oldexcom.herokuapp.com/api/v1/entries/sgv?count=3000&find[dateString][$gte]=2019-11-16T01:00:00
 
 ## Collaboration
-You are allways welcome to connect to this open source project by helping of any kind (e.g. testing, programming, spelling and etc.). 
+You are always welcome to connect to this open source project by helping of any kind (e.g. testing, programming, spelling and etc.). 
 Don't be hesitating if you notice something that can help to improve this project. Just write me an issue.
-PS. I'm not a native english speaker. I'll be gratefull if you paticipate in correction of [mistakes](https://github.com/SergeyRock/nightscout-watcher/issues).
+PS. I'm not a native English speaker. I'll be grateful if you participate in correction of [mistakes](https://github.com/SergeyRock/nightscout-watcher/issues).
 
 ## Prerequisites
 1. The main prerequisite is availability of your own [nightscout site](https://github.com/nightscout/cgm-remote-monitor).
@@ -24,9 +24,9 @@ PS. I'm not a native english speaker. I'll be gratefull if you paticipate in cor
 A lot of hot keys are available in then main window.
 
 ## Alarms
-When glucose level is going to be high or data from site is stale the alarms appeare.
+When glucose level is going to be high or data from site is stale the alarms appear.
 Last glucose level and stale indicator start blinking.
-Deppending on settings it can also be blinking tray icon with ballon hint or blinking icon on Taskbar.
+Depending on settings it can also be blinking tray icon with balloon hint or blinking icon on Taskbar.
 Sound alarms are the same as in the nightscout (disabled by default).
 You can snooze all alarms by popup menu and click snooze alarms or just hit Z key.
 
@@ -57,7 +57,7 @@ It allows to set up different glucose data to show on diagram such as:
 - Glucose level points
 - Glucose level
 - Alert lines
-- Last glucose level retreived time
+- Last glucose level retrieved time
 - Glucose level delta
 - Glucose average
 - Vertical guide lines
@@ -72,7 +72,7 @@ You can change *Scale* of diagram elements by Mouse Wheel.
 - Show window border (B)
 - Make window full screen (F11)
 - Show new data checking progress bar ( P )
-- Windows opacity
+- Window opacity
 
 ## Alert options
 ![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/Settings.Alerts.jpg)
@@ -87,7 +87,7 @@ You can change *Scale* of diagram elements by Mouse Wheel.
 
 - S – Set Nightscout site URL
 - M – Set unit of measure to mmol/l
-- H – Set hours to recieve data from site
+- H – Set hours to receive data from site
 - I – Set time interval of new data checking
 - F9 - Show settings window
 
@@ -103,7 +103,7 @@ You can change *Scale* of diagram elements by Mouse Wheel.
 - W – Draw wallpaper
 - A – Draw average glucose level
 - L – Draw vertical guidelines
-- E – Draw hourse to receive data
+- E – Draw hours to receive data
 - T – Stay window on top
 - B – Show window border
 - P – Show new data checking progress bar
