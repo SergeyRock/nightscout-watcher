@@ -3,37 +3,51 @@
 #define MyInstallerName "NightscoutWatcher" 
 #define MyAppExeName "NightscoutWatcher.exe" 
 #define MyAppName "Nightscout Watcher"
+#define MyAppContact "osp1000@gmail.com"
 #define MyAppVersion "2.6.0"
 #define MyGitHubSite "https://github.com/SergeyRock/nightscout-watcher#nightscout-watcher"
+#define MyGitHubSupportURL "https://github.com/SergeyRock/nightscout-watcher/issues"
+#define MyGitHubLatestReleaseURL "https://github.com/SergeyRock/nightscout-watcher/releases/latest"
 #define MyAuthor "Sergey Oleynikov"
 #define MyPortableLockFile "Portable.lock"
 
 [Setup]
+AllowNoIcons=True
+AlwaysShowDirOnReadyPage=True
+AlwaysShowGroupOnReadyPage=True
+AppComments=Any help in application developing is appreciated
+AppContact={#MyAppContact}
+AppCopyright={#MyAuthor}, 2019
+AppMutex={#MyAppExeName}
 AppName={#MyAppName}
-WizardStyle=modern
+AppPublisher={#MyAuthor}
+AppPublisherURL={#MyGitHubSite}
+AppSupportURL={#MyGitHubSupportURL}
+AppUpdatesURL={#MyGitHubLatestReleaseURL}
+AppVersion={#MyAppVersion}
+Compression=lzma2
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-Compression=lzma2
-SolidCompression=yes
-OutputDir=.\
-OutputBaseFilename={#MyInstallerName}
-PrivilegesRequired=none
-Uninstallable=not IsTaskSelected('portable_mode')
 DisableReadyPage=True
-AppCopyright={#MyAuthor}, 2019
-SetupIconFile=NightScoutWatcher.ico
+OutputBaseFilename={#MyInstallerName}
+OutputDir=.\
+PrivilegesRequired=none
+SetupIconFile=NightscoutWatcher.ico
 ShowUndisplayableLanguages=True
-UninstallDisplayName={#MyAppName}
+SolidCompression=yes
 UninstallDisplayIcon={app}\{#MyAppExeName}
-AppVersion={#MyAppVersion}
-VersionInfoVersion={#MyAppVersion}
+UninstallDisplayName={#MyAppName}
+Uninstallable=not IsTaskSelected('portable_mode')
 VersionInfoCompany={#MyAuthor}
-VersionInfoDescription=Blood Glucose Monitoring app
-VersionInfoTextVersion={#MyAppVersion}
 VersionInfoCopyright={#MyAuthor}, 2019
+VersionInfoDescription=Blood Glucose Monitoring app
 VersionInfoProductName={#MyAppName}
-AlwaysShowGroupOnReadyPage=True
-AlwaysShowDirOnReadyPage=True
+VersionInfoTextVersion={#MyAppVersion}
+VersionInfoVersion={#MyAppVersion}
+WizardImageFile=InstallerImage.bmp
+WizardStyle=classic     
+WizardSizePercent=150,130           
+InfoAfterFile=ReadMe.rtf
 
 [Files]
 Source: "..\lib\i386-win32\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
@@ -44,8 +58,8 @@ Source: "ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#MyPortableLockFile}"; DestDir: "{app}"; Flags: ignoreversion; Tasks: "portable_mode"
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppExeName}"; Tasks: "start_menu_icon"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppExeName}"; Tasks: "desktop_icon"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; IconFilename: "{app}\{#MyAppExeName}";
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; IconFilename: "{app}\{#MyAppExeName}"; Tasks: "desktop_icon"
 Name: "{autostartup}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Tasks: "startup_icon"
 
 [Languages]
@@ -53,8 +67,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl";
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl";
 
 [Tasks]
-Name: "start_menu_icon"; Description: "{cm:AddToStartMenu}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "desktop_icon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "desktop_icon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; 
 Name: "startup_icon"; Description: "{cm:AutoStartProgram,{cm:AutoStartProgramOption}}"; GroupDescription: "{cm:Options}"; Flags: unchecked
 Name: "portable_mode"; Description: "{cm:PortableMode}"; GroupDescription: "{cm:Options}"; Flags: unchecked
 
@@ -63,8 +76,6 @@ Filename: "{app}\{#MyAppExeName}"; Flags: nowait postinstall skipifsilent; Descr
 Filename: "{#MyGitHubSite}"; Flags: nowait postinstall skipifsilent shellexec; Description: "{cm:ProgramOnTheWeb,{#MyGitHubSite}}"
 
 [CustomMessages]
-english.AddToStartMenu=Add to shortcut to Start Menu
-russian.AddToStartMenu=Добавить ссылку в меню "Пуск"
 english.Options=Options:
 russian.Options=Опции:
 english.PortableMode=Portable Mode
