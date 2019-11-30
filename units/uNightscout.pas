@@ -17,6 +17,8 @@ type
   { TNightscoutEntry }
 
   TNightscoutEntry = class
+  private
+    TimeZoneForParsing: Integer;
   public
     Date: TDateTime;
     Glucose: Integer;
@@ -237,6 +239,18 @@ begin
 end;
 
 function TNightscoutEntry.ParseRow(Row: string): Boolean;
+
+  procedure ParseTimeZoneFromDateTime(DateText: string);
+  var
+    PlusPos: Integer;
+    TimeZoneStr: String;
+  begin
+//    Value = '2019-11-30T22:10:23.684+0400'
+    PlusPos := Pos('+', DateText) + 1;
+    TimeZoneStr := Copy(DateText, PlusPos, Length(DateText) - PlusPos - 1);
+    TimeZoneForParsing := StrToInt(TimeZoneStr);
+  end;
+
 var
   Columns: TStringList;
   i: Integer;
@@ -252,7 +266,7 @@ begin
       begin
         Value := Columns[i];
         case i of
-          0: Continue;
+          0: ParseTimeZoneFromDateTime(Value);
           1: SetDate(Value);
           2: SetGlucose(Value);
           3: Slope := Value;
@@ -274,7 +288,7 @@ begin
   // Remove microsecs
   UnixDateStr := Copy(UnixDateStr, 1, 10);
   UnixDate := StrToInt64(UnixDateStr);
-  Date := UnixToDateTime(UnixDate);
+  Date := UnixToDateTime(UnixDate) + TimeZoneForParsing / HoursPerDay;
 end;
 
 procedure TNightscoutEntry.SetGlucose(Value: Double; IsMmolL: Boolean);

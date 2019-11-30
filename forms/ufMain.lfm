@@ -60,6 +60,9 @@ object fMain: TfMain
     object miSetCheckInterval: TMenuItem
       Action = actSetCheckInterval
     end
+    object miSetTimeZoneCorrection: TMenuItem
+      Action = actSetTimeZoneCorrection
+    end
     object miShowSettings: TMenuItem
       Action = actShowSettings
     end
@@ -633,6 +636,11 @@ object fMain: TfMain
       AutoCheck = True
       Caption = 'Enable sound alarms'
       OnExecute = actEnableAudioAlarmsExecute
+    end
+    object actSetTimeZoneCorrection: TAction
+      Category = 'Other'
+      Caption = 'Set TimeZone correction'
+      OnExecute = actSetTimeZoneCorrectionExecute
     end
   end
   object TrayIcon: TTrayIcon

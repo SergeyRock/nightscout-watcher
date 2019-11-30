@@ -36,6 +36,7 @@ type
     actEnableGlucoseLevelAlarms: TAction;
     actEnableStaleDataAlarms: TAction;
     actEnableAudioAlarms: TAction;
+    actSetTimeZoneCorrection: TAction;
     actSnoozeAlarmsCustom: TAction;
     actShowIconInTray: TAction;
     actShowIconOnTaskbar: TAction;
@@ -46,6 +47,7 @@ type
     actSnoozeAlarms30mins: TAction;
     actSnoozeAlarms10mins: TAction;
     actStayOnTop: TAction;
+    miSetTimeZoneCorrection: TMenuItem;
     miEnableAudioAlarms: TMenuItem;
     miEnableStaleDataAlarms: TMenuItem;
     miEnableGlucoseLevelAlarms: TMenuItem;
@@ -148,6 +150,7 @@ type
     procedure actEnableGlucoseLevelAlarmsExecute(Sender: TObject);
     procedure actEnableAudioAlarmsExecute(Sender: TObject);
     procedure actEnableStaleDataAlarmsExecute(Sender: TObject);
+    procedure actSetTimeZoneCorrectionExecute(Sender: TObject);
     procedure actShowIconInTrayExecute(Sender: TObject);
     procedure actShowIconOnTaskbarExecute(Sender: TObject);
     procedure alUpdate(AAction: TBasicAction; var Handled: Boolean);
@@ -983,6 +986,26 @@ end;
 procedure TfMain.actEnableStaleDataAlarmsExecute(Sender: TObject);
 begin
   Settings.EnableStaleDataAlarms := TAction(Sender).Checked;
+end;
+
+procedure TfMain.actSetTimeZoneCorrectionExecute(Sender: TObject);
+const
+  cMsg = 'Type in time zone correction (in hours). Sometimes it is needed when Nightscout site is not set up correctly.';
+var
+  TimeZoneCorrectionStr, Msg: string;
+begin
+  al.State := asSuspended;
+  TimeZoneCorrectionStr := IntToStr(Settings.TimeZoneCorrection);
+  if TfTimerDialog.Execute(Self, 'Time zone correction', cMsg, TimeZoneCorrectionStr, [pbOK, pbCancel]) = mrOK then
+  begin
+    if not TryStrToInt(TimeZoneCorrectionStr, Settings.TimeZoneCorrection) then
+    begin
+      Msg := 'You must type in time zone correction in hours (int value)';
+      if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
+        actSetTimeZoneCorrectionExecute(Sender);
+    end;
+  end;
+  al.State := asNormal;
 end;
 
 procedure TfMain.FormMouseEnter(Sender: TObject);
