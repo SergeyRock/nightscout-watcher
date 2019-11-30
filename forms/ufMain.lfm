@@ -1,7 +1,7 @@
 object fMain: TfMain
-  Left = 805
+  Left = 1992
   Height = 198
-  Top = 426
+  Top = 20
   Width = 338
   AlphaBlend = True
   AlphaBlendValue = 230
@@ -63,8 +63,23 @@ object fMain: TfMain
     object miShowSettings: TMenuItem
       Action = actShowSettings
     end
-    object miSnoozeAlarms: TMenuItem
-      Caption = 'Snooze alarms'
+    object miAlarms: TMenuItem
+      Caption = 'Alarms/Snooze'
+      object miEnableGlucoseLevelAlarms: TMenuItem
+        Action = actEnableGlucoseLevelAlarms
+        AutoCheck = True
+      end
+      object miEnableStaleDataAlarms: TMenuItem
+        Action = actEnableStaleDataAlarms
+        AutoCheck = True
+      end
+      object miEnableAudioAlarms: TMenuItem
+        Action = actEnableAudioAlarms
+        AutoCheck = True
+      end
+      object miSeparator5: TMenuItem
+        Caption = '-'
+      end
       object miSnoozeAlarms10mins: TMenuItem
         Action = actSnoozeAlarms10mins
       end
@@ -538,37 +553,37 @@ object fMain: TfMain
     end
     object actSnoozeAlarms10mins: TAction
       Tag = 600
-      Category = 'Other'
+      Category = 'Alarms'
       Caption = 'Snooze alarms for 10 mins'
       OnExecute = DoSnoozeAlarmsExecute
       ShortCut = 90
     end
     object actSnoozeAlarms30mins: TAction
       Tag = 1800
-      Category = 'Other'
+      Category = 'Alarms'
       Caption = 'Snooze alarms for 30 mins'
       OnExecute = DoSnoozeAlarmsExecute
     end
     object actSnoozeAlarms60mins: TAction
       Tag = 3600
-      Category = 'Other'
+      Category = 'Alarms'
       Caption = 'Snooze alarms for 60 mins'
       OnExecute = DoSnoozeAlarmsExecute
     end
     object actSnoozeAlarms90mins: TAction
       Tag = 5400
-      Category = 'Other'
+      Category = 'Alarms'
       Caption = 'Snooze alarms for 90 mins'
       OnExecute = DoSnoozeAlarmsExecute
     end
     object actSnoozeAlarms120mins: TAction
       Tag = 7200
-      Category = 'Other'
+      Category = 'Alarms'
       Caption = 'Snooze alarms for 2 hours'
       OnExecute = DoSnoozeAlarmsExecute
     end
     object actSnoozeAlarmsReset: TAction
-      Category = 'Other'
+      Category = 'Alarms'
       Caption = 'Reset snooze alarms'
       OnExecute = DoSnoozeAlarmsExecute
     end
@@ -590,7 +605,7 @@ object fMain: TfMain
     end
     object actSnoozeAlarmsCustom: TAction
       Tag = -1
-      Category = 'Other'
+      Category = 'Alarms'
       Caption = 'Snooze alarms for ...'
       OnExecute = DoSnoozeAlarmsExecute
     end
@@ -600,6 +615,24 @@ object fMain: TfMain
       AutoCheck = True
       Caption = 'Draw hours to receive data'
       OnExecute = DoDrawStageExecute
+    end
+    object actEnableGlucoseLevelAlarms: TAction
+      Category = 'Alarms'
+      AutoCheck = True
+      Caption = 'Enable glucose alarms'
+      OnExecute = actEnableGlucoseLevelAlarmsExecute
+    end
+    object actEnableStaleDataAlarms: TAction
+      Category = 'Alarms'
+      AutoCheck = True
+      Caption = 'Enable stale alarms'
+      OnExecute = actEnableStaleDataAlarmsExecute
+    end
+    object actEnableAudioAlarms: TAction
+      Category = 'Alarms'
+      AutoCheck = True
+      Caption = 'Enable sound alarms'
+      OnExecute = actEnableAudioAlarmsExecute
     end
   end
   object TrayIcon: TTrayIcon

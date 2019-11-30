@@ -33,6 +33,9 @@ type
     actDrawGlucoseAvg: TAction;
     actDrawWallpaper: TAction;
     actDrawHoursToReceiveData: TAction;
+    actEnableGlucoseLevelAlarms: TAction;
+    actEnableStaleDataAlarms: TAction;
+    actEnableAudioAlarms: TAction;
     actSnoozeAlarmsCustom: TAction;
     actShowIconInTray: TAction;
     actShowIconOnTaskbar: TAction;
@@ -43,6 +46,10 @@ type
     actSnoozeAlarms30mins: TAction;
     actSnoozeAlarms10mins: TAction;
     actStayOnTop: TAction;
+    miEnableAudioAlarms: TMenuItem;
+    miEnableStaleDataAlarms: TMenuItem;
+    miEnableGlucoseLevelAlarms: TMenuItem;
+    miSeparator5: TMenuItem;
     miDrawHoursToReceiveData: TMenuItem;
     miDiagram: TMenuItem;
     miSnoozeAlarmsCustom: TMenuItem;
@@ -55,7 +62,7 @@ type
     miSnoozeAlarms60mins: TMenuItem;
     miSnoozeAlarms30mins: TMenuItem;
     miSnoozeAlarms10mins: TMenuItem;
-    miSnoozeAlarms: TMenuItem;
+    miAlarms: TMenuItem;
     miStayOnTop: TMenuItem;
     miDrawWallpaper: TMenuItem;
     miDrawGlucoseAvg: TMenuItem;
@@ -138,6 +145,9 @@ type
     actDrawGlucoseLevelPoints: TAction;
     miDrawGlucoseLevelPoints: TMenuItem;
     TrayIcon: TTrayIcon;
+    procedure actEnableGlucoseLevelAlarmsExecute(Sender: TObject);
+    procedure actEnableAudioAlarmsExecute(Sender: TObject);
+    procedure actEnableStaleDataAlarmsExecute(Sender: TObject);
     procedure actShowIconInTrayExecute(Sender: TObject);
     procedure actShowIconOnTaskbarExecute(Sender: TObject);
     procedure alUpdate(AAction: TBasicAction; var Handled: Boolean);
@@ -230,6 +240,7 @@ type
     procedure SnoozeAlarms(Seconds: Integer);
     procedure UpdateApplicationTitle();
     procedure UpdateHint();
+    procedure UpdateSingleActions();
     procedure UpdateSnoozeActionShortCut(Seconds: Integer);
   end;
 
@@ -253,6 +264,13 @@ uses
   , mmsystem
   {$ENDIF}
   ;
+
+function ContainsText(AText: string; SubText: string): Boolean;
+begin
+  AText := UpperCase(AText);
+  SubText := UpperCase(SubText);
+  Result := Pos(SubText, AText) > 0;
+end;
 
 procedure TfMain.Restart(Params: string = '');
 var
@@ -487,10 +505,13 @@ begin
 
   ActionFound := False;
   // Reassign shortcut according to chosen snooze period
-  for i := 0 to miSnoozeAlarms.Count - 1 do
+  for i := 0 to miAlarms.Count - 1 do
   begin
-    SnoozeAction := TAction(miSnoozeAlarms.Items[i].Action);
+    SnoozeAction := TAction(miAlarms.Items[i].Action);
     if SnoozeAction = nil then
+      Continue;
+
+    if not ContainsText(SnoozeAction.Name, 'SnoozeAlarms') then
       Continue;
 
     if SnoozeAction.Tag = Seconds then
@@ -712,6 +733,7 @@ begin
   actDrawWallpaper.Checked            := Settings.IsInDrawStage(dsWallpaper);
 
   UpdateSnoozeActionShortCut(Settings.LastSnoozeTimePeriod);
+  UpdateSingleActions();
 
   ShowIconInTray(Settings.ShowIconInTray);
   ShowWindowBorder(Settings.ShowWindowBorder);
@@ -860,10 +882,10 @@ var
   Opacity: Integer;
 begin
   // Update snooze menu items
-  miSnoozeAlarms.Caption := 'Snooze alarms';
+  miAlarms.Caption := 'Alarms/Snooze';
   if not Settings.IsSnoozeAlarmsEndTimePassed() then
-    miSnoozeAlarms.Caption := Format('%s (%d minutes remain)',
-      [miSnoozeAlarms.Caption, MinutesBetween(Settings.SnoozeAlarmsEndTime, Now())]);
+    miAlarms.Caption := Format('%sd (%d minutes remain)',
+      [miAlarms.Caption, MinutesBetween(Settings.SnoozeAlarmsEndTime, Now())]);
 
   // Update scale menu items
   miScale.Caption := Format('Scale (%d %%)', [Settings.GetScale]);
@@ -946,6 +968,21 @@ end;
 procedure TfMain.actShowIconInTrayExecute(Sender: TObject);
 begin
   ShowIconInTray(TAction(Sender).Checked);
+end;
+
+procedure TfMain.actEnableGlucoseLevelAlarmsExecute(Sender: TObject);
+begin
+  Settings.EnableGlucoseLevelAlarms := TAction(Sender).Checked;
+end;
+
+procedure TfMain.actEnableAudioAlarmsExecute(Sender: TObject);
+begin
+  Settings.EnableAudioAlarms := TAction(Sender).Checked;
+end;
+
+procedure TfMain.actEnableStaleDataAlarmsExecute(Sender: TObject);
+begin
+  Settings.EnableStaleDataAlarms := TAction(Sender).Checked;
 end;
 
 procedure TfMain.FormMouseEnter(Sender: TObject);
@@ -1250,13 +1287,6 @@ begin
   DrawApplicationIcon();
   PlayAlarm();
   HardInvalidate();
-end;
-
-function ContainsText(AText: string; SubText: string): Boolean;
-begin
-  AText := UpperCase(AText);
-  SubText := UpperCase(SubText);
-  Result := Pos(SubText, AText) > 0;
 end;
 
 function TfMain.GetArrowRect(Slope: string; ArrowAreaRect: TRect; var OutPoints: TRect): Boolean;
@@ -1686,9 +1716,17 @@ begin
   DoDrawStages(Settings.DrawStages);
 end;
 
+procedure TfMain.UpdateSingleActions();
+begin
+  actEnableGlucoseLevelAlarms.Checked := Settings.EnableGlucoseLevelAlarms;
+  actEnableAudioAlarms.Checked        := Settings.EnableAudioAlarms;
+  actEnableStaleDataAlarms.Checked    := Settings.EnableStaleDataAlarms;
+end;
+
 procedure TfMain.DoUpdateCallerFormWithSettings;
 begin
   ApplyWindowSettings;
+  UpdateSingleActions();
   SetScaleIndex(Settings.ScaleIndex);
   SetAlphaBlendValue(Settings.AlphaBlendValue);
   LoadWallpaper(Settings.WallpaperFileName);

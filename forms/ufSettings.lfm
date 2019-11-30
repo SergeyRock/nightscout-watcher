@@ -1,7 +1,7 @@
 object fSettings: TfSettings
-  Left = 2057
+  Left = 1997
   Height = 500
-  Top = 212
+  Top = 312
   Width = 600
   Caption = 'Settings'
   ClientHeight = 500
@@ -2001,7 +2001,7 @@ object fSettings: TfSettings
           ''
           'S – Set Nightscout site URL'
           'M – Set unit of measure to mmol/l'
-          'H – Set hours to recieve data from site'
+          'H – Set hours to receive data from site'
           'I – Set time interval of new data checking'
           'F9 - Show settings window'
           ''
