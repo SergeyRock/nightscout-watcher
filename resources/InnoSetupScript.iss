@@ -4,7 +4,7 @@
 #define MyAppExeName "NightscoutWatcher.exe" 
 #define MyAppName "Nightscout Watcher"
 #define MyAppContact "osp1000@gmail.com"
-#define MyAppVersion "2.6.0"
+#define MyAppVersion "2.11.1"
 #define MyGitHubSite "https://github.com/SergeyRock/nightscout-watcher#nightscout-watcher"
 #define MyGitHubSupportURL "https://github.com/SergeyRock/nightscout-watcher/issues"
 #define MyGitHubLatestReleaseURL "https://github.com/SergeyRock/nightscout-watcher/releases/latest"
