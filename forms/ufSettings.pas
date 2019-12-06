@@ -324,7 +324,7 @@ begin
   sbScale.Max                    := Length(cDrawStageSizes[1]);
   sbScale.Position               := NewSettings.ScaleIndex;
   seCheckInterval.Value          := NewSettings.CheckInterval;
-  seHoursToReceive.Value         := NewSettings.HoursToRecive;
+  seHoursToReceive.Value         := NewSettings.HoursToReceive;
   seHighGlucoseAlarm.Value       := NewSettings.HighGlucoseAlarm;
   seLowGlucoseAlarm.Value        := NewSettings.LowGlucoseAlarm;
   seStaleDataAlarm.Value         := NewSettings.StaleDataAlarm;
@@ -346,7 +346,7 @@ end;
 procedure TfSettings.AssignComponentsToSettings;
 begin
   NewSettings.CheckInterval := seCheckInterval.Value;
-  NewSettings.HoursToRecive := seHoursToReceive.Value;
+  NewSettings.HoursToReceive := seHoursToReceive.Value;
 
   NewSettings.EnableAudioAlarms        := cbEnableAudioAlarms.Checked;
   NewSettings.EnableGlucoseLevelAlarms := cbEnableGlucoseLevelAlarms.Checked;

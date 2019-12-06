@@ -165,7 +165,7 @@ begin
         FreeAndNil(Entry);
     end;
     RemoveDuplicatesWithTheSameDate;
-    //LimitEntries(Settings.HoursToRecive);
+    //LimitEntries(Settings.HoursToReceive);
     CloseFile(DataFile);
     Result := True;
   except

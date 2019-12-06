@@ -47,6 +47,7 @@ type
     actSnoozeAlarms30mins: TAction;
     actSnoozeAlarms10mins: TAction;
     actStayOnTop: TAction;
+    il: TImageList;
     miSetTimeZoneCorrection: TMenuItem;
     miEnableAudioAlarms: TMenuItem;
     miEnableStaleDataAlarms: TMenuItem;
@@ -136,8 +137,8 @@ type
     miDrawGlucoseSlope: TMenuItem;
     actDrawGlucoseExtremePoints: TAction;
     miDrawGlucoseExtremePoints: TMenuItem;
-    actSetHoursToRecive: TAction;
-    miSetHoursToRecive: TMenuItem;
+    actSetHoursToReceive: TAction;
+    miSetHoursToReceive: TMenuItem;
     actShowSettings: TAction;
     miShowSettings: TMenuItem;
     actDrawAlertLines: TAction;
@@ -167,6 +168,7 @@ type
     procedure CheckStaleDataAlarms;
     procedure DoOpacityPercentClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure pmClose(Sender: TObject);
     procedure pmPopup(Sender: TObject);
     procedure tmrTimer(Sender: TObject);
     procedure tmrProgressBarTimer(Sender: TObject);
@@ -183,12 +185,13 @@ type
     procedure actSetUnitOfMeasureMmolLExecute(Sender: TObject);
     procedure FormMouseEnter(Sender: TObject);
     procedure FormMouseLeave(Sender: TObject);
-    procedure actSetHoursToReciveExecute(Sender: TObject);
+    procedure actSetHoursToReceiveExecute(Sender: TObject);
     procedure DoShowSettingsExecute(Sender: TObject);
     procedure actFullScreenExecute(Sender: TObject);
     procedure TrayIconClick(Sender: TObject);
     procedure DrawTrayIcon();
   private
+    IsMenuPopuped: Boolean;
     StaleAlarmBlinkTrigger: Boolean;
     NeedStaleDataBlink: Boolean;
     NeedGlucoseLevelAlarmBlink: Boolean;
@@ -537,43 +540,49 @@ var
   CheckIntervalStr, Msg: string;
 begin
   al.State := asSuspended;
-  CheckIntervalStr := IntToStr(Settings.CheckInterval);
-  if TfTimerDialog.Execute(Self, 'Check interval', cMsg, CheckIntervalStr, [pbOK, pbCancel]) = mrOK then
-    if not SetCheckIntervalByString(CheckIntervalStr) then
-    begin
-      Msg := 'You must type in time interval in seconds (int value)';
-      if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
-        actSetCheckIntervalExecute(Sender);
-    end;
-  al.State := asNormal;
+  try
+    CheckIntervalStr := IntToStr(Settings.CheckInterval);
+    if TfTimerDialog.Execute(Self, 'Check interval', cMsg, CheckIntervalStr, [pbOK, pbCancel]) = mrOK then
+      if not SetCheckIntervalByString(CheckIntervalStr) then
+      begin
+        Msg := 'You must type in time interval in seconds (int value)';
+        if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
+          actSetCheckIntervalExecute(Sender);
+      end;
+  finally
+    al.State := asNormal;
+  end;
 end;
 
-procedure TfMain.actSetHoursToReciveExecute(Sender: TObject);
+procedure TfMain.actSetHoursToReceiveExecute(Sender: TObject);
 var
   Count, Msg: string;
   CountEntered: Integer;
   CanSetCount: Boolean;
 begin
   al.State := asSuspended;
-  Count := IntToStr(Settings.HoursToRecive);
-  Msg := 'Type in the hours to recieve data from Nightscout site';
-  if InputQuery('Hours to receive', Msg, Count) then
-  begin
-    CanSetCount := TryStrToInt(Count, CountEntered);
-    CanSetCount := CanSetCount and (CountEntered >= cHoursToReceiveMin) and (CountEntered <= cHoursToReceiveMax);
-    if CanSetCount then
+  try
+    Count := IntToStr(Settings.HoursToReceive);
+    Msg := 'Type in the hours to recieve data from Nightscout site';
+    if InputQuery('Hours to receive', Msg, Count) then
     begin
-      Settings.HoursToRecive := CountEntered;
-      tmrTimer(tmr);
-    end
-    else
-    begin
-      Msg := Format('You must type in an integer value (between %d and %d).' + #13#10 + 'Try again?', [cHoursToReceiveMin, cHoursToReceiveMax]);
-      if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
-        actSetHoursToReciveExecute(Sender);
+      CanSetCount := TryStrToInt(Count, CountEntered);
+      CanSetCount := CanSetCount and (CountEntered >= cHoursToReceiveMin) and (CountEntered <= cHoursToReceiveMax);
+      if CanSetCount then
+      begin
+        Settings.HoursToReceive := CountEntered;
+        tmrTimer(tmr);
+      end
+      else
+      begin
+        Msg := Format('You must type in an integer value (between %d and %d).' + LineEnding + 'Try again?', [cHoursToReceiveMin, cHoursToReceiveMax]);
+        if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
+          actSetHoursToReceiveExecute(Sender);
+      end;
     end;
+  finally
+    al.State := asNormal;
   end;
-  al.State := asNormal;
 end;
 
 procedure TfMain.actSetNightscoutSiteExecute(Sender: TObject);
@@ -584,34 +593,37 @@ var
   TimerIntervalSecs: Integer;
 begin
   al.State := asSuspended;
-  WasConnected := Connected;
-  Connected := False;
-  Url := Settings.NightscoutUrl;
-  TimerIntervalSecs := -1;
-  if WasConnected then
-    TimerIntervalSecs := 20;
-  Msg := 'Type in URL of Nightscout site.' + #13#10 +
-    'If there is an error appeare try to change protocol to HTTP instead of HTTPS in URL.';
-  DialogResult := TfTimerDialog.Execute(Self, 'Nighscout site', Msg, Url, [pbOK, pbCancel], TimerIntervalSecs);
-  if DialogResult = mrOK then
-  begin
-    if (Url <> '') and (SetNightscoutUrl(Url)) then
-      tmrTimer(tmr)
-    else
+  try
+    WasConnected := Connected;
+    Connected := False;
+    Url := Settings.NightscoutUrl;
+    TimerIntervalSecs := -1;
+    if WasConnected then
+      TimerIntervalSecs := 20;
+    Msg := 'Type in URL of Nightscout site.' + LineEnding +
+      'If an error occurs try to change protocol to HTTP instead of HTTPS in URL.';
+    DialogResult := TfTimerDialog.Execute(Self, 'Nighscout site', Msg, Url, [pbOK, pbCancel], TimerIntervalSecs);
+    if DialogResult = mrOK then
     begin
-      actSetNightscoutSiteExecute(Sender);
+      if (Url <> '') and (SetNightscoutUrl(Url)) then
+        tmrTimer(tmr)
+      else
+      begin
+        actSetNightscoutSiteExecute(Sender);
+      end;
+    end
+    else if (DialogResult = mrCancel) and not WasConnected then
+    begin
+      Msg := 'To obtain CGM data you have to type in full URL of your Nightscout site.' + LineEnding +
+        'To support HTTPS you have to download libeay32.dll and ssleay32.dll and put it to the project directory.' + LineEnding +
+        'Otherwise only HTTP protocol is supported. Try to change protocol to HTTP instead of HTTPS in URL.' + LineEnding + LineEnding +
+        'Do you want to try again?';
+      if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
+        actSetNightscoutSiteExecute(Sender);
     end;
-  end
-  else if (DialogResult = mrCancel) and not WasConnected then
-  begin
-    Msg := 'To obtain CGM data you have to type in full URL of your Nightscout site.' + #13#10 +
-      'To support HTTPS you have to download libeay32.dll and ssleay32.dll and put it to the project directory.' + #13#10 +
-      'Otherwise only HTTP protocol is supported. Try to change protocol to HTTP instead of HTTPS in URL.' + #13#10#13#10 +
-      'Do you want to try again?';
-    if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
-      actSetNightscoutSiteExecute(Sender);
+  finally
+    al.State := asNormal;
   end;
-  al.State := asNormal;
 end;
 
 procedure TfMain.actShowCheckNewDataProgressBarExecute(Sender: TObject);
@@ -707,6 +719,7 @@ end;
 
 procedure TfMain.FormCreate(Sender: TObject);
 begin
+  IsMenuPopuped := True;
   Loaded := False;
   Connected := False;
   Settings := TSettings.Create();
@@ -768,7 +781,8 @@ begin
       VK_UP:    Top  := Top - cMoveWindowDelta;
       VK_DOWN:  Top  := Top + cMoveWindowDelta;
       VK_APPS:  pm.PopUp;
-      VK_Z:
+      VK_H:     actSetHoursToReceive.Execute;
+      VK_E:     actDrawHoursToReceiveData.Execute;
     end;
   end
   else if Shift = [ssShift] then
@@ -879,11 +893,24 @@ begin
   LoadWallpaper(Settings.WallpaperFileName);
 end;
 
+procedure TfMain.pmClose(Sender: TObject);
+begin
+  IsMenuPopuped := False;
+end;
+
 procedure TfMain.pmPopup(Sender: TObject);
 var
   i: Integer;
   Opacity: Integer;
 begin
+  IsMenuPopuped := True;
+
+  // Update hours to receive item
+  miSetHoursToReceive.Caption := Format('Set hours to receive data (%d h)', [Settings.HoursToReceive] );
+
+  // Check interval item
+  miSetCheckInterval.Caption := Format('Set time interval to check new data (%d secs)', [Settings.CheckInterval]);
+
   // Update snooze menu items
   miAlarms.Caption := 'Alarms/Snooze';
   if not Settings.IsSnoozeAlarmsEndTimePassed() then
@@ -951,7 +978,7 @@ var
   Msg: String;
 begin
   ShowIconInTaskbar(TAction(Sender).Checked);
-  Msg := 'To apply setting you should restart application.' + #13#10 + 'Restart now?';
+  Msg := 'To apply setting you should restart application.' + LineEnding + 'Restart now?';
   if MessageDlg(Msg, mtConfirmation, mbYesNo, -1) = mrYes then
     Restart();
 end;
@@ -964,6 +991,7 @@ end;
 
 procedure TfMain.ShowIconInTray(AVisible: Boolean);
 begin
+  actShowIconInTray.Checked := AVisible;
   Settings.ShowIconInTray := AVisible;
   TrayIcon.Visible := AVisible;
 end;
@@ -995,17 +1023,20 @@ var
   TimeZoneCorrectionStr, Msg: string;
 begin
   al.State := asSuspended;
-  TimeZoneCorrectionStr := IntToStr(Settings.TimeZoneCorrection);
-  if TfTimerDialog.Execute(Self, 'Time zone correction', cMsg, TimeZoneCorrectionStr, [pbOK, pbCancel]) = mrOK then
-  begin
-    if not TryStrToInt(TimeZoneCorrectionStr, Settings.TimeZoneCorrection) then
+  try
+    TimeZoneCorrectionStr := IntToStr(Settings.TimeZoneCorrection);
+    if TfTimerDialog.Execute(Self, 'Time zone correction', cMsg, TimeZoneCorrectionStr, [pbOK, pbCancel]) = mrOK then
     begin
-      Msg := 'You must type in time zone correction in hours (int value)';
-      if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
-        actSetTimeZoneCorrectionExecute(Sender);
+      if not TryStrToInt(TimeZoneCorrectionStr, Settings.TimeZoneCorrection) then
+      begin
+        Msg := 'You must type in time zone correction in hours (int value)';
+        if MessageDlg(Msg, mtWarning, [mbYes, mbCancel], -1) = mrYes then
+          actSetTimeZoneCorrectionExecute(Sender);
+      end;
     end;
+  finally
+    al.State := asNormal;
   end;
-  al.State := asNormal;
 end;
 
 procedure TfMain.FormMouseEnter(Sender: TObject);
@@ -1090,7 +1121,7 @@ var
   BaloonHint: string;
   LastEntry: TNightscoutEntry;
 begin
-  if not Settings.IsSnoozeAlarmsEndTimePassed() then
+  if IsMenuPopuped or  not Settings.IsSnoozeAlarmsEndTimePassed() then
     Exit;
 
   BaloonHint := '';
@@ -1098,19 +1129,22 @@ begin
   TrayIcon.BalloonTitle := 'Alarm!';
   if Settings.IsUrgentGlucoseLevelAlarmExists(LastEntry) then
   begin
-    BaloonHint := BaloonHint + 'Urgent dangerous glucose level is reached!' + #13#10;
+    BaloonHint := BaloonHint + 'Urgent dangerous glucose level is reached!' + LineEnding;
     TrayIcon.BalloonTitle := 'ALARM!!!';
   end
   else if Settings.IsGlucoseLevelAlarmExists(LastEntry) then
-    BaloonHint := BaloonHint + 'Dangerous glucose level is reached!' + #13#10;
+    BaloonHint := BaloonHint + 'Dangerous glucose level is reached!' + LineEnding;
 
   if Settings.IsUrgentStaleDataAlarmExists(LastEntry) then
   begin
-    BaloonHint := BaloonHint + 'Glucose data is very stale!' + #13#10;
+    BaloonHint := BaloonHint + 'Glucose data is very stale!' + LineEnding;
     TrayIcon.BalloonTitle := 'ALARM!!!';
   end
   else if Settings.IsStaleDataAlarmExists(LastEntry) then
-    BaloonHint := BaloonHint + 'Glucose data is stale!' + #13#10;
+    BaloonHint := BaloonHint + 'Glucose data is stale!' + LineEnding;
+
+  if BaloonHint = '' then
+    Exit;
 
   TrayIcon.BalloonHint := BaloonHint;
   TrayIcon.BalloonFlags := bfWarning;
@@ -1618,7 +1652,7 @@ begin
   begin
     cnv.Brush.Color := Color;
     SetBkMode(cnv.Handle, TRANSPARENT);
-    AText := 'Hours: ' + IntToStr(Settings.HoursToRecive);
+    AText := 'Hours: ' + IntToStr(Settings.HoursToReceive);
     SetMaximumDrawStageSizeToCanvas(dsHoursToReceiveData, AText);
     TextSize := cnv.TextExtent(AText);
     DrawStrokedText(AText, cSmallMargin, 0, cHoursToReceiveDataColor);
@@ -1877,7 +1911,7 @@ begin
   Lst := TStringList.Create();
   try
     Lst.Add(Format('Count of entries with glucose data: %d', [Entries.Count]));
-    Lst.Add(Format('Hours to recieve data: %d', [Settings.HoursToRecive]));
+    Lst.Add(Format('Hours to recieve data: %d', [Settings.HoursToReceive]));
     Lst.Add(Format('Glucose average: %s', [Entries.GetAvgGlucoseStr(Settings.IsMmolL)]));
     if Assigned(Entries.First) then
     begin

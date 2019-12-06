@@ -81,7 +81,7 @@ type
     EnableAudioAlarms: Boolean;
     FullScreen: Boolean;
     HighGlucoseAlarm: Integer;
-    HoursToRecive: Integer;
+    HoursToReceive: Integer;
     IsMmolL: Boolean;
     LastSnoozeTimePeriod: Integer;
     LowGlucoseAlarm: Integer;
@@ -185,7 +185,7 @@ procedure TSettings.Assign(Settings: TSettings);
 begin
   AlphaBlendValue := Settings.AlphaBlendValue;
   CheckInterval := Settings.CheckInterval;
-  HoursToRecive := Settings.HoursToRecive;
+  HoursToReceive := Settings.HoursToReceive;
   DrawStages := Settings.DrawStages;
   EnableGlucoseLevelAlarms := Settings.EnableGlucoseLevelAlarms;
   EnableStaleDataAlarms := Settings.EnableStaleDataAlarms;
@@ -219,7 +219,7 @@ begin
   Result.UrgentAlarmAudioFile := UrgentAlarmAudioFile;
   Result.AlphaBlendValue := AlphaBlendValue;
   Result.CheckInterval := CheckInterval;
-  Result.HoursToRecive := HoursToRecive;
+  Result.HoursToReceive := HoursToReceive;
   Result.DrawStages := DrawStages;
   Result.EnableGlucoseLevelAlarms := EnableGlucoseLevelAlarms;
   Result.EnableStaleDataAlarms := EnableStaleDataAlarms;
@@ -259,7 +259,7 @@ begin
   EnableAudioAlarms := False;
   FullScreen := False;
   HighGlucoseAlarm:= 9 * cMmolDenominator;
-  HoursToRecive := 24;
+  HoursToReceive := 24;
   IsMmolL := True;
   LastSnoozeTimePeriod := 600;
   LowGlucoseAlarm:= 4 * cMmolDenominator;
@@ -327,7 +327,7 @@ begin
   try
     ini.WriteBool   ('Main', 'IsMmolL',            IsMmolL);
     ini.WriteString ('Main', 'NightscoutUrl',      NightscoutUrl);
-    ini.WriteInteger('Main', 'HoursToRecive',      HoursToRecive);
+    ini.WriteInteger('Main', 'HoursToReceive',      HoursToReceive);
     ini.WriteInteger('Main', 'TimeZoneCorrection', TimeZoneCorrection);
     ini.WriteInteger('Main', 'CheckInterval',      CheckInterval);
 
@@ -402,7 +402,7 @@ begin
     NightscoutUrl      := ini.ReadString ('Main', 'NightscoutUrl',      NightscoutUrl);
     CheckInterval      := ini.ReadInteger('Main', 'CheckInterval',      CheckInterval);
     TimeZoneCorrection := ini.ReadInteger('Main', 'TimeZoneCorrection', TimeZoneCorrection);
-    HoursToRecive      := ini.ReadInteger('Main', 'HoursToRecive',      HoursToRecive);
+    HoursToReceive      := ini.ReadInteger('Main', 'HoursToReceive',      HoursToReceive);
 
     // Visual settings
     LoadDrawStageOption('dsLastGlucoseLevel',     dsLastGlucoseLevel);
@@ -471,7 +471,7 @@ var
   DateString: string;
   DateResult: TDateTime;
 begin
-  DateResult := Now() - HoursToRecive / HoursPerDay;
+  DateResult := Now() - HoursToReceive / HoursPerDay;
   DateString :=
     FormatDateTime('yyyy-mm-dd', DateResult) + 'T' +
     FormatDateTime('hh:nn:ss', DateResult);
