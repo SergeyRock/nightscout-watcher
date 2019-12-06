@@ -129,3 +129,5 @@ It is written on [Lazarus](https://en.wikipedia.org/wiki/Lazarus_(IDE)) and can 
 ![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/gallery/11.08-27709.jpg)
 ![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/gallery/11.09-20531.jpg)
 ![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/gallery/11.09-20629.jpg)
+
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/Main.Menu.jpg)
