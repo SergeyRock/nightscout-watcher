@@ -1179,7 +1179,7 @@ var
   IsFileDownloaded: Boolean;
 begin
   Result := False;
-  FileName := './entries.tsv';
+  FileName := TSettings.GetEntriesFileName;
   Entries.Clear;
   if not DebugMode then
   begin

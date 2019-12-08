@@ -70,6 +70,7 @@ type
   TSettings = class
   private
     function GetEntryMinsWithTimeZoneCorrection(DateFirst, DateLast: TDateTime): Integer;
+    class function GetOptionDir(): string;
   public
     AlphaBlendValue: Integer;
     AlarmAudioFile: string;
@@ -102,6 +103,7 @@ type
     WallpaperFileName: string;
     WindowRect: TRect;
     class function GetOptionFileName(): string;
+    class function GetEntriesFileName(): string;
     class function IsPortable(): Boolean;
     constructor Create();
     function Clone(): TSettings;
@@ -511,33 +513,44 @@ begin
   Result := FileExists('Portable.lock');
 end;
 
-// Search Option.ini in the next order:
+class function TSettings.GetOptionFileName(): string;
+const
+  cOptionFileName = 'Options.ini';
+begin
+  Result := IncludeTrailingBackslash(GetOptionDir) + cOptionFileName;
+end;
+
+class function TSettings.GetEntriesFileName(): string;
+const
+  cEntriesFileName = 'entries.tsv';
+begin
+  Result := IncludeTrailingBackslash(GetOptionDir) + cEntriesFileName;
+end;
+
+// Search Option dir in the next order:
 // 1) \Users\<user>\AppData\Local\Nightscout Watcher\
 // 2) \ProgramData\Nightscout Watcher\
 // 3) \<current app dir>\
 // The first one is default
-
-class function TSettings.GetOptionFileName(): string;
-const
-  cOptionFileName = 'Options.ini';
+class function TSettings.GetOptionDir(): string;
 var
-  UserLocalAppDataFile, ProgramDataFile, AppDirFile: String;
+  UserLocalAppDataDir, ProgramDataDir, AppDir: String;
 begin
-  UserLocalAppDataFile := GetAppConfigDir(False) + cOptionFileName;
-  ProgramDataFile := GetAppConfigDir(True) + cOptionFileName;
-  AppDirFile := ExtractFilePath(ParamStr(0)) + cOptionFileName;
+  UserLocalAppDataDir := ExcludeTrailingBackslash(GetAppConfigDir(False));
+  ProgramDataDir := ExcludeTrailingBackslash(GetAppConfigDir(True));
+  AppDir := ExcludeTrailingBackslash(ExtractFilePath(ParamStr(0)));
 
   if IsPortable() then
   begin
-    Result := AppDirFile;
+    Result := AppDir;
     Exit;
   end;
 
-  Result := UserLocalAppDataFile;
-  if FileExists(ProgramDataFile) then
-    Result := ProgramDataFile
-  else if FileExists(AppDirFile) then
-    Result := AppDirFile;
+  Result := UserLocalAppDataDir;
+  if DirectoryExists(ProgramDataDir) then
+    Result := ProgramDataDir
+  else if DirectoryExists(AppDir) then
+    Result := AppDir;
 end;
 
 function TSettings.GetGlucoseLevelDateText(DateFirst, DateLast: TDateTime; out OutColor: TColor): string;
