@@ -1,0 +1,59 @@
+object fTimerDialog: TfTimerDialog
+  Left = 806
+  Height = 135
+  Top = 264
+  Width = 525
+  BorderStyle = bsDialog
+  Caption = 'fTimerDialog'
+  ClientHeight = 135
+  ClientWidth = 525
+  Constraints.MinHeight = 130
+  Constraints.MinWidth = 400
+  OnCreate = FormCreate
+  Position = poScreenCenter
+  ShowHint = True
+  LCLVersion = '2.0.6.0'
+  object eInputText: TEdit
+    Left = 16
+    Height = 21
+    Top = 44
+    Width = 495
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 0
+  end
+  object pb: TButtonPanel
+    Left = 6
+    Height = 34
+    Top = 95
+    Width = 513
+    OKButton.Name = 'OKButton'
+    OKButton.DefaultCaption = True
+    OKButton.OnClick = OKButtonClick
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CloseButton.OnClick = CloseButtonClick
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
+    CancelButton.OnClick = CancelButtonClick
+    TabOrder = 1
+  end
+  object lblDescription: TLabel
+    Left = 16
+    Height = 67
+    Top = 13
+    Width = 495
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = False
+    Caption = 'lblDescription'
+    ParentColor = False
+    WordWrap = True
+  end
+  object tmr: TTimer
+    Enabled = False
+    OnTimer = tmrTimer
+    left = 432
+    top = 24
+  end
+end

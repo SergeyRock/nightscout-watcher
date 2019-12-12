@@ -1175,7 +1175,7 @@ end;
 
 function TfMain.LoadEntriesData: Boolean;
 var
-  FileName, Msg, DummyText: string;
+  FileName, Msg, DummyText, Url: string;
   IsFileDownloaded: Boolean;
 begin
   Result := False;
@@ -1183,8 +1183,9 @@ begin
   Entries.Clear;
   if not DebugMode then
   begin
-    DeleteUrlCacheEntry(PAnsiChar(Settings.GetEntriesUrlByHours()));
-    IsFileDownloaded := URLDownloadToFile(nil, PAnsiChar(Settings.GetEntriesUrlByHours()), PAnsiChar(FileName), 0, nil) = S_OK;
+    Url := Settings.GetEntriesUrlByHours();
+    DeleteUrlCacheEntry(PAnsiChar(Url));
+    IsFileDownloaded := URLDownloadToFile(nil, PAnsiChar(Url), PAnsiChar(FileName), 0, nil) = S_OK;
 
     if not IsFileDownloaded then
     begin

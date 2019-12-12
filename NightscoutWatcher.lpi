@@ -25,8 +25,8 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="2"/>
       <MinorVersionNr Value="11"/>
-      <RevisionNr Value="2"/>
-      <BuildNr Value="122"/>
+      <RevisionNr Value="3"/>
+      <BuildNr Value="125"/>
       <StringTable CompanyName="Sergey Oleynikov" LegalCopyright="Sergey Oleynikov" ProductName="Nightscout Watcher"/>
     </VersionInfo>
     <BuildModes Count="3">
@@ -38,7 +38,6 @@
           <SearchPaths>
             <IncludeFiles Value="Forms;Units;$(ProjOutDir)"/>
             <OtherUnitFiles Value="Forms;Units"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -80,7 +79,7 @@
           <SearchPaths>
             <IncludeFiles Value="Forms;Units;$(ProjOutDir)"/>
             <OtherUnitFiles Value="Forms;Units"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+            <UnitOutputDirectory Value="r:\Дом\Здоровье\NightscoutWatcher"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>

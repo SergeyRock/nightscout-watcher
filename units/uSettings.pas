@@ -280,7 +280,7 @@ begin
   UrgentLowGlucoseAlarm := Round(3.3 * cMmolDenominator);
   UrgentStaleDataAlarm := 40;
   WallpaperFileName := '';
-  WindowRect := Rect(Screen.Width div 2, Screen.Height div 2, Screen.Width - 100, Screen.Height - 100);
+  WindowRect := Types.Rect(Screen.Width div 2, Screen.Height div 2, Screen.Width - 100, Screen.Height - 100);
 end;
 
 function TSettings.GetColorByGlucoseLevel(Glucose: Integer): TColor;
@@ -524,7 +524,7 @@ class function TSettings.GetEntriesFileName(): string;
 const
   cEntriesFileName = 'entries.tsv';
 begin
-  Result := IncludeTrailingBackslash(GetOptionDir) + cEntriesFileName;
+  Result := IncludeTrailingBackslash(SysUtils.GetTempDir) + cEntriesFileName;
 end;
 
 // Search Option dir in the next order:
