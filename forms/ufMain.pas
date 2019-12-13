@@ -252,11 +252,6 @@ type
 
 var
   fMain: TfMain;
-  {$IFDEF DEBUG}
-  DebugMode: Boolean = True; // Set to True to read data from file entries.tsv
-  {$ELSE}
-  DebugMode: Boolean = False;
-  {$ENDIF}
 
 const
   cSnoozeAlarmsResetTag = 0;
