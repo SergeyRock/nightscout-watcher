@@ -457,7 +457,7 @@ object fMain: TfMain
     object actVisitNightscoutSite: TAction
       Category = 'Other'
       Caption = 'Visit Nightscout site'
-      ImageIndex = 19
+      ImageIndex = 24
       OnExecute = actVisitNightscoutSiteExecute
       ShortCut = 86
     end
