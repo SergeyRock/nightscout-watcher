@@ -24,9 +24,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="2"/>
-      <MinorVersionNr Value="11"/>
-      <RevisionNr Value="2"/>
-      <BuildNr Value="122"/>
+      <MinorVersionNr Value="14"/>
+      <BuildNr Value="124"/>
       <StringTable CompanyName="Sergey Oleynikov" LegalCopyright="Sergey Oleynikov" ProductName="Nightscout Watcher"/>
     </VersionInfo>
     <BuildModes Count="3">
@@ -119,10 +118,13 @@
       <FormatVersion Value="2"/>
       <Modes Count="0"/>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="TurboPowerIPro"/>
       </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
     </RequiredPackages>
     <Units Count="6">
       <Unit0>

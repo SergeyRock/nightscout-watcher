@@ -103,7 +103,6 @@ type
     WallpaperFileName: string;
     WindowRect: TRect;
     class function GetOptionFileName(): string;
-    class function GetEntriesFileName(): string;
     class function IsPortable(): Boolean;
     constructor Create();
     function Clone(): TSettings;
@@ -366,16 +365,17 @@ begin
     ini.WriteBool   ('Visual', 'ShowIconInTaskBar', ShowIconInTaskBar);
     ini.WriteBool   ('Visual', 'ShowIconInTray',    ShowIconInTray);
 
-    ini.WriteInteger('Alarms', 'HighGlucoseAlarm',         HighGlucoseAlarm);
-    ini.WriteInteger('Alarms', 'LowGlucoseAlarm',          LowGlucoseAlarm);
-    ini.WriteInteger('Alarms', 'UrgentHighGlucoseAlarm',   UrgentHighGlucoseAlarm);
-    ini.WriteInteger('Alarms', 'UrgentLowGlucoseAlarm',    UrgentLowGlucoseAlarm);
-    ini.WriteInteger('Alarms', 'StaleDataAlarm',           StaleDataAlarm);
-    ini.WriteInteger('Alarms', 'UrgentStaleDataAlarm',     UrgentStaleDataAlarm);
-    ini.WriteBool   ('Alarms', 'EnableGlucoseLevelAlarms', EnableGlucoseLevelAlarms);
-    ini.WriteBool   ('Alarms', 'EnableStaleDataAlarms',    EnableStaleDataAlarms);
-    ini.WriteBool   ('Alarms', 'EnableAudioAlarms',        EnableAudioAlarms);
-    ini.WriteInteger('Alarms', 'LastSnoozeTime',           LastSnoozeTimePeriod);
+    ini.WriteInteger ('Alarms', 'HighGlucoseAlarm',         HighGlucoseAlarm);
+    ini.WriteInteger ('Alarms', 'LowGlucoseAlarm',          LowGlucoseAlarm);
+    ini.WriteInteger ('Alarms', 'UrgentHighGlucoseAlarm',   UrgentHighGlucoseAlarm);
+    ini.WriteInteger ('Alarms', 'UrgentLowGlucoseAlarm',    UrgentLowGlucoseAlarm);
+    ini.WriteInteger ('Alarms', 'StaleDataAlarm',           StaleDataAlarm);
+    ini.WriteInteger ('Alarms', 'UrgentStaleDataAlarm',     UrgentStaleDataAlarm);
+    ini.WriteBool    ('Alarms', 'EnableGlucoseLevelAlarms', EnableGlucoseLevelAlarms);
+    ini.WriteBool    ('Alarms', 'EnableStaleDataAlarms',    EnableStaleDataAlarms);
+    ini.WriteBool    ('Alarms', 'EnableAudioAlarms',        EnableAudioAlarms);
+    ini.WriteInteger ('Alarms', 'LastSnoozeTime',           LastSnoozeTimePeriod);
+    ini.WriteDateTime('Alarms', 'SnoozeAlarmsEndTime',      SnoozeAlarmsEndTime);
   finally
     ini.Free;
   end;
@@ -404,7 +404,7 @@ begin
     NightscoutUrl      := ini.ReadString ('Main', 'NightscoutUrl',      NightscoutUrl);
     CheckInterval      := ini.ReadInteger('Main', 'CheckInterval',      CheckInterval);
     TimeZoneCorrection := ini.ReadInteger('Main', 'TimeZoneCorrection', TimeZoneCorrection);
-    HoursToReceive      := ini.ReadInteger('Main', 'HoursToReceive',      HoursToReceive);
+    HoursToReceive     := ini.ReadInteger('Main', 'HoursToReceive',     HoursToReceive);
 
     // Visual settings
     LoadDrawStageOption('dsLastGlucoseLevel',     dsLastGlucoseLevel);
@@ -438,16 +438,17 @@ begin
     ScaleIndex        := ini.ReadInteger('Visual', 'ScaleIndex',        ScaleIndex);
 
     // Alarm settings
-    EnableGlucoseLevelAlarms := ini.ReadBool   ('Alarms', 'EnableGlucoseLevelAlarms', EnableGlucoseLevelAlarms);
-    EnableStaleDataAlarms    := ini.ReadBool   ('Alarms', 'EnableStaleDataAlarms',    EnableStaleDataAlarms);
-    EnableAudioAlarms        := ini.ReadBool   ('Alarms', 'EnableAudioAlarms',         EnableAudioAlarms);
-    HighGlucoseAlarm         := ini.ReadInteger('Alarms', 'HighGlucoseAlarm',         HighGlucoseAlarm);
-    LowGlucoseAlarm          := ini.ReadInteger('Alarms', 'LowGlucoseAlarm',          LowGlucoseAlarm);
-    UrgentHighGlucoseAlarm   := ini.ReadInteger('Alarms', 'UrgentHighGlucoseAlarm',   UrgentHighGlucoseAlarm);
-    UrgentLowGlucoseAlarm    := ini.ReadInteger('Alarms', 'UrgentLowGlucoseAlarm',    UrgentLowGlucoseAlarm);
-    StaleDataAlarm           := ini.ReadInteger('Alarms', 'StaleDataAlarm',           StaleDataAlarm);
-    UrgentStaleDataAlarm     := ini.ReadInteger('Alarms', 'UrgentStaleDataAlarm',     UrgentStaleDataAlarm);
-    LastSnoozeTimePeriod     := ini.ReadInteger('Alarms', 'LastSnoozeTime',           LastSnoozeTimePeriod);
+    EnableGlucoseLevelAlarms := ini.ReadBool    ('Alarms', 'EnableGlucoseLevelAlarms', EnableGlucoseLevelAlarms);
+    EnableStaleDataAlarms    := ini.ReadBool    ('Alarms', 'EnableStaleDataAlarms',    EnableStaleDataAlarms);
+    EnableAudioAlarms        := ini.ReadBool    ('Alarms', 'EnableAudioAlarms',        EnableAudioAlarms);
+    HighGlucoseAlarm         := ini.ReadInteger ('Alarms', 'HighGlucoseAlarm',         HighGlucoseAlarm);
+    LowGlucoseAlarm          := ini.ReadInteger ('Alarms', 'LowGlucoseAlarm',          LowGlucoseAlarm);
+    UrgentHighGlucoseAlarm   := ini.ReadInteger ('Alarms', 'UrgentHighGlucoseAlarm',   UrgentHighGlucoseAlarm);
+    UrgentLowGlucoseAlarm    := ini.ReadInteger ('Alarms', 'UrgentLowGlucoseAlarm',    UrgentLowGlucoseAlarm);
+    StaleDataAlarm           := ini.ReadInteger ('Alarms', 'StaleDataAlarm',           StaleDataAlarm);
+    UrgentStaleDataAlarm     := ini.ReadInteger ('Alarms', 'UrgentStaleDataAlarm',     UrgentStaleDataAlarm);
+    LastSnoozeTimePeriod     := ini.ReadInteger ('Alarms', 'LastSnoozeTime',           LastSnoozeTimePeriod);
+    SnoozeAlarmsEndTime      := ini.ReadDateTime('Alarms', 'SnoozeAlarmsEndTime',      SnoozeAlarmsEndTime);
   finally
     ini.Free;
   end;
@@ -472,12 +473,14 @@ function TSettings.GetEntriesUrlByHours: string;
 var
   DateString: string;
   DateResult: TDateTime;
+  CacheResetParam: Int64;
 begin
   DateResult := Now() - HoursToReceive / HoursPerDay;
   DateString :=
     FormatDateTime('yyyy-mm-dd', DateResult) + 'T' +
     FormatDateTime('hh:nn:ss', DateResult);
-  Result := Format('%s/api/v1/entries/sgv?count=3000&find[dateString][$gte]=%s', [NightscoutUrl, DateString]);
+  CacheResetParam := Random(MaxInt);
+  Result := Format('%s/api/v1/entries/sgv?count=3000&find[dateString][$gte]=%s&rnd=%d', [NightscoutUrl, DateString, CacheResetParam]);
 end;
 
 function TSettings.IsSnoozeAlarmsEndTimePassed(): Boolean;
@@ -520,18 +523,12 @@ begin
   Result := IncludeTrailingBackslash(GetOptionDir) + cOptionFileName;
 end;
 
-class function TSettings.GetEntriesFileName(): string;
-const
-  cEntriesFileName = 'entries.tsv';
-begin
-  Result := IncludeTrailingBackslash(GetOptionDir) + cEntriesFileName;
-end;
-
 // Search Option dir in the next order:
 // 1) \Users\<user>\AppData\Local\Nightscout Watcher\
 // 2) \ProgramData\Nightscout Watcher\
 // 3) \<current app dir>\
 // The first one is default
+// If Portable turned ON then always 3)
 class function TSettings.GetOptionDir(): string;
 var
   UserLocalAppDataDir, ProgramDataDir, AppDir: String;

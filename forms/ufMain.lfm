@@ -317,8 +317,8 @@ object fMain: TfMain
       Action = actShowWindowBorder
       AutoCheck = True
     end
-    object miShowIconOnTaskbar: TMenuItem
-      Action = actShowIconOnTaskbar
+    object miShowIconInTaskbar: TMenuItem
+      Action = actShowIconInTaskbar
       AutoCheck = True
     end
     object miShowIconInTray: TMenuItem
@@ -610,12 +610,12 @@ object fMain: TfMain
       ImageIndex = 11
       OnExecute = DoSnoozeAlarmsExecute
     end
-    object actShowIconOnTaskbar: TAction
+    object actShowIconInTaskbar: TAction
       Category = 'Show options'
       AutoCheck = True
-      Caption = 'Show icon on Taskbar'
+      Caption = 'Show icon in Taskbar'
       Checked = True
-      OnExecute = actShowIconOnTaskbarExecute
+      OnExecute = actShowIconInTaskbarExecute
       ShortCut = 82
     end
     object actShowIconInTray: TAction
@@ -660,7 +660,7 @@ object fMain: TfMain
     end
     object actSetTimeZoneCorrection: TAction
       Category = 'Other'
-      Caption = 'Set TimeZone correction'
+      Caption = 'Set time zone correction'
       OnExecute = actSetTimeZoneCorrectionExecute
     end
   end

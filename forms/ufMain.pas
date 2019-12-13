@@ -39,7 +39,7 @@ type
     actSetTimeZoneCorrection: TAction;
     actSnoozeAlarmsCustom: TAction;
     actShowIconInTray: TAction;
-    actShowIconOnTaskbar: TAction;
+    actShowIconInTaskbar: TAction;
     actSnoozeAlarmsReset: TAction;
     actSnoozeAlarms120mins: TAction;
     actSnoozeAlarms90mins: TAction;
@@ -57,7 +57,7 @@ type
     miDiagram: TMenuItem;
     miSnoozeAlarmsCustom: TMenuItem;
     miShowIconInTray: TMenuItem;
-    miShowIconOnTaskbar: TMenuItem;
+    miShowIconInTaskbar: TMenuItem;
     miSnoozeAlarmsSeparator: TMenuItem;
     miSnoozeAlarmsReset: TMenuItem;
     miSnoozeAlarms120mins: TMenuItem;
@@ -153,7 +153,7 @@ type
     procedure actEnableStaleDataAlarmsExecute(Sender: TObject);
     procedure actSetTimeZoneCorrectionExecute(Sender: TObject);
     procedure actShowIconInTrayExecute(Sender: TObject);
-    procedure actShowIconOnTaskbarExecute(Sender: TObject);
+    procedure actShowIconInTaskbarExecute(Sender: TObject);
     procedure alUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure DoSnoozeAlarmsExecute(Sender: TObject);
     procedure actStayOnTopExecute(Sender: TObject);
@@ -264,8 +264,8 @@ const
 implementation
 
 uses
-  ufSettings, ufTimerDialog, UrlMon, Wininet, Math, StrUtils, Types, graphtype,
-  intfgraphics, fpimage, process, ButtonPanel
+  ufSettings, ufTimerDialog, Math, StrUtils, Types, graphtype,
+  intfgraphics, fpimage, process, ButtonPanel, fphttpclient, fpopenssl, openssl
   {$IFDEF WINDOWS}
   , mmsystem
   {$ENDIF}
@@ -646,8 +646,8 @@ begin
   finally
     if OldShowIconInTaskbar <> Settings.ShowIconInTaskBar  then
     begin
-      actShowIconOnTaskbar.Checked := Settings.ShowIconInTaskBar;
-      actShowIconOnTaskbarExecute(actShowIconOnTaskbar);
+      actShowIconInTaskbar.Checked := Settings.ShowIconInTaskBar;
+      actShowIconInTaskbarExecute(actShowIconInTaskbar);
     end;
     ShowWindowBorder(Settings.ShowWindowBorder);
     SetSystemStayOnTop(Settings.StayOnTop);
@@ -708,7 +708,7 @@ var
   EXStyle: Int64;
 begin
   Settings.ShowIconInTaskBar := AVisible;
-  actShowIconOnTaskbar.Checked := AVisible;
+  actShowIconInTaskbar.Checked := AVisible;
 
   if not AVisible then
   begin
@@ -905,8 +905,13 @@ var
 begin
   IsMenuPopuped := True;
 
+  // Show time zone correction value
+  miSetTimeZoneCorrection.Caption := actSetTimeZoneCorrection.Caption;
+  if Settings.TimeZoneCorrection <> 0 then
+    miSetTimeZoneCorrection.Caption := Format('%s (%d h.)', [miSetTimeZoneCorrection.Caption, Settings.TimeZoneCorrection]);
+
   // Update hours to receive item
-  miSetHoursToReceive.Caption := Format('Set hours to receive data (%d h)', [Settings.HoursToReceive] );
+  miSetHoursToReceive.Caption := Format('Set hours to receive data (%d h.)', [Settings.HoursToReceive] );
 
   // Check interval item
   miSetCheckInterval.Caption := Format('Set time interval to check new data (%d secs)', [Settings.CheckInterval]);
@@ -973,7 +978,7 @@ begin
   SnoozeAlarms(Seconds);
 end;
 
-procedure TfMain.actShowIconOnTaskbarExecute(Sender: TObject);
+procedure TfMain.actShowIconInTaskbarExecute(Sender: TObject);
 var
   Msg: String;
 begin
@@ -1174,44 +1179,30 @@ begin
 end;
 
 function TfMain.LoadEntriesData: Boolean;
-var
-  FileName, Msg, DummyText: string;
-  IsFileDownloaded: Boolean;
-begin
-  Result := False;
-  FileName := TSettings.GetEntriesFileName;
-  Entries.Clear;
-  if not DebugMode then
-  begin
-    DeleteUrlCacheEntry(PAnsiChar(Settings.GetEntriesUrlByHours()));
-    IsFileDownloaded := URLDownloadToFile(nil, PAnsiChar(Settings.GetEntriesUrlByHours()), PAnsiChar(FileName), 0, nil) = S_OK;
 
-    if not IsFileDownloaded then
-    begin
-      Msg := 'File downloading is failed. URL: ' + Settings.GetEntriesUrlByHours();
-      TfTimerDialog.Execute(Self, 'Connection fail', Msg, DummyText, [pbOK], 20, True);
-      Exit;
-    end
-    else if not FileExists(FileName) then
-    begin
-      Msg := 'No data to download';
-      TfTimerDialog.Execute(Self, 'No data', Msg, DummyText, [pbOK], 20, True);
-      Exit;
-    end;
+  function LoadEntriesFromNightscoutSite(): string;
+  var
+    Url: string;
+  begin
+    Url := Settings.GetEntriesUrlByHours();
+    Result := TFPHttpClient.SimpleGet(Url);
   end;
 
-  if not FileExists(FileName) then
+var
+  EntriesData, Msg, DummyText: string;
+begin
+  Result := False;
+  Entries.Clear;
+  EntriesData := LoadEntriesFromNightscoutSite();
+
+  if EntriesData = '' then
   begin
-    Msg := 'File with entries doesn`t exist: ' + FileName;
-    TfTimerDialog.Execute(Self, 'File error', Msg, DummyText, [pbOK], 20, True);
+    Msg := 'No data to download by URL: ' + Settings.GetEntriesUrlByHours();
+    TfTimerDialog.Execute(Self, 'No data', Msg, DummyText, [pbOK], 20, True);
     Exit;
   end;
 
-  if Entries.LoadFromFile(FileName) then
-    if not DebugMode then
-      DeleteFile(FileName);
-
-  if Entries.Count = 0 then
+  if not Entries.LoadFromString(EntriesData) or (Entries.Count = 0) then
   begin
     Msg := 'No entries were downloaded. URL: ' + Settings.GetEntriesUrlByHours();
     TfTimerDialog.Execute(Self, 'File error', Msg, DummyText, [pbOK], 20, True);

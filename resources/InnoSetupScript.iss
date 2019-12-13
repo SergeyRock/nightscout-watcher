@@ -1,6 +1,6 @@
 ; -- Installation script --
 
-#define MyAppVersion "2.11.2"
+#define MyAppVersion "2.14.0"
 
 #define MyInstallerName "NightscoutWatcher" 
 #define MyAppExeName "NightscoutWatcher.exe" 

@@ -29,7 +29,7 @@ type
     cbEnableGlucoseLevelAlarms: TCheckBox;
     cbEnableStaleDataAlarms: TCheckBox;
     cbDrawWallpaper: TCheckBox;
-    cbShowIconOnTaskbar: TCheckBox;
+    cbShowIconInTaskbar: TCheckBox;
     eWallpaper: TEdit;
     gbGlucoseLevelAlarms: TGroupBox;
     Image1: TImage;
@@ -221,7 +221,7 @@ begin
   cbDrawGlucoseLevelDelta.OnClick := DoChange;
   cbDrawGlucoseAvg.OnClick := DoChange;
   cbDrawWallpaper.OnClick := DoChange;
-  cbShowIconOnTaskbar.OnClick := DoChange;
+  cbShowIconInTaskbar.OnClick := DoChange;
   cbShowIconInTray.OnClick := DoChange;
   cbDrawHoursToReceiveData.OnClick := DoChange;
 end;
@@ -318,7 +318,7 @@ begin
   cbShowCheckNewDataProgressBar.Checked := NewSettings.ShowCheckNewDataProgressBar;
   cbShowWindowBorder.Checked     := NewSettings.ShowWindowBorder;
   cbStayOnTop.Checked            := NewSettings.StayOnTop;
-  cbShowIconOnTaskbar.Checked    := NewSettings.ShowIconInTaskBar;
+  cbShowIconInTaskbar.Checked    := NewSettings.ShowIconInTaskBar;
   cbShowIconInTray.Checked       := NewSettings.ShowIconInTray;
   sbAlphaBlend.Position          := NewSettings.AlphaBlendValue;
   sbScale.Max                    := Length(cDrawStageSizes[1]);
@@ -377,7 +377,7 @@ begin
   NewSettings.ShowCheckNewDataProgressBar := cbShowCheckNewDataProgressBar.Checked;
   NewSettings.ShowWindowBorder            := cbShowWindowBorder.Checked;
   NewSettings.StayOnTop                   := cbStayOnTop.Checked;
-  NewSettings.ShowIconInTaskBar           := cbShowIconOnTaskbar.Checked;
+  NewSettings.ShowIconInTaskBar           := cbShowIconInTaskbar.Checked;
   NewSettings.ShowIconInTray              := cbShowIconInTray.Checked;
   NewSettings.NightscoutUrl               := eNightscoutSite.Text;
 

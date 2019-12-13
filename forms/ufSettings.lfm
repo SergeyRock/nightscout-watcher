@@ -44,10 +44,10 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 600
-    ActivePage = tsHelp
+    ActivePage = tsVisual
     Align = alTop
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 4
+    TabIndex = 1
     TabOrder = 2
     OnChange = pcChange
     object tsMain: TTabSheet
@@ -448,8 +448,8 @@ object fSettings: TfSettings
         Left = 277
         Height = 23
         Top = 88
-        Width = 278
-        Caption = 'Show icon on Taskbar (need restart)'
+        Width = 273
+        Caption = 'Show icon in Taskbar (need restart)'
         Font.Color = clWindowText
         Font.Height = -16
         Font.Name = 'Tahoma'
