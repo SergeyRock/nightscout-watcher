@@ -1,7 +1,7 @@
 object fSettings: TfSettings
-  Left = 1997
+  Left = 1155
   Height = 500
-  Top = 312
+  Top = 179
   Width = 600
   Caption = 'Settings'
   ClientHeight = 500
@@ -16,7 +16,7 @@ object fSettings: TfSettings
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   Position = poScreenCenter
-  LCLVersion = '2.0.6.0'
+  LCLVersion = '2.2.6.0'
   object btnOK: TButton
     Left = 120
     Height = 36
@@ -44,10 +44,10 @@ object fSettings: TfSettings
     Height = 432
     Top = 0
     Width = 600
-    ActivePage = tsVisual
+    ActivePage = tsMain
     Align = alTop
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 2
     OnChange = pcChange
     object tsMain: TTabSheet
@@ -57,7 +57,7 @@ object fSettings: TfSettings
       object lblCheckInterval: TLabel
         Left = 13
         Height = 19
-        Top = 133
+        Top = 198
         Width = 178
         AutoSize = False
         Caption = 'Check interval in seconds'
@@ -71,7 +71,7 @@ object fSettings: TfSettings
       object lblHoursToReceive: TLabel
         Left = 13
         Height = 19
-        Top = 174
+        Top = 239
         Width = 186
         AutoSize = False
         Caption = 'Hours to receive data'
@@ -97,7 +97,7 @@ object fSettings: TfSettings
       object lblTimeZoneCorrection: TLabel
         Left = 13
         Height = 35
-        Top = 212
+        Top = 277
         Width = 157
         AutoSize = False
         Caption = 'Time-zone correction in hours'
@@ -111,7 +111,7 @@ object fSettings: TfSettings
       object cbIsMmolL: TCheckBox
         Left = 13
         Height = 23
-        Top = 88
+        Top = 153
         Width = 233
         Caption = 'Set unit of measure to mmol/l'
         Font.Color = clWindowText
@@ -123,7 +123,7 @@ object fSettings: TfSettings
       object seCheckInterval: TSpinEdit
         Left = 224
         Height = 27
-        Top = 128
+        Top = 193
         Width = 60
         Font.Color = clWindowText
         Font.Height = -16
@@ -137,7 +137,7 @@ object fSettings: TfSettings
       object seHoursToReceive: TSpinEdit
         Left = 224
         Height = 27
-        Top = 170
+        Top = 235
         Width = 60
         Font.Color = clWindowText
         Font.Height = -16
@@ -163,7 +163,7 @@ object fSettings: TfSettings
       object seTimeZoneCorrection: TSpinEdit
         Left = 224
         Height = 27
-        Top = 213
+        Top = 278
         Width = 60
         Font.Color = clWindowText
         Font.Height = -16
@@ -173,6 +173,30 @@ object fSettings: TfSettings
         ParentFont = False
         TabOrder = 4
         Value = 3
+      end
+      object lblNightscoutToken: TLabel
+        Left = 13
+        Height = 19
+        Top = 79
+        Width = 119
+        Caption = 'Nightscout token'
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        ParentColor = False
+        ParentFont = False
+      end
+      object eNightscoutToken: TEdit
+        Left = 13
+        Height = 27
+        Top = 102
+        Width = 566
+        Anchors = [akTop, akLeft, akRight]
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        ParentFont = False
+        TabOrder = 5
       end
     end
     object tsVisual: TTabSheet
@@ -444,7 +468,7 @@ object fSettings: TfSettings
         ParentFont = False
         TabOrder = 13
       end
-      object cbShowIconOnTaskbar: TCheckBox
+      object cbShowIconInTaskbar: TCheckBox
         Left = 277
         Height = 23
         Top = 88
@@ -2039,7 +2063,7 @@ object fSettings: TfSettings
   object odWallpaper: TOpenDialog
     Filter = '*.jp*g|*.jp*g'
     Options = [ofFileMustExist, ofEnableSizing, ofViewDetail, ofAutoPreview]
-    left = 528
-    top = 40
+    Left = 528
+    Top = 40
   end
 end

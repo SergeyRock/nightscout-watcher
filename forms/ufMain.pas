@@ -231,7 +231,7 @@ type
     procedure DrawTextInCenter(const AText: string);
     procedure DoDraw(Sender: TObject);
     procedure DoUpdateCallerFormWithSettings;
-    function SetNightscoutUrl(Url: string): Boolean;
+    function SetNightscoutUrl(Url: string; Token: string): Boolean;
     function SetCheckIntervalByString(Value: string): Boolean;
     function SetMaximumDrawStageSizeToCanvas(DrawStage: TDrawStage; const AText: string): Byte;
     procedure SetAlphaBlendValue(Value: Integer);
@@ -259,7 +259,7 @@ const
 implementation
 
 uses
-  ufSettings, ufTimerDialog, Math, StrUtils, Types, graphtype,
+  ufNightscoutSite, ufSettings, ufTimerDialog, Math, StrUtils, Types, graphtype,
   intfgraphics, fpimage, process, ButtonPanel, fphttpclient, fpopenssl, openssl
   {$IFDEF WINDOWS}
   , mmsystem
@@ -582,7 +582,7 @@ end;
 
 procedure TfMain.actSetNightscoutSiteExecute(Sender: TObject);
 var
-  Url, Msg: string;
+  NightscoutUrl, NightscoutToken, Msg: string;
   DialogResult: TModalResult;
   WasConnected: Boolean;
   TimerIntervalSecs: Integer;
@@ -591,16 +591,13 @@ begin
   try
     WasConnected := Connected;
     Connected := False;
-    Url := Settings.NightscoutUrl;
-    TimerIntervalSecs := -1;
-    if WasConnected then
-      TimerIntervalSecs := 20;
-    Msg := 'Type in URL of Nightscout site.' + LineEnding +
-      'If an error occurs try to change protocol to HTTP instead of HTTPS in URL.';
-    DialogResult := TfTimerDialog.Execute(Self, 'Nighscout site', Msg, Url, [pbOK, pbCancel], TimerIntervalSecs);
+    NightscoutUrl := Settings.NightscoutUrl;
+    NightscoutToken := Settings.NightscoutToken;
+
+    DialogResult := TfNightscoutSite.Execute(Self, NightscoutUrl, NightscoutToken);
     if DialogResult = mrOK then
     begin
-      if (Url <> '') and (SetNightscoutUrl(Url)) then
+      if SetNightscoutUrl(NightscoutUrl, NightscoutToken) then
         tmrTimer(tmr)
       else
       begin
@@ -1180,6 +1177,7 @@ function TfMain.LoadEntriesData: Boolean;
     Url: string;
   begin
     Url := Settings.GetEntriesUrlByHours();
+
     Result := TFPHttpClient.SimpleGet(Url);
   end;
 
@@ -1285,13 +1283,14 @@ begin
   OnResize := FormResize;
 end;
 
-function TfMain.SetNightscoutUrl(Url: string): Boolean;
+function TfMain.SetNightscoutUrl(Url: string; Token: string): Boolean;
 begin
   Result := False;
   if Trim(Url) = '' then
     Exit;
 
-  Settings.NightscoutUrl := ExcludeTrailingBackslash(Url);
+  Settings.NightscoutUrl := ExcludeTrailingBackslash(Trim(Url));
+  Settings.NightscoutToken := ExcludeTrailingBackslash(Trim(Token));
   Result := True;
 end;
 

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="11"/>
+    <Version Value="12"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <MainUnitHasScaledStatement Value="False"/>
+        <CompatibilityMode Value="True"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <MainUnit Value="0"/>
       <Title Value="Nightscout Watcher"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
@@ -25,7 +25,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="2"/>
       <MinorVersionNr Value="14"/>
-      <BuildNr Value="126"/>
+      <BuildNr Value="135"/>
       <StringTable CompanyName="Sergey Oleynikov" LegalCopyright="Sergey Oleynikov" ProductName="Nightscout Watcher"/>
     </VersionInfo>
     <BuildModes Count="3">
@@ -95,6 +95,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <DebugInfoType Value="dsDwarf2Set"/>
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>
@@ -116,7 +117,6 @@
     </PublishOptions>
     <RunParams>
       <FormatVersion Value="2"/>
-      <Modes Count="0"/>
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
@@ -126,7 +126,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="NightscoutWatcher.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -161,6 +161,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ufTimerDialog"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="forms\ufnightscoutsite.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fNightscoutSite"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ufNightscoutSite"/>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

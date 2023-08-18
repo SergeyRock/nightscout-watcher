@@ -25,6 +25,8 @@ program NightscoutWatcher;
 uses
   Interfaces,
   Forms,
+  {$IFDEF ExplSSL}, sslsockets, fpopenssl,{$ENDIF}
+  opensslsockets,
   ufMain in 'forms\ufMain.pas' {fMain},                 
   ufSettings in 'forms\ufSettings.pas' {fSettings},
   uNightscout in 'units\uNightscout.pas',

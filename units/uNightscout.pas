@@ -247,7 +247,7 @@ function TNightscoutEntry.ParseRow(Row: string): Boolean;
 //    Value = '2019-11-30T22:10:23.684+0400'
     PlusPos := Pos('+', DateText) + 1;
     TimeZoneStr := Copy(DateText, PlusPos, Length(DateText) - PlusPos - 1);
-    TimeZoneForParsing := StrToInt(TimeZoneStr);
+    TimeZoneForParsing := 3; //StrToInt(TimeZoneStr);
   end;
 
 var

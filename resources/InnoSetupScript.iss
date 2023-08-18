@@ -1,6 +1,6 @@
 ; -- Installation script --
 
-#define MyAppVersion "2.14.0"
+#define MyAppVersion "2.15.0"
 
 #define MyInstallerName "NightscoutWatcher" 
 #define MyAppExeName "NightscoutWatcher.exe" 
@@ -27,7 +27,7 @@ AppSupportURL={#MyGitHubSupportURL}
 AppUpdatesURL={#MyGitHubLatestReleaseURL}
 AppVersion={#MyAppVersion}
 Compression=lzma2
-DefaultDirName={autopf}\{#MyAppName}
+DefaultDirName={userdocs}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableReadyPage=True
 OutputBaseFilename={#MyInstallerName}
@@ -38,10 +38,10 @@ ShowUndisplayableLanguages=True
 SolidCompression=yes
 UninstallDisplayIcon={app}\{#MyAppExeName}
 UninstallDisplayName={#MyAppName}
-Uninstallable=not IsTaskSelected('portable_mode')
+Uninstallable=not WizardIsTaskSelected('portable_mode')
 VersionInfoCompany={#MyAuthor}
-VersionInfoCopyright={#MyAuthor}, 2019
-VersionInfoDescription=Blood Glucose Monitoring app
+VersionInfoCopyright={#MyAuthor}, 2023
+VersionInfoDescription=continuous Glucose Monitoring app
 VersionInfoProductName={#MyAppName}
 VersionInfoTextVersion={#MyAppVersion}
 VersionInfoVersion={#MyAppVersion}
@@ -51,7 +51,7 @@ WizardSizePercent=150,130
 InfoAfterFile=ReadMe.rtf
 
 [Files]
-Source: "..\lib\i386-win32\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\lib\x86_64-win64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "alarm.wav"; DestDir: "{app}"; Flags: ignoreversion
 Source: "alarm2.wav"; DestDir: "{app}"; Flags: ignoreversion
 Source: "libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -82,7 +82,7 @@ russian.Options=Опции:
 english.PortableMode=Portable Mode
 russian.PortableMode=Портативная установка
 russian.AutoStartProgramOption=при загрузке операционной системы
-english.AutoStartProgramOption=with OS
+english.AutoStartProgramOption=with OS startup
 
 [InstallDelete]
 Type: files; Name: "{app}\{#MyPortableLockFile}"

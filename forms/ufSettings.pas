@@ -23,17 +23,19 @@ type
     cbDrawHoursToReceiveData: TCheckBox;
     cbEnableAudioAlarms: TCheckBox;
     cbShowIconInTray: TCheckBox;
+    cbShowIconInTaskbar: TCheckBox;
     cbStayOnTop: TCheckBox;
     cbDrawGlucoseLevelDelta: TCheckBox;
     cbDrawGlucoseAvg: TCheckBox;
     cbEnableGlucoseLevelAlarms: TCheckBox;
     cbEnableStaleDataAlarms: TCheckBox;
     cbDrawWallpaper: TCheckBox;
-    cbShowIconInTaskbar: TCheckBox;
+    eNightscoutToken: TEdit;
     eWallpaper: TEdit;
     gbGlucoseLevelAlarms: TGroupBox;
     Image1: TImage;
     lblDeveloper: TLabel;
+    lblNightscoutToken: TLabel;
     lblVersion: TLabel;
     lblGitHubLink: TLabel;
     lblHighGlucoseAlarm: TLabel;
@@ -152,7 +154,7 @@ begin
   AssignComponentsToSettings();
   SourceSettings.Assign(NewSettings);
   
-  if (NewSettings.NightscoutUrl <> SourceSettings.NightscoutUrl) and
+  if ((NewSettings.NightscoutUrl <> SourceSettings.NightscoutUrl) or (NewSettings.NightscoutToken <> SourceSettings.NightscoutToken)) and
     Assigned(OnTryLoadEntriesData) and not OnTryLoadEntriesData then
   begin
     ModalResult := mrNone;
@@ -333,6 +335,7 @@ begin
   seUrgentStaleDataAlarm.Value   := NewSettings.UrgentStaleDataAlarm;
   seTimeZoneCorrection.Value     := NewSettings.TimeZoneCorrection;
   eNightscoutSite.Text           := NewSettings.NightscoutUrl;
+  eNightscoutToken.Text          := NewSettings.NightscoutToken;
 
   AssignGlucoseAlertInMmolL(seUrgentHighGlucoseAlarm);
   AssignGlucoseAlertInMmolL(seHighGlucoseAlarm);
@@ -380,6 +383,7 @@ begin
   NewSettings.ShowIconInTaskBar           := cbShowIconInTaskbar.Checked;
   NewSettings.ShowIconInTray              := cbShowIconInTray.Checked;
   NewSettings.NightscoutUrl               := eNightscoutSite.Text;
+  NewSettings.NightscoutToken             := eNightscoutToken.Text;
 
   NewSettings.ScaleIndex         := sbScale.Position;
   NewSettings.AlphaBlendValue    := sbAlphaBlend.Position;

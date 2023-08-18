@@ -1,5 +1,6 @@
 # Project 
 tmp/
+.ignore/
 AutomaticConversion.log
 *.bat
 

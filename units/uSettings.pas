@@ -87,6 +87,7 @@ type
     LastSnoozeTimePeriod: Integer;
     LowGlucoseAlarm: Integer;
     NightscoutUrl: string;
+    NightscoutToken: string;
     OptionsFileName: string;
     ScaleIndex: Integer;
     ShowCheckNewDataProgressBar: Boolean;
@@ -196,6 +197,7 @@ begin
   IsMmolL := Settings.IsMmolL;
   LowGlucoseAlarm := Settings.LowGlucoseAlarm;
   NightscoutUrl := Settings.NightscoutUrl;
+  NightscoutToken := Settings.NightscoutToken;
   OptionsFileName := Settings.OptionsFileName;
   ScaleIndex := Settings.ScaleIndex;
   ShowCheckNewDataProgressBar := Settings.ShowCheckNewDataProgressBar;
@@ -230,6 +232,7 @@ begin
   Result.IsMmolL := IsMmolL;
   Result.LowGlucoseAlarm := LowGlucoseAlarm;
   Result.NightscoutUrl := NightscoutUrl;
+  Result.NightscoutToken := NightscoutToken;
   Result.ScaleIndex := ScaleIndex;
   Result.ShowCheckNewDataProgressBar := ShowCheckNewDataProgressBar;
   Result.ShowWindowBorder := ShowWindowBorder;
@@ -265,7 +268,7 @@ begin
   LastSnoozeTimePeriod := 600;
   LowGlucoseAlarm:= 4 * cMmolDenominator;
   NightscoutUrl := '';
-  NightscoutUrl := '';
+  NightscoutToken := '';
   ScaleIndex := 12;
   ShowCheckNewDataProgressBar := True;
   ShowIconInTaskBar := True;
@@ -402,6 +405,7 @@ begin
     // Main settings
     IsMmolL            := ini.ReadBool   ('Main', 'IsMmolL',            IsMmolL);
     NightscoutUrl      := ini.ReadString ('Main', 'NightscoutUrl',      NightscoutUrl);
+    NightscoutToken    := ini.ReadString ('Main', 'NightscoutToken',    NightscoutToken);
     CheckInterval      := ini.ReadInteger('Main', 'CheckInterval',      CheckInterval);
     TimeZoneCorrection := ini.ReadInteger('Main', 'TimeZoneCorrection', TimeZoneCorrection);
     HoursToReceive     := ini.ReadInteger('Main', 'HoursToReceive',     HoursToReceive);
@@ -481,6 +485,8 @@ begin
     FormatDateTime('hh:nn:ss', DateResult);
   CacheResetParam := Random(MaxInt);
   Result := Format('%s/api/v1/entries/sgv?count=3000&find[dateString][$gte]=%s&rnd=%d', [NightscoutUrl, DateString, CacheResetParam]);
+  if NightscoutToken <> '' then
+    Result := Result + '&token=' + NightscoutToken;
 end;
 
 function TSettings.IsSnoozeAlarmsEndTimePassed(): Boolean;

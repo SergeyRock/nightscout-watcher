@@ -12,10 +12,10 @@ object fTimerDialog: TfTimerDialog
   OnCreate = FormCreate
   Position = poScreenCenter
   ShowHint = True
-  LCLVersion = '2.0.6.0'
+  LCLVersion = '2.2.6.0'
   object eInputText: TEdit
     Left = 16
-    Height = 21
+    Height = 23
     Top = 44
     Width = 495
     Anchors = [akTop, akLeft, akRight]
@@ -53,7 +53,7 @@ object fTimerDialog: TfTimerDialog
   object tmr: TTimer
     Enabled = False
     OnTimer = tmrTimer
-    left = 432
-    top = 24
+    Left = 432
+    Top = 24
   end
 end
