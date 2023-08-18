@@ -19,6 +19,7 @@ type
     lblDescription1: TLabel;
     pb: TButtonPanel;
     procedure CancelButtonClick(Sender: TObject);
+    procedure HelpButtonClick(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
   private
 
@@ -28,6 +29,9 @@ type
 
 
 implementation
+
+uses
+  LCLIntf;
 
 {$R *.lfm}
 
@@ -60,6 +64,12 @@ end;
 procedure TfNightscoutSite.CancelButtonClick(Sender: TObject);
 begin
   ModalResult := mrClose;
+end;
+
+procedure TfNightscoutSite.HelpButtonClick(Sender: TObject);
+begin
+  OpenDocument('https://github.com/SergeyRock/nightscout-watcher#nightscout-site-permission');
+
 end;
 
 

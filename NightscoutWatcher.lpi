@@ -25,7 +25,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="2"/>
       <MinorVersionNr Value="14"/>
-      <BuildNr Value="135"/>
+      <BuildNr Value="136"/>
       <StringTable CompanyName="Sergey Oleynikov" LegalCopyright="Sergey Oleynikov" ProductName="Nightscout Watcher"/>
     </VersionInfo>
     <BuildModes Count="3">
