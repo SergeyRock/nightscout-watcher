@@ -15,16 +15,18 @@ PS. I'm not a native English speaker. I'll be grateful if you participate in cor
 2. Blood sugar level data from your CGM must be sent to Nightscout site (for instance through [xDrip+](https://github.com/NightscoutFoundation/xDrip))
 
 ### Nightscout site permission
-⚠️ It is nessesary to create user with reed permission! ⚠️ 
-1. Log in to the admin panel of your Nightscout site (e.g. https://some-cgm.site.com/admin/)
-2. Create a new role using the pattern ***:*:read**
+⚠️ It is nessesary to create user with reed permission!
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/AccessToken.jpg)
+1. Log in to the admin panel of your Nightscout site (e.g. https://nightscout.somedomain.com/admin/)
+2. Create a new role using the pattern `*:*:read`
 3. Create a new subject using role created in step 2
 4. Use generated access token of the role in application window "Source settings"
+![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/SourceSettings.jpg)
 
 ## Installation
-1. Download [installer](https://github.com/SergeyRock/nightscout-watcher/releases) (only win32 version is available)
+1. Download [installer](https://github.com/SergeyRock/nightscout-watcher/releases) (only win64 version is available)
 2. Install and start executable
-3. Type in url of your Nightscout site and set Time Zone
+3. Type in url and access token of your Nightscout site
 
 ## Main window
 ![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/Main.2.jpg)
