@@ -331,7 +331,8 @@ begin
   try
     ini.WriteBool   ('Main', 'IsMmolL',            IsMmolL);
     ini.WriteString ('Main', 'NightscoutUrl',      NightscoutUrl);
-    ini.WriteInteger('Main', 'HoursToReceive',      HoursToReceive);
+    ini.WriteString ('Main', 'NightscoutToken',    NightscoutToken);
+    ini.WriteInteger('Main', 'HoursToReceive',     HoursToReceive);
     ini.WriteInteger('Main', 'TimeZoneCorrection', TimeZoneCorrection);
     ini.WriteInteger('Main', 'CheckInterval',      CheckInterval);
 
