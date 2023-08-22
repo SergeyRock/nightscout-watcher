@@ -3,7 +3,7 @@ The main purpose of the application is to show glucose level on your monitor in 
 
 ![N|Solid](https://raw.githubusercontent.com/SergeyRock/nightscout-watcher/master/screenshots/Main.jpg)
 
-App receives TSV-data about blood sugar level by requesting url like this: http://oldexcom.herokuapp.com/api/v1/entries/sgv?count=3000&find[dateString][$gte]=2019-11-16T01:00:00
+App receives TSV-data about blood sugar level by requesting url like this: [http://oldexcom.herokuapp.com/api/v1/entries/sgv?count=3000&find[dateString][$gte]=2019-11-16T01:00:00](http://nightscout.protema.ru/api/v1/entries/sgv?count=3000&find[dateString][$gte]=2023-08-18T12:41:19&rnd=1273124118&token=widget-7ac0863108777e83)
 
 ## Collaboration
 You are always welcome to connect to this open source project by helping of any kind (e.g. testing, programming, spelling and etc.). 
